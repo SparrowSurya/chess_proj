@@ -3,6 +3,7 @@ from configs.gui import *
 
 from gui.cell import Cell
 
+
 class ChessBoard:
     def __init__(self, canvas:tk.Canvas):
         self.canvas = canvas
@@ -18,12 +19,6 @@ class ChessBoard:
         self.kill = CH_KILL
         self.check = CH_CHECK
     
-    def cell(self, ix, iy):
-        """returns the cell"""
-        return self.__cells[iy][ix]
-
-    def draw(self):
-        """draws chessboard"""
         for i in range(8):
             tmp = []
             for j in range(8):
@@ -31,6 +26,11 @@ class ChessBoard:
                 cell = Cell(self.canvas, i, j, self.cell_size, col, self.col0)
                 tmp.append(cell)
             self.__cells.append(tmp)
+    
+    def cell(self, ix, iy):
+        """returns the cell"""
+        return self.__cells[iy][ix]
 
     def select(self, x, y):
-        self.__cells[y//self.cell_size][x//self.cell_size].select(self.sel1)
+        self.cell(y//self.cell_size, x//self.cell_size).select(self.sel1)
+
