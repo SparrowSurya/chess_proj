@@ -1,5 +1,6 @@
 import tkinter as tk
 from gui.chessboard import ChessBoard
+from src import ctxManager
 
 
 root = tk.Tk()
@@ -10,6 +11,9 @@ c.pack(fill=tk.BOTH, expand=1)
 
 z = ChessBoard(c)
 
-# root.after(3000, lambda: z.select(200, 400))
+m = ctxManager(z)
+
+root.bind('<Button-1>', m.single_left_click_only)
+root.bind('<Button-3>', m.single_right_click_only)
 
 root.mainloop()

@@ -1,9 +1,10 @@
 
 CH_SQSIZE = 80
-CH_TILE_COL1 = "white"
-CH_TILE_COL2 = "black"
-CH_SELECT_COL1 = "yellow"
-CH_SELECT_COL2 = "blue"
+CH_CELL_COL1 = "white"
+CH_CELL_COL2 = "black"
+CH_SEL1 = "yellow"
+CH_SEL2 = "blue"
 CH_CHECK = "red"
 CH_KILL = "orange"
-CH_TILE_OUTLINE = "black"
+CH_CELL_EDGE1 = "black"
+CH_CELL_EDGE2 = "WHITE"

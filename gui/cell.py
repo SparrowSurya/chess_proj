@@ -2,11 +2,11 @@ import tkinter as tk
 from configs.gui import *
 
 class Cell:
-    def __init__(self, canvas: tk.Canvas, row: int, column: int, size: int, fill: str, edge: str):
+    def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, edge: str):
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
-        self.size: int = size
+
         self.fill: str = fill
         self.edge: str = edge
 
@@ -15,33 +15,34 @@ class Cell:
         
         self.__img = None
         self.cell_bg = self.canvas.create_rectangle(
-            self.ix*self.size,
-            self.iy*self.size,
-            (self.ix+1)*self.size,
-            (self.iy+1)*self.size,
+            self.ix*CH_SQSIZE,
+            self.iy*CH_SQSIZE,
+            (self.ix+1)*CH_SQSIZE,
+            (self.iy+1)*CH_SQSIZE,
             fill=self.fill,
             width=0,
         )
 
         self.cell_fg = self.canvas.create_rectangle(
-            self.ix*self.size +2,
-            self.iy*self.size +2,
-            (self.ix+1)*self.size -2,
-            (self.iy+1)*self.size -2,
+            self.ix*CH_SQSIZE +2,
+            self.iy*CH_SQSIZE +2,
+            (self.ix+1)*CH_SQSIZE -2,
+            (self.iy+1)*CH_SQSIZE -2,
             fill=self.fill,
             width=0,
         )
         
         self.cell_im = self.canvas.create_image(
-            (2*self.ix +1)*self.size //2,
-            (2*self.iy +1)*self.size //2,
+            (2*self.ix +1)*CH_SQSIZE //2,
+            (2*self.iy +1)*CH_SQSIZE //2,
             anchor=tk.CENTER,
             state=tk.NORMAL,
+            image=""
         )
     
-    def select(self, color: str):
-        self.canvas.itemconfig(self.cell_fg, fill=color)
-        self.canvas.itemconfig(self.cell_bg, fill="black")
+    def select(self, fill_color: str, edge_color: str):
+        self.canvas.itemconfig(self.cell_fg, fill=fill_color)
+        self.canvas.itemconfig(self.cell_bg, fill=edge_color)
     
     def deselect(self):
         self.canvas.itemconfig(self.cell_fg, fill=self.fill)
@@ -56,8 +57,11 @@ class Cell:
     
     def hideimg(self):
         self.canvas.itemconfig(self.cell_im, state=tk.HIDDEN)
+    
+    # def clearimg(self):
+    #     self.canvas.itemcget(self.cell_im, 'image')
 
-    def move(self, dx, dy):
+    def move(self, dx: int, dy: int):
         self.__dx += dx
         self.__dy += dy
         self.canvas.move(self.cell_im, self.__dx, self.__dy)
