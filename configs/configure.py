@@ -1,10 +1,14 @@
 from configparser import ConfigParser
 
 config = ConfigParser()
-config.read('config.ini')
+config.read("config.ini")
 
-'''
-to change configuration for user 
-to make new user
-to delete user
-'''
+print(config.sections())
+
+config.add_section('Main')
+
+with open('config.ini', 'w') as file:
+    config.write(file)
+
+
+
