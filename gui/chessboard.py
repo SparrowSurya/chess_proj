@@ -1,6 +1,6 @@
 import tkinter as tk
-from configs.gui import *
 
+import config as CN
 from gui.cell import Cell
 
 
@@ -9,15 +9,6 @@ class ChessBoard:
         self.canvas = canvas
 
         self.__cells:list[list[Cell]] = []
-
-        # self.size = CH_SQSIZE
-        # self.sel1 = CH_SEL1
-        # self.sel2 = CH_SEL2
-        # self.col1 = CH_CELL_COL1
-        # self.col2 = CH_CELL_COL2
-        # self.col0 = CH_TILE_OUTLINE
-        # self.kill = CH_KILL
-        # self.check = CH_CHECK
     
         for i in range(8):
             tmp = []
@@ -29,7 +20,7 @@ class ChessBoard:
     @staticmethod
     def xy2rc(x_coord: int, y_coord: int):
         """coords to cell coords"""
-        c, r = x_coord//CH_SQSIZE, y_coord//CH_SQSIZE
+        c, r = x_coord//CN.SQSIZE, y_coord//CN.SQSIZE
         if r in range(8) and c in range(8):
             return r, c
         else:
@@ -37,11 +28,11 @@ class ChessBoard:
     
     @staticmethod
     def get_fill_col(r: int, c: int):
-        return CH_CELL_COL1 if (r+c)%2 else CH_CELL_COL2
+        return CN.CELL_COL1 if (r+c)%2 else CN.CELL_COL2
     
     @staticmethod
     def get_edge_col(r: int, c: int):
-        return CH_CELL_EDGE1 if (r+c)%2 else CH_CELL_EDGE2
+        return CN.CELL_EDGE1 if (r+c)%2 else CN.CELL_EDGE2
     
     def cell(self, r: int, c: int) -> Cell:
         """returns the cell at r, c"""

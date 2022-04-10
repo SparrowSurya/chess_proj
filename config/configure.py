@@ -1,13 +1,15 @@
 from configparser import ConfigParser
 
-config = ConfigParser()
-config.read("configs/config.ini")
+if __name__ == '__main__':
+    File = "config/config.ini"
+else:
+    File = "config.ini"
 
-config.add_section('User')
+Config = ConfigParser()
+Config.read(File)
 
 
-with open('configs/config.ini', 'w') as file:
-    config.write(file)
-
+# with open(File, 'w') as f:
+#     config.write(f)
 
 

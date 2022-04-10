@@ -1,5 +1,5 @@
 import tkinter as tk
-from configs.gui import *
+import config as CN
 
 class Cell:
     def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, edge: str):
@@ -15,27 +15,27 @@ class Cell:
         
         self.__img = None
         self.cell_bg = self.canvas.create_rectangle(
-            self.ix*CH_SQSIZE,
-            self.iy*CH_SQSIZE,
-            (self.ix+1)*CH_SQSIZE,
-            (self.iy+1)*CH_SQSIZE,
+            self.ix*CN.SQSIZE,
+            self.iy*CN.SQSIZE,
+            (self.ix+1)*CN.SQSIZE,
+            (self.iy+1)*CN.SQSIZE,
             fill=self.fill,
             width=0,
         )
 
         self.cell_fg = self.canvas.create_rectangle(
-            self.ix*CH_SQSIZE +2,
-            self.iy*CH_SQSIZE +2,
-            (self.ix+1)*CH_SQSIZE -2,
-            (self.iy+1)*CH_SQSIZE -2,
+            self.ix*CN.SQSIZE +2,
+            self.iy*CN.SQSIZE +2,
+            (self.ix+1)*CN.SQSIZE -2,
+            (self.iy+1)*CN.SQSIZE -2,
             fill=self.fill,
             width=0,
         )
         
         self.cell_im = self.canvas.create_image(
-            (2*self.ix +1)*CH_SQSIZE //2,
-            (2*self.iy +1)*CH_SQSIZE //2,
-            anchor=tk.CENTER,
+            (2*self.ix +1)*CN.SQSIZE //2,
+            (2*self.iy +1)*CN.SQSIZE //2,
+            anchorr=tk.CENTER,
             state=tk.NORMAL,
             image=""
         )

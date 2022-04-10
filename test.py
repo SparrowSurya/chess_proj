@@ -1,7 +1,7 @@
 import tkinter as tk
+
 from gui.chessboard import ChessBoard
 from src import ctxManager
-
 
 root = tk.Tk()
 root.state("zoomed")
