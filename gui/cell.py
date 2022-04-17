@@ -2,7 +2,7 @@ import tkinter as tk
 import config as cfg
 
 class Cell:
-    def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, edge: str):
+    def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, edge: str, image=""):
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
@@ -13,7 +13,8 @@ class Cell:
         self.__dx: int = 0
         self.__dy: int = 0
         
-        self.__img = None
+        self.img = image
+
         self.cell_bg = self.canvas.create_rectangle(
             self.ix*cfg.SQSIZE,
             self.iy*cfg.SQSIZE,
@@ -37,7 +38,7 @@ class Cell:
             (2*self.iy +1)*cfg.SQSIZE //2,
             anchor=tk.CENTER,
             state=tk.NORMAL,
-            image=""
+            image=self.img
         )
     
     def select(self, fill_color: str, edge_color: str):
@@ -49,17 +50,20 @@ class Cell:
         self.canvas.itemconfig(self.cell_bg, fill=self.fill)
     
     def newimg(self, image):
-        self.__img = image
-        self.canvas.itemconfig(self.cell_im, image=self.__img)
+        self.img = image
+        self.canvas.itemconfig(self.cell_im, image=self.img)
+        self.canvas.tag_raise(self.cell_im)
     
     def showimg(self):
         self.canvas.itemconfig(self.cell_im, state=tk.NORMAL)
+        self.canvas.tag_raise(self.cell_im)
     
     def hideimg(self):
         self.canvas.itemconfig(self.cell_im, state=tk.HIDDEN)
     
     def clearimg(self):
         self.canvas.itemcget(self.cell_im, "")
+        self.img = ""
 
     def move(self, dx: int, dy: int):
         self.__dx += dx

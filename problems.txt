@@ -1,2 +1,9 @@
+1.
 TCLERROR: (fixed)
     as canvas is extended when there are no cells further on clicking 2nd time it raises error
+
+2.
+IMAGE NOT EXIST:
+    config takes help of config.configure to get the path of directory as per user settings
+    config(__init__) package knows that from where the images need to be fetched
+    gui.ipath uses that info to provide the relative path (wrt to test.py file) to fetch the images

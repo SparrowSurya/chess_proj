@@ -3,18 +3,18 @@ if __name__ == '__main':
 else:
     from config.configure import Config, uConfig
 
-default = Config['DEFAULT']
+Default = Config['DEFAULT']
 
-SQSIZE = int(default['size'])
-CELL_COL1 = default['col1']
-CELL_COL2 = default['col2']
-CELL_EDGE1 = default['edge1']
-CELL_EDGE2 = default['edge2']
-SEL1 = default['sel1']
-SEL2 = default['sel2']
-CHECK = default['check']
-KILL = default['kill']
+SQSIZE = int(Default['size'])
+CELL_COL1 = Default['col1']
+CELL_COL2 = Default['col2']
+CELL_EDGE1 = Default['edge1']
+CELL_EDGE2 = Default['edge2']
+SEL1 = Default['sel1']
+SEL2 = Default['sel2']
+CHECK = Default['check']
+KILL = Default['kill']
 
 # images path as per user settings
-imgdir = uConfig["pimg"]
+imgdir = uConfig["ipath"]
 ipath = f"assets/images/{imgdir}"

@@ -2,6 +2,7 @@ import tkinter as tk
 
 import config as cfg
 from gui.cell import Cell
+import gui.ipath as im
 
 
 class ChessBoard:
@@ -13,7 +14,7 @@ class ChessBoard:
         for i in range(8):
             tmp = []
             for j in range(8):
-                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j), self.get_edge_col(i, j))
+                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j), self.get_edge_col(i, j), im.IWN)
                 tmp.append(cell)
             self.__cells.append(tmp)
     
