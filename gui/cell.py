@@ -35,7 +35,7 @@ class Cell:
         self.cell_im = self.canvas.create_image(
             (2*self.ix +1)*CN.SQSIZE //2,
             (2*self.iy +1)*CN.SQSIZE //2,
-            anchorr=tk.CENTER,
+            anchor=tk.CENTER,
             state=tk.NORMAL,
             image=""
         )

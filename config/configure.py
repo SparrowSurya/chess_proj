@@ -1,15 +1,13 @@
-from configparser import ConfigParser
+import json
 
-if __name__ == '__main__':
-    File = "config/config.ini"
-else:
-    File = "config.ini"
+# if __name__ == '__main__':
+#     File = "config/config.json"
+# else:
+#     File = "config.json"
+File = "config/config.json"
+# print("File:", File)
+with open(File, 'r') as f:
+    Data = f.read()
 
-Config = ConfigParser()
-Config.read(File)
-
-
-# with open(File, 'w') as f:
-#     config.write(f)
-
+Config = json.loads(Data)
 
