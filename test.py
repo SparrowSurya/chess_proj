@@ -2,6 +2,7 @@ import tkinter as tk
 
 import config as cfg
 from gui.chessboard import ChessBoard
+from gui.pimg import *
 from src import ctxManager
 
 root = tk.Tk()

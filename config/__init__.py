@@ -1,10 +1,9 @@
 if __name__ == '__main':
-    from configure import Config
+    from configure import Config, uConfig
 else:
-    from config.configure import Config
+    from config.configure import Config, uConfig
 
 default = Config['DEFAULT']
-
 
 SQSIZE = int(default['size'])
 CELL_COL1 = default['col1']
@@ -16,3 +15,6 @@ SEL2 = default['sel2']
 CHECK = default['check']
 KILL = default['kill']
 
+# images path as per user settings
+imgdir = uConfig["pimg"]
+ipath = f"assets/images/{imgdir}"
