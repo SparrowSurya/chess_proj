@@ -1,1 +1,2 @@
-1. as canvas is extended when there are no cells further on clicking 2nd time there raises error 
+TCLERROR:
+as canvas is extended when there are no cells further on clicking 2nd time it raises error

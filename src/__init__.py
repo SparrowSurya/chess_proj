@@ -1,7 +1,5 @@
 import tkinter as tk
 
-# from configs.gui import *
-import config
 from gui.chessboard import ChessBoard
 
 

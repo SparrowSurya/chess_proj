@@ -5,6 +5,7 @@ else:
 
 default = Config['DEFAULT']
 
+
 SQSIZE = int(default['size'])
 CELL_COL1 = default['col1']
 CELL_COL2 = default['col2']
