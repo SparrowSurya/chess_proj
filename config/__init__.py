@@ -15,5 +15,4 @@ SEL2 = Default['sel2']
 CHECK = Default['check']
 KILL = Default['kill']
 
-# images path as per user settings
 ipath = "assets/images/" + uConfig["ipath"]

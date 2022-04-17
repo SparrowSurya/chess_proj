@@ -39,7 +39,6 @@ class Cell:
             anchor=tk.CENTER,
             state=tk.NORMAL,
             image=self.img
-            # image=r'C:\Users\Suryakant\Desktop\chess_proj\assets\images\default\bK.png'
         )
     
     def select(self, fill_color: str, edge_color: str):
