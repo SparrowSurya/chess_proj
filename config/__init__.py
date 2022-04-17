@@ -16,5 +16,4 @@ CHECK = Default['check']
 KILL = Default['kill']
 
 # images path as per user settings
-imgdir = uConfig["ipath"]
-ipath = f"assets/images/{imgdir}"
+ipath = "assets/images/" + uConfig["ipath"]

@@ -14,7 +14,7 @@ class ChessBoard:
         for i in range(8):
             tmp = []
             for j in range(8):
-                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j), self.get_edge_col(i, j), im.IWN)
+                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j), self.get_edge_col(i, j))
                 tmp.append(cell)
             self.__cells.append(tmp)
     
@@ -40,9 +40,9 @@ class ChessBoard:
         try:
             if r in range(8) and c in range(8):
                 return self.__cells[r][c]
-            return None
+            return
         except:
-            return None
+            return
 
     def mark(self, r: int, c: int, fill_color: str, edge_color: str) -> bool:
         """to change colour of a cell returns sucess as bool"""
