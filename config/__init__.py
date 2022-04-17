@@ -1,7 +1,7 @@
 if __name__ == '__main':
-    from configure import File, Config
+    from configure import Config
 else:
-    from config.configure import File, Config
+    from config.configure import Config
 
 default = Config['DEFAULT']
 
