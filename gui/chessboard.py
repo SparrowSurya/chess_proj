@@ -14,7 +14,7 @@ class ChessBoard:
         for i in range(8):
             tmp = []
             for j in range(8):
-                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j), self.get_edge_col(i, j))
+                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j))
                 tmp.append(cell)
             self.__cells.append(tmp)
     
@@ -30,10 +30,10 @@ class ChessBoard:
     @staticmethod
     def get_fill_col(r: int, c: int):
         return cfg.CELL_COL1 if (r+c)%2 else cfg.CELL_COL2
-    
+        
     @staticmethod
-    def get_edge_col(r: int, c: int):
-        return cfg.CELL_EDGE1 if (r+c)%2 else cfg.CELL_EDGE2
+    def get_sel_col(r: int, c: int):
+        return cfg.CELL_SEL1 if (r+c)%2 else cfg.CELL_SEL2
     
     def cell(self, r: int, c: int) -> Cell:
         """returns the cell at r, c"""
@@ -44,11 +44,11 @@ class ChessBoard:
         except:
             return
 
-    def mark(self, r: int, c: int, fill_color: str, edge_color: str) -> bool:
+    def mark(self, r: int, c: int, fill_color: str) -> bool:
         """to change colour of a cell returns sucess as bool"""
         if r==-1 and c==-1:
             return False
         else:
-            self.cell(r, c).select(fill_color, edge_color)
+            self.cell(r, c).select(fill_color)
             return True
     

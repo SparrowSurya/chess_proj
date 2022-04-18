@@ -8,10 +8,9 @@ Default = Config['DEFAULT']
 SQSIZE = int(Default['size'])
 CELL_COL1 = Default['col1']
 CELL_COL2 = Default['col2']
-CELL_EDGE1 = Default['edge1']
-CELL_EDGE2 = Default['edge2']
-SEL1 = Default['sel1']
-SEL2 = Default['sel2']
+CELL_SEL0 = Default['sel0']
+CELL_SEL1 = Default['sel1']
+CELL_SEL2 = Default['sel2']
 CHECK = Default['check']
 KILL = Default['kill']
 

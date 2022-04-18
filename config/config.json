@@ -3,10 +3,9 @@
         "size": 80,
         "col1" : "#efd6ae",
         "col2" : "#b7865d",
-        "edge1" : "black",
-        "edge2" : "white",
+        "sel0" : "green",
         "sel1" : "yellow",
-        "sel2" : "blue",
+        "sel2" : "cyan",
         "check" : "red",
         "kill" : "orange"
     },
@@ -15,10 +14,9 @@
         "size": 80,
         "col1" : "white",
         "col2" : "black",
-        "edge1" : "black",
-        "edge2" : "white",
+        "sel0" : "green",
         "sel1" : "yellow",
-        "sel2" : "blue",
+        "sel2" : "cyan",
         "check" : "red",
         "kill" : "orange"
     }

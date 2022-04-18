@@ -2,20 +2,19 @@ import tkinter as tk
 import config as cfg
 
 class Cell:
-    def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, edge: str, image=""):
+    def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, image=""):
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
 
         self.fill: str = fill
-        self.edge: str = edge
 
         self.__dx: int = 0
         self.__dy: int = 0
         
         self.img = image
 
-        self.cell_bg = self.canvas.create_rectangle(
+        self.cell_col = self.canvas.create_rectangle(
             self.ix*cfg.SQSIZE,
             self.iy*cfg.SQSIZE,
             (self.ix+1)*cfg.SQSIZE,
@@ -24,16 +23,7 @@ class Cell:
             width=0,
         )
 
-        self.cell_fg = self.canvas.create_rectangle(
-            self.ix*cfg.SQSIZE +2,
-            self.iy*cfg.SQSIZE +2,
-            (self.ix+1)*cfg.SQSIZE -2,
-            (self.iy+1)*cfg.SQSIZE -2,
-            fill=self.fill,
-            width=0,
-        )
-        
-        self.cell_im = self.canvas.create_image(
+        self.cell_img = self.canvas.create_image(
             (2*self.ix +1)*cfg.SQSIZE //2,
             (2*self.iy +1)*cfg.SQSIZE //2,
             anchor=tk.CENTER,
@@ -41,36 +31,37 @@ class Cell:
             image=self.img
         )
     
-    def select(self, fill_color: str, edge_color: str):
-        self.canvas.itemconfig(self.cell_fg, fill=fill_color)
-        self.canvas.itemconfig(self.cell_bg, fill=edge_color)
+    def select(self, fill_color: str):
+        self.canvas.itemconfig(self.cell_col, fill=fill_color)
     
     def deselect(self):
-        self.canvas.itemconfig(self.cell_fg, fill=self.fill)
-        self.canvas.itemconfig(self.cell_bg, fill=self.fill)
+        self.canvas.itemconfig(self.cell_col, fill=self.fill)
+    
+    def activecol(self):
+        return self.canvas.itemcget(self.cell_col, 'fill')
     
     def newimg(self, image):
         self.img = image
-        self.canvas.itemconfig(self.cell_im, image=self.img)
-        self.canvas.tag_raise(self.cell_im)
+        self.canvas.itemconfig(self.cell_img, image=self.img)
+        self.canvas.tag_raise(self.cell_img)
     
     def showimg(self):
-        self.canvas.itemconfig(self.cell_im, state=tk.NORMAL)
-        self.canvas.tag_raise(self.cell_im)
+        self.canvas.itemconfig(self.cell_img, state=tk.NORMAL)
+        self.canvas.tag_raise(self.cell_img)
     
     def hideimg(self):
-        self.canvas.itemconfig(self.cell_im, state=tk.HIDDEN)
+        self.canvas.itemconfig(self.cell_img, state=tk.HIDDEN)
     
     def clearimg(self):
-        self.canvas.itemcget(self.cell_im, "")
+        self.canvas.itemcget(self.cell_img, "")
         self.img = ""
 
     def move(self, dx: int, dy: int):
         self.__dx += dx
         self.__dy += dy
-        self.canvas.move(self.cell_im, self.__dx, self.__dy)
+        self.canvas.move(self.cell_img, self.__dx, self.__dy)
     
     def resetmove(self):
-        self.canvas.move(self.cell_im, -self.__dx, -self.__dy)
+        self.canvas.move(self.cell_img, -self.__dx, -self.__dy)
         self.__dx = 0
         self.__dy = 0
