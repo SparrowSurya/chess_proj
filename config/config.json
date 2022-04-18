@@ -1,6 +1,18 @@
 {
     "DEFAULT": {
         "size": 80,
+        "col1" : "#efd6ae",
+        "col2" : "#b7865d",
+        "edge1" : "black",
+        "edge2" : "white",
+        "sel1" : "yellow",
+        "sel2" : "blue",
+        "check" : "red",
+        "kill" : "orange"
+    },
+
+    "RESET": {
+        "size": 80,
         "col1" : "white",
         "col2" : "black",
         "edge1" : "black",
