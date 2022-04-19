@@ -21,6 +21,10 @@ class King(Piece):
     ischeck: bool = False
     march_dir = ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1))
 
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
+
     def moves(self):
         pass
 
@@ -29,6 +33,10 @@ class Queen(Piece):
     name: str = "queen"
     alias: str = 'Q'
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1))
+
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
 
     def moves(self):
         pass
@@ -39,6 +47,10 @@ class Knight(Piece):
     alias: str = 'N'
     march_dir = ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2))
 
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
+
     def moves(self):
         pass
 
@@ -47,6 +59,10 @@ class Rook(Piece):
     name: str = "rook"
     alias: str = 'R'
     march_dir = ((1,0),(0,1),(-1,0),(0,-1))
+
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
 
     def moves(self):
         pass
@@ -57,6 +73,10 @@ class Bishop(Piece):
     alias: str = 'B'
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1))
 
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
+
     def moves(self):
         pass
 
@@ -65,6 +85,10 @@ class Pawn(Piece):
     name: str = "pawn"
     alias: str = 'P'
     canmove: bool = False
+
+    @property
+    def id(self):
+        return f"{self.player}{self.alias}"
 
     def moves(self):
         pass

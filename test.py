@@ -11,6 +11,10 @@ root = tk.Tk()
 
 padd = 48
 marking_font = ('times new roman', 18, 'bold')
+marking = (
+    ('1', '2', '3', '4', '5', '6', '7', '8'),
+    ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
+)
 
 board = tk.Canvas(root, bg='#7d4512', height=cfg.SQSIZE*8+padd, width=cfg.SQSIZE*8+padd, highlightthickness=0)
 board.pack()
@@ -21,12 +25,12 @@ for i in range(8):
     y = padd//4
     board.create_text(
         x,y, anchor=tk.CENTER, fill='white',
-        text=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][i],
+        text=marking[1][i],
         font=marking_font
     )
     board.create_text(
         x, 3*y+cfg.SQSIZE*8, anchor=tk.CENTER, fill='white',
-        text=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][i],
+        text=marking[1][i],
         font=marking_font
     )
 
@@ -36,12 +40,12 @@ for i in range(8):
     y = padd//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
     board.create_text(
         x, y, anchor=tk.CENTER, fill='white',
-        text=f'{i+1}',
+        text=marking[0][i],
         font=marking_font
     )
     board.create_text(
         3*x+cfg.SQSIZE*8, y, anchor=tk.CENTER, fill='white',
-        text=f'{i+1}',
+        text=marking[0][i],
         font=marking_font
     )
 
