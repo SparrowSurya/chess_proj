@@ -13,5 +13,12 @@ CELL_SEL1 = Default['sel1']
 CELL_SEL2 = Default['sel2']
 CHECK = Default['check']
 KILL = Default['kill']
+BOARD_BORDER = Default['board_border']
+MARKING_FONT = Default['marking_font']
+
+MARKING = (
+    ('1', '2', '3', '4', '5', '6', '7', '8'),
+    ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
+)
 
 ipath = "assets/images/" + uConfig["ipath"]

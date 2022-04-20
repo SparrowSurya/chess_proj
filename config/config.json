@@ -7,9 +7,11 @@
         "sel1" : "yellow",
         "sel2" : "cyan",
         "check" : "red",
-        "kill" : "orange"
+        "kill" : "orange",
+        "board_border": 48,
+        "marking_font": ["times new roman", 18, "bold"]
     },
-
+    
     "RESET": {
         "size": 80,
         "col1" : "white",
@@ -18,6 +20,8 @@
         "sel1" : "yellow",
         "sel2" : "cyan",
         "check" : "red",
-        "kill" : "orange"
+        "kill" : "orange",
+        "board_border": 48,
+        "marking_font": ["times new roman", 18, "bold"]
     }
 }

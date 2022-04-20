@@ -10,11 +10,44 @@ class ChessBoard:
         self.canvas = canvas
 
         self.__cells:list[list[Cell]] = []
-    
+
+        # horizontal marking
         for i in range(8):
+            x = cfg.BOARD_BORDER//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
+            y = cfg.BOARD_BORDER//4
+            canvas.create_text(
+                x,y, anchor=tk.CENTER, fill='white',
+                text=cfg.MARKING[1][i],
+                font=cfg.MARKING_FONT
+            )
+            canvas.create_text(
+                x, 3*y+cfg.SQSIZE*8, anchor=tk.CENTER, fill='white',
+                text=cfg.MARKING[1][i],
+                font=cfg.MARKING_FONT
+            )
+
+        # vertical marking
+        for i in range(8):
+            x = cfg.BOARD_BORDER//4
+            y = cfg.BOARD_BORDER//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
+            canvas.create_text(
+                x, y, anchor=tk.CENTER, fill='white',
+                text=cfg.MARKING[0][i],
+                font=cfg.MARKING_FONT
+            )
+            canvas.create_text(
+                3*x+cfg.SQSIZE*8, y, anchor=tk.CENTER, fill='white',
+                text=cfg.MARKING[0][i],
+                font=cfg.MARKING_FONT
+            )
+    
+        self.board: tk.Canvas = tk.Canvas(canvas, height=cfg.SQSIZE*8, width=cfg.SQSIZE*8, highlightthickness=0)
+        self.board.place(x=cfg.BOARD_BORDER//2, y=cfg.BOARD_BORDER//2)
+
+        for y in range(8):
             tmp = []
-            for j in range(8):
-                cell = Cell(self.canvas, i, j, self.get_fill_col(i, j))
+            for x in range(8):
+                cell = Cell(self.board, y, x, self.get_fill_col(y, x))
                 tmp.append(cell)
             self.__cells.append(tmp)
     

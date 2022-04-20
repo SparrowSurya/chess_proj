@@ -29,7 +29,7 @@ class ctxManager:
     def single_left_click_only(self, e: tk.Event):
         self.deselect_all()
 
-        if e.widget==self.board.canvas:
+        if e.widget==self.board.board:
             self.last_clicked_loc.append((e.x, e.y))
             r, c = self.board.xy2rc(e.x, e.y)
             return self.__select__(r, c, cfg.CELL_SEL0)
