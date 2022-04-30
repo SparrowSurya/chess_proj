@@ -36,3 +36,21 @@ class ctxManager:
     
     def single_right_click_only(self, e: tk.Event):
         self.deselect_all()
+
+
+class Manager:
+    def __init__(self, board: ChessBoard):
+        self.board: ChessBoard = board
+        self.ctx: ctxManager = ctxManager(self.board)
+    
+        self.__grid: list[list[str]] = []
+    
+    @property
+    def grid(self):
+        return self.__grid
+    
+    @grid.setter
+    def grid(self, newgrid: list[list[str]]):
+        self.__grid = newgrid
+    
+    

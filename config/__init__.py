@@ -4,6 +4,7 @@ else:
     from config.configure import Config, uConfig
 
 Default = Config['DEFAULT']
+ipath = "assets/images/" + uConfig["ipath"]
 
 SQSIZE = int(Default['size'])
 CELL_COL1 = Default['col1']
@@ -21,4 +22,13 @@ MARKING = (
     ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 )
 
-ipath = "assets/images/" + uConfig["ipath"]
+REFRENCE = {
+    'player0': 'p0',
+    'player1': 'p1',
+    'king': 'K',
+    'queen': 'Q',
+    'knight': 'K',
+    'bishop': 'B',
+    'rook': 'R',
+    'pawn': 'P'
+}
