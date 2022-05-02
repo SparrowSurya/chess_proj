@@ -1,5 +1,5 @@
 from config.configure import Default, uConfig
-from config.const import MARKING, REF
+from config.const import *
 
 IPATH = "assets/images/" + uConfig["ipath"]
 

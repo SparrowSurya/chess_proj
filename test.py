@@ -26,7 +26,7 @@ for i in range(8):
         board.cell(i, j).newimg(tk.PhotoImage(file=im.IWQ))
         board.cell(i, j).showimg()
 
-root.bind('<Button-1>', b.ctx.single_left_click_only)
-root.bind('<Button-3>', b.ctx.single_right_click_only)
+root.bind('<Button-1>', b.ctx.MLRC)
+root.bind('<Button-3>', b.ctx.MSRC)
 
 root.mainloop()

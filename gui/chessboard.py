@@ -57,7 +57,7 @@ class ChessBoard:
         if r in range(8) and c in range(8):
             return r, c
         else:
-            return -1, -1
+            return None
     
     @staticmethod
     def get_fill_col(r: int, c: int):
@@ -77,10 +77,6 @@ class ChessBoard:
             return
 
     def mark(self, r: int, c: int, fill_color: str) -> bool:
-        """to change colour of a cell returns sucess as bool"""
-        if r==-1 and c==-1:
-            return False
-        else:
-            self.cell(r, c).select(fill_color)
-            return True
+        """to change colour of a cell"""
+        self.cell(r, c).select(fill_color)
     
