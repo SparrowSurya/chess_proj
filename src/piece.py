@@ -1,4 +1,4 @@
-from config import _Ref
+from config import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN
 
 class Piece:
     def __init__(self, player_name: str, row: int, col: int, ipath: str):
@@ -19,7 +19,7 @@ class Piece:
 
 class King(Piece):
     name: str = "king"
-    alias: _Ref = _Ref.king
+    alias: str = KING
     ischeck: bool = False
     march_dir = ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1))
 
@@ -33,7 +33,7 @@ class King(Piece):
 
 class Queen(Piece):
     name: str = "queen"
-    alias: _Ref = _Ref.queen
+    alias: str = QUEEN
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1))
 
     @property
@@ -46,7 +46,7 @@ class Queen(Piece):
 
 class Knight(Piece):
     name: str = "knight"
-    alias: _Ref = _Ref.knight
+    alias: str = KNIGHT
     march_dir = ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2))
 
     @property
@@ -59,7 +59,7 @@ class Knight(Piece):
 
 class Rook(Piece):
     name: str = "rook"
-    alias: _Ref = _Ref.rook
+    alias: str = ROOK
     march_dir = ((1,0),(0,1),(-1,0),(0,-1))
 
     @property
@@ -72,7 +72,7 @@ class Rook(Piece):
 
 class Bishop(Piece):
     name: str = "bishop"
-    alias: _Ref = _Ref.bishop
+    alias: str = BISHOP
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1))
 
     @property
@@ -85,7 +85,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     name: str = "pawn"
-    alias: _Ref = _Ref.pawn
+    alias: str = PAWN
     canmove: bool = False
 
     @property
