@@ -2,9 +2,10 @@ import tkinter as tk
 
 from gui.chessboard import ChessBoard
 import config as cfg
+from src.player import Player
 
 
-class ctxManager:
+class ctx:
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
 
@@ -38,12 +39,15 @@ class ctxManager:
         self.deselect_all()
 
 
-class Manager:
+class Brain:
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
-        self.ctx: ctxManager = ctxManager(self.board)
+        self.ctx: ctx = ctx(self.board)
     
         self.__grid: list[list[str]] = []
+        
+        self.player0: Player = Player(self.board, cfg._Ref.p0)
+        self.player1: Player = Player(self.board, cfg._Ref.p1)
     
     @property
     def grid(self):

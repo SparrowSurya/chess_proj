@@ -1,9 +1,6 @@
-if __name__ == '__main':
-    from configure import Config, uConfig
-else:
-    from config.configure import Config, uConfig
+from config.configure import Default, uConfig
+from config.const import _Ref, MARKING
 
-Default = Config['DEFAULT']
 ipath = "assets/images/" + uConfig["ipath"]
 
 SQSIZE = int(Default['size'])
@@ -17,18 +14,3 @@ KILL = Default['kill']
 BOARD_BORDER = Default['board_border']
 MARKING_FONT = Default['marking_font']
 
-MARKING = (
-    ('1', '2', '3', '4', '5', '6', '7', '8'),
-    ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
-)
-
-REFRENCE = {
-    'player0': 'p0',
-    'player1': 'p1',
-    'king': 'K',
-    'queen': 'Q',
-    'knight': 'K',
-    'bishop': 'B',
-    'rook': 'R',
-    'pawn': 'P'
-}

@@ -2,7 +2,6 @@ import tkinter as tk
 
 import config as cfg
 from gui.cell import Cell
-import gui.ipath as im
 
 
 class ChessBoard:

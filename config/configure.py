@@ -8,3 +8,5 @@ with open(File, 'r') as f:
 
 with open(uFile, 'r') as f:
     uConfig = json.loads(f.read())
+
+Default = Config['DEFAULT']
