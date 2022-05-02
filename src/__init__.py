@@ -75,3 +75,14 @@ class Brain:
             self.Deselect(*loc)
         self.last_selected.clear()
     
+    def SwitchTurn(self):
+        if self.TurnOf()==self.player0.name:
+            self.player0.turn = False
+            self.player1.turn = True
+        else:
+            self.player0.turn = True
+            self.player1.turn = False
+
+    def Move(self, r0: int, c0: int, r1: int, c1: int):
+        pass
+    
