@@ -28,5 +28,5 @@ for i in range(8):
 
 root.bind('<Button-1>', b.ctx.single_left_click_only)
 root.bind('<Button-3>', b.ctx.single_right_click_only)
-root.mainloop()
 
+root.mainloop()

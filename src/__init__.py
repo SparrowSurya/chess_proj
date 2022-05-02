@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from gui.chessboard import ChessBoard
-import config as cfg
+from config import *
 from src.player import Player
 
 
@@ -33,7 +33,7 @@ class ctx:
         if e.widget==self.board.board:
             self.last_clicked_loc.append((e.x, e.y))
             r, c = self.board.xy2rc(e.x, e.y)
-            return self.__select__(r, c, cfg.CELL_SEL0)
+            return self.__select__(r, c, CELL_SEL0)
     
     def single_right_click_only(self, e: tk.Event):
         self.deselect_all()
@@ -44,10 +44,10 @@ class Brain:
         self.board: ChessBoard = board
         self.ctx: ctx = ctx(self.board)
     
-        self.__grid: list[list[str]] = []
+        self.__grid: list[list[str]] = [[NULL]]
         
-        self.player0: Player = Player(self.board, cfg._Ref.p0)
-        self.player1: Player = Player(self.board, cfg._Ref.p1)
+        self.player0: Player = Player(self.board, P0)
+        self.player1: Player = Player(self.board, P1)
     
     @property
     def grid(self):
