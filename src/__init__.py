@@ -5,49 +5,17 @@ from config import *
 from src.player import Player
 
 
-class ctx:
-    def __init__(self, board: ChessBoard):
-        self.board: ChessBoard = board
-
-        self.last_selected_cell = [] 
-        self.last_clicked_loc = []
-    
-    def Select(self, r: int, c: int, fill: str):
-        """selects the given location"""
-        self.board.mark(r, c, fill)
-        self.last_selected_cell.append((r, c))
-    
-    def Deselect(self, r: int, c: int):
-        """deselects the given location"""
-        self.board.cell(r, c).deselect()
-    
-    def deselect_all(self):
-        """deselects all the selected cells"""
-        for loc in self.last_selected_cell:
-            self.Deselect(*loc)
-        self.last_selected_cell.clear()
-
-    def MLRC(self, e: tk.Event):
-        self.deselect_all()
-
-        if e.widget==self.board.board:
-            self.last_clicked_loc.append((e.x, e.y))
-            r, c = self.board.xy2rc(e.x, e.y)
-            return self.Select(r, c, CELL_SEL0)
-    
-    def MSRC(self, e: tk.Event):
-        self.deselect_all()
-
-
 class Brain:
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
-        self.ctx: ctx = ctx(self.board)
 
         self.__grid: list[list[str]] = [['..' for _ in range(8)] for _ in range(8)]
         
         self.player0: Player = Player(self.board, P0)
         self.player1: Player = Player(self.board, P1)
+
+        self.last_clicked: list[int] = [] # [x, y]
+        self.last_selected: list[tuple[int, int]] = [] # [(r0, c0), (r1, c1), ...]
     
     @property
     def grid(self):
@@ -76,23 +44,34 @@ class Brain:
             return '0' if self.player0.turn else '1'
         else:
             return '1' if self.player0.turn else '0'
-    
-    def GetPieceID(self, x: int, y: int):
-        loc = self.board.xy2rc(x, y)
-        if loc is not None:
-            r, c = loc
-            return self.__grid[r][c]
-        return NULL
 
     def Mouse_SLC(self, e: tk.Event):
-        if self.GetPieceID(e.x, e.y)[0]==self.TurnOf():
-            self.ctx.MLRC(e)
+        if (loc:=self.board.xy2rc(e.x, e.y)): r, c = loc
+        else: return
+
+        if self.__grid[r][c][0]==self.TurnOf() or 1: # EXP
+            self.DeselectAll()
+
+            if e.widget==self.board.board:
+                self.last_clicked.append((e.x, e.y))
+                r, c = self.board.xy2rc(e.x, e.y)
+                self.Select(r, c, CELL_SEL0)
     
     def Mouse_SRC(self, e: tk.Event):
-        if self.GetPieceID(e.x, e.y)[0]==self.TurnOf():
-            self.ctx.MSRC(e)
+        self.DeselectAll()
     
     def MouseDrag(self, e: tk.Event):
         pass
 
+    def Select(self, r: int, c: int, fill: str):
+        self.board.mark(r, c, fill)
+        self.last_selected.append((r, c))
+    
+    def Deselect(self, r: int, c: int):
+        self.board.cell(r, c).deselect()
+    
+    def DeselectAll(self):
+        for loc in self.last_selected:
+            self.Deselect(*loc)
+        self.last_selected.clear()
     

@@ -6,8 +6,8 @@ class Player:
         self.board: ChessBoard = board
         self.name: str = name
 
-        self.turn = False
-        self.last_move:list[int] = []
+        self.turn: bool = False
+        self.last_move: list[int] = [] # [r0, c0, r1, c1]
     
 
     # def isowner(self, piece):
