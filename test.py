@@ -19,9 +19,9 @@ canvas.pack()
 
 board = ChessBoard(canvas)
 b = Brain(board)
+b.StartDefault()
 
 root.bind('<Button-1>', b.Mouse_SLC)
 root.bind('<Button-3>', b.Mouse_SRC)
-root.bind('<Escape>', b.StartDefault)
 
 root.mainloop()

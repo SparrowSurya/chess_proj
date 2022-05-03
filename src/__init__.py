@@ -35,8 +35,10 @@ class Brain:
                 if pl==NULL or pc==NULL:
                     cell.clearimg()
                 elif pl==self.player0.name:
+                    self.player0.NewPiece(pc, i,j)
                     cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
                 elif pl==self.player1.name:
+                    self.player1.NewPiece(pc, i,j)
                     cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
                 else:
                     raise Exception("Invalid player name")
@@ -56,21 +58,19 @@ class Brain:
     
     def TurnOf(self, rev: bool=False):
         if rev:
-            return '0' if self.player0.turn else '1'
-        else:
             return '1' if self.player0.turn else '0'
+        else:
+            return '0' if self.player0.turn else '1'
 
     def Mouse_SLC(self, e: tk.Event):
+        self.DeselectAll()
         if (loc:=self.board.xy2rc(e.x, e.y)): r, c = loc
         else: return
 
-        if self.__grid[r][c][0]==self.TurnOf() or 1: # EXP
-            self.DeselectAll()
-
-            if e.widget==self.board.board:
-                self.last_clicked.append((e.x, e.y))
-                r, c = self.board.xy2rc(e.x, e.y)
-                self.Select(r, c, CELL_SEL0)
+        if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
+            self.last_clicked.append((e.x, e.y))
+            r, c = self.board.xy2rc(e.x, e.y)
+            self.Select(r, c, CELL_SEL0)
     
     def Mouse_SRC(self, e: tk.Event):
         self.DeselectAll()
