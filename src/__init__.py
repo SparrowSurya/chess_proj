@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from gui.chessboard import ChessBoard
+from gui import GetImgPath
 from config import *
 from src.player import Player
 
@@ -26,8 +27,22 @@ class Brain:
         x = iter(newgrid)
         for i in range(8):
             for j in range(8):
-                self.__grid[i][j] = f"{next(x)}{next(x)}"
-        # update the grid
+
+                pl = next(x)
+                pc = next(x)
+                cell = self.board.cell(i, j)
+
+                if pl==NULL or pc==NULL:
+                    cell.clearimg()
+                elif pl==self.player0.name:
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
+                elif pl==self.player1.name:
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
+                else:
+                    raise Exception("Invalid player name")
+                    
+                cell.showimg()
+                self.__grid[i][j] = f"{pl}{pc}"
     
     def StartDefault(self, p1: bool = True):
         # reset board pieces 

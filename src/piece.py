@@ -17,7 +17,6 @@ class Piece:
 
 
 class King(Piece):
-    name: str = "king"
     alias: str = KING
     ischeck: bool = False
     march_dir = ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1))
@@ -31,7 +30,6 @@ class King(Piece):
 
 
 class Queen(Piece):
-    name: str = "queen"
     alias: str = QUEEN
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1))
 
@@ -44,7 +42,6 @@ class Queen(Piece):
 
 
 class Knight(Piece):
-    name: str = "knight"
     alias: str = KNIGHT
     march_dir = ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2))
 
@@ -57,7 +54,6 @@ class Knight(Piece):
 
 
 class Rook(Piece):
-    name: str = "rook"
     alias: str = ROOK
     march_dir = ((1,0),(0,1),(-1,0),(0,-1))
 
@@ -70,7 +66,6 @@ class Rook(Piece):
 
 
 class Bishop(Piece):
-    name: str = "bishop"
     alias: str = BISHOP
     march_dir = ((1,1),(1,-1),(-1,1),(-1,-1))
 
@@ -83,7 +78,6 @@ class Bishop(Piece):
 
 
 class Pawn(Piece):
-    name: str = "pawn"
     alias: str = PAWN
     canmove: bool = False
 

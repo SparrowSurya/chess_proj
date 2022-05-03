@@ -23,3 +23,4 @@ BISHOP : str = REF['bishop']
 ROOK   : str = REF['rook']
 PAWN   : str = REF['pawn']
 NULL   : str = REF['none']
+

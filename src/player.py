@@ -46,7 +46,6 @@ class Player:
                 if pic.alive and pic.r == r and pic.c == c:
                     return pic
 
-
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int, piece: str = None):
         if piece is None:
             piece = self.GetPiece(r0, c0)

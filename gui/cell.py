@@ -53,7 +53,7 @@ class Cell:
         self.canvas.itemconfig(self.cell_img, state=tk.HIDDEN)
     
     def clearimg(self):
-        self.canvas.itemcget(self.cell_img, "")
+        self.canvas.itemconfig(self.cell_img, image="")
         self.img = ""
 
     def move(self, dx: int, dy: int):
