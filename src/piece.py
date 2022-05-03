@@ -1,16 +1,15 @@
 from config import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN
 
 class Piece:
-    def __init__(self, player_name: str, row: int, col: int, ipath: str):
-        self.player: str = player_name
-        self.ipath: str = ipath
+    def __init__(self, player: str, row: int, col: int):
+        self.player: str = player
         self.r: int = row
         self.c: int = col
 
         self.move0: bool = True
         self.alive: bool = True
 
-    def moveto(self, r: int, c: int):
+    def move(self, r: int, c: int):
         self.r, self.c = r, c
     
     def march(self):
