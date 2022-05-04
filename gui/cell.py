@@ -6,6 +6,7 @@ class Cell:
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
+        self.selected: bool = False
 
         self.fill: str = fill
 
@@ -33,9 +34,11 @@ class Cell:
     
     def select(self, fill_color: str):
         self.canvas.itemconfig(self.cell_col, fill=fill_color)
+        self.selected = True
     
     def deselect(self):
         self.canvas.itemconfig(self.cell_col, fill=self.fill)
+        self.selected = False
     
     def activecol(self):
         return self.canvas.itemcget(self.cell_col, 'fill')
@@ -55,7 +58,7 @@ class Cell:
     def clearimg(self):
         self.canvas.itemconfig(self.cell_img, image="")
         self.img = ""
-
+    
     def move(self, dx: int, dy: int):
         self.__dx += dx
         self.__dy += dy

@@ -80,3 +80,10 @@ class ChessBoard:
         """to change colour of a cell"""
         self.cell(r, c).select(fill_color)
     
+    def move(self, r0: int, c0: int, r1: int, c1: int):
+        cell0 = self.cell(r0, c0)
+        img = cell0.img
+        cell0.clearimg()
+        self.cell(r1, c1).newimg(img)
+    
+    

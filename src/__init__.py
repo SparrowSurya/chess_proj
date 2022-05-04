@@ -63,21 +63,24 @@ class Brain:
             return self.player0 if self.player0.turn else self.player1
 
     def Mouse_SLC(self, e: tk.Event):
-        self.DeselectAll()
-        if (loc:=self.board.xy2rc(e.x, e.y)): r, c = loc
-        else: return
+        r, c = self.board.xy2rc(e.x, e.y)
 
-        if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
-            self.last_clicked.append((e.x, e.y))
-            r, c = self.board.xy2rc(e.x, e.y)
-            Epos, Apos = self.GetMoves(r, c)
-            print(Epos, Apos)
+        if self.last_selected:
+            if self.board.cell(r, c).selected:
+                i, j = self.last_selected[0]
+                self.Move(i, j, r, c)
+            self.DeselectAll()
+        else:
+            if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
+                self.last_clicked.append((e.x, e.y))
+                r, c = self.board.xy2rc(e.x, e.y)
+                Epos, Apos = self.GetMoves(r, c)
 
-            self.Select(r, c, CELL_SEL0)
-            for i, j in Epos:
-                self.Select(i, j, CELL_SEL1)
-            for i, j in Apos:
-                self.Select(i, j, KILL)
+                self.Select(r, c, CELL_SEL0)
+                for i, j in Epos:
+                    self.Select(i, j, CELL_SEL1)
+                for i, j in Apos:
+                    self.Select(i, j, KILL)
     
     def Mouse_SRC(self, e: tk.Event):
         self.DeselectAll()
@@ -110,5 +113,8 @@ class Brain:
         return pc.moves(self.grid)
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
-        pass
-    
+        self.TurnOf().GetPiece(r0, c0).move(r1, c1)
+        self.__grid[r1][c1] = self.grid[r0][c0]
+        self.__grid[r0][c0] = f"{NULL}{NULL}"
+        self.board.move(r0, c0, r1, c1)
+

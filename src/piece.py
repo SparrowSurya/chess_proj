@@ -22,11 +22,11 @@ class Piece:
             if x[0] == NULL: # empty
                 way.append((r, c))
             elif x[0] == self.player: # friend
-                return way, ()
+                return way, []
             else: # enemy
-                return way, (r, c)
+                return way, [(r, c)]
             r, c = r+dr, c+dc
-        return way, ()
+        return way, []
 
 
 class King(Piece):
