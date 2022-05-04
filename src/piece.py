@@ -138,7 +138,7 @@ class Pawn(Piece):
             if grid[r][c][0]!=self.player:
                 Apos.extend((r, c))
         if (c:=self.c-1) in range(8): # left enemy
-            if grid[r][c][0]!=self.player:
+            if grid[r][c][0] not in (self.player, NULL):
                 Apos.extend((r, c))
         if self.move0 and Epos:
             if grid[r+self.dir][self.c][0] == NULL: # empty 2
