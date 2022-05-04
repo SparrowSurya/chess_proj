@@ -63,12 +63,18 @@ class Brain:
             return self.player0 if self.player0.turn else self.player1
 
     def Mouse_SLC(self, e: tk.Event):
-        r, c = self.board.xy2rc(e.x, e.y)
-
+        loc = self.board.xy2rc(e.x, e.y)
+        if loc is None:
+            self.DeselectAll()
+            return
+        else:
+            r, c = loc
+            
         if self.last_selected:
             if self.board.cell(r, c).selected:
                 i, j = self.last_selected[0]
                 self.Move(i, j, r, c)
+                self.switch()
             self.DeselectAll()
         else:
             if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
@@ -118,3 +124,10 @@ class Brain:
         self.__grid[r0][c0] = f"{NULL}{NULL}"
         self.board.move(r0, c0, r1, c1)
 
+    def switch(self):
+        if self.TurnOf() == self.player0:
+            self.player0.turn = False
+            self.player1.turn = True
+        else:
+            self.player0.turn = True
+            self.player1.turn = False
