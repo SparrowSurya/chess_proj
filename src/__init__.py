@@ -34,10 +34,10 @@ class Brain:
 
                 if pl==NULL or pc==NULL:
                     cell.clearimg()
-                elif pl==self.player0.name:
+                elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
                     cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
-                elif pl==self.player1.name:
+                elif pl==self.player1:
                     self.player1.NewPiece(pc, i,j)
                     cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
                 else:
@@ -58,9 +58,9 @@ class Brain:
     
     def TurnOf(self, rev: bool=False):
         if rev:
-            return '1' if self.player0.turn else '0'
+            return self.player1 if self.player0.turn else self.player0
         else:
-            return '0' if self.player0.turn else '1'
+            return self.player0 if self.player0.turn else self.player1
 
     def Mouse_SLC(self, e: tk.Event):
         self.DeselectAll()
@@ -70,7 +70,14 @@ class Brain:
         if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
             self.last_clicked.append((e.x, e.y))
             r, c = self.board.xy2rc(e.x, e.y)
+            Epos, Apos = self.GetMoves(r, c)
+            print(Epos, Apos)
+
             self.Select(r, c, CELL_SEL0)
+            for i, j in Epos:
+                self.Select(i, j, CELL_SEL1)
+            for i, j in Apos:
+                self.Select(i, j, KILL)
     
     def Mouse_SRC(self, e: tk.Event):
         self.DeselectAll()
@@ -91,12 +98,16 @@ class Brain:
         self.last_selected.clear()
     
     def SwitchTurn(self):
-        if self.TurnOf()==self.player0.name:
+        if self.TurnOf()==self.player0:
             self.player0.turn = False
             self.player1.turn = True
         else:
             self.player0.turn = True
             self.player1.turn = False
+
+    def GetMoves(self, r: int, c: int, rev: bool = False):
+        pc = self.TurnOf(rev).GetPiece(r, c)
+        return pc.moves(self.grid)
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         pass

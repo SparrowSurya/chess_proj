@@ -20,7 +20,7 @@ class Cell:
             (self.ix+1)*cfg.SQSIZE,
             (self.iy+1)*cfg.SQSIZE,
             fill=self.fill,
-            width=0,
+            width=2,
         )
 
         self.cell_img = self.canvas.create_image(

@@ -6,6 +6,7 @@ from src import Brain
 
 
 root = tk.Tk()
+root.geometry("+640+20")
 # root.state("zoomed")
 
 canvas = tk.Canvas(

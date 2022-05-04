@@ -28,6 +28,12 @@ class Player:
             ROOK  : [],
             PAWN  : []
         }
+    
+    def __call__(self):
+        return self.name
+    
+    def __eq__(self, name: str):
+        return self.name == name
 
     def IsOwner(self, piece_id: str):
         return piece_id[0] == self.name
