@@ -36,19 +36,19 @@ class Brain:
                 pc = next(x)
                 cell = self.board.cell(i, j)
 
-                if f"{pl}{pc}"==NULL:
+                if (pid:=f"{pl}{pc}")==NULL:
                     cell.clearimg()
                 elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), f"{pl}{pc}")
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), pid)
                 elif pl==self.player1:
                     self.player1.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), f"{pl}{pc}")
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), pid)
                 else:
                     raise Exception("Invalid player name")
                     
                 cell.showimg()
-                self.__grid[i][j] = f"{pl}{pc}"
+                self.__grid[i][j] = pid
     
     def StartDefault(self, p1: bool = True):
         # reset board pieces 
@@ -76,20 +76,16 @@ class Brain:
         else:
             r, c = loc
             
-        if self.selected:
+        if self.selected and (cell:=self.board.cell(r, c)).pid[0] != self.TurnOf():
             cell = self.board.cell(r, c)
             if cell.selected:
                 i, j = self.last_selected[0]
                 self.Move(i, j, r, c)
-                self.DeselectAll()
                 self.switch()
-            elif cell.pid == NULL:
-                pass
-            else:
-                self.DeselectAll()
+            self.DeselectAll()
         else:
             if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
-                self.last_clicked.append((e.x, e.y))
+                self.DeselectAll()
                 r, c = self.board.xy2rc(e.x, e.y)
                 Epos, Apos = self.GetMoves(r, c)
 
