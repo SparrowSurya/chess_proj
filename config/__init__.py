@@ -1,5 +1,4 @@
 from config.configure import Default, uConfig
-from config.const import *
 
 IPATH = "assets/images/" + uConfig["ipath"]
 
@@ -13,14 +12,4 @@ CHECK = Default['check']
 KILL = Default['kill']
 BOARD_BORDER = Default['board_border']
 MARKING_FONT = Default['marking_font']
-
-P0     : str = REF['player0']
-P1     : str = REF['player1']
-KING   : str = REF['king']
-QUEEN  : str = REF['queen']
-KNIGHT : str = REF['knight']
-BISHOP : str = REF['bishop']
-ROOK   : str = REF['rook']
-PAWN   : str = REF['pawn']
-NULL   : str = REF['none']
 

@@ -1,11 +1,13 @@
 import tkinter as tk
 import config as cfg
+from config.const import NULL
 
 class Cell:
     def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, image=""):
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
+        self.pid: str = f"{NULL}{NULL}"
         self.selected: bool = False
 
         self.fill: str = fill
@@ -43,8 +45,9 @@ class Cell:
     def activecol(self):
         return self.canvas.itemcget(self.cell_col, 'fill')
     
-    def newimg(self, image):
+    def newimg(self, image, pid):
         self.img = image
+        self.pid = pid
         self.canvas.itemconfig(self.cell_img, image=self.img)
         self.canvas.tag_raise(self.cell_img)
     
@@ -58,6 +61,7 @@ class Cell:
     def clearimg(self):
         self.canvas.itemconfig(self.cell_img, image="")
         self.img = ""
+        self.pid = f"{NULL}{NULL}"
     
     def move(self, dx: int, dy: int):
         self.__dx += dx

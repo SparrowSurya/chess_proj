@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import config as cfg
+import config.const as const
 from gui.cell import Cell
 
 
@@ -16,12 +17,12 @@ class ChessBoard:
             y = cfg.BOARD_BORDER//4
             canvas.create_text(
                 x,y, anchor=tk.CENTER, fill='white',
-                text=cfg.MARKING[1][i],
+                text=const.MARKING[1][i],
                 font=cfg.MARKING_FONT
             )
             canvas.create_text(
                 x, 3*y+cfg.SQSIZE*8, anchor=tk.CENTER, fill='white',
-                text=cfg.MARKING[1][i],
+                text=const.MARKING[1][i],
                 font=cfg.MARKING_FONT
             )
 
@@ -31,12 +32,12 @@ class ChessBoard:
             y = cfg.BOARD_BORDER//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
             canvas.create_text(
                 x, y, anchor=tk.CENTER, fill='white',
-                text=cfg.MARKING[0][i],
+                text=const.MARKING[0][i],
                 font=cfg.MARKING_FONT
             )
             canvas.create_text(
                 3*x+cfg.SQSIZE*8, y, anchor=tk.CENTER, fill='white',
-                text=cfg.MARKING[0][i],
+                text=const.MARKING[0][i],
                 font=cfg.MARKING_FONT
             )
     
@@ -80,10 +81,10 @@ class ChessBoard:
         """to change colour of a cell"""
         self.cell(r, c).select(fill_color)
     
-    def move(self, r0: int, c0: int, r1: int, c1: int):
+    def move(self, r0: int, c0: int, r1: int, c1: int, pid: str):
         cell0 = self.cell(r0, c0)
         img = cell0.img
         cell0.clearimg()
-        self.cell(r1, c1).newimg(img)
+        self.cell(r1, c1).newimg(img, pid)
     
     

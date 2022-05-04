@@ -1,4 +1,4 @@
-from config import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1
+from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1
 
 class Piece:
     def __init__(self, player: str, row: int, col: int):
@@ -37,8 +37,8 @@ class King(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
@@ -64,8 +64,8 @@ class Queen(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
@@ -83,8 +83,8 @@ class Knight(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
@@ -110,8 +110,8 @@ class Rook(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
@@ -129,8 +129,8 @@ class Bishop(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
@@ -152,8 +152,8 @@ class Pawn(Piece):
     def __call__(self):
         return f"{self.player}{self.alias}"
 
-    def __eq__(self, id: str):
-        return self.alias == id[1]
+    def __eq__(self, pid: str):
+        return self.alias == pid[1]
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []

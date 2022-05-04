@@ -1,4 +1,5 @@
-from config import  KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, IPATH
+from config.const import  KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN
+from config import IPATH
 
 def GetImgPath(player: str, piece: str):
     IMG = {

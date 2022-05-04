@@ -3,6 +3,7 @@ import tkinter as tk
 from gui.chessboard import ChessBoard
 from gui import GetImgPath
 from config import *
+from config.const import *
 from src.player import Player
 
 
@@ -17,6 +18,9 @@ class Brain:
 
         self.last_clicked: list[int] = [] # [x, y]
         self.last_selected: list[tuple[int, int]] = [] # [(r0, c0), (r1, c1), ...]
+
+        self.selected: bool = False
+        self.mdrag: bool = False
     
     @property
     def grid(self):
@@ -36,10 +40,10 @@ class Brain:
                     cell.clearimg()
                 elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), f"{pl}{pc}")
                 elif pl==self.player1:
                     self.player1.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)))
+                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), f"{pl}{pc}")
                 else:
                     raise Exception("Invalid player name")
                     
@@ -63,19 +67,23 @@ class Brain:
             return self.player0 if self.player0.turn else self.player1
 
     def Mouse_SLC(self, e: tk.Event):
+        self.last_clicked = [e.x, e.y]
         loc = self.board.xy2rc(e.x, e.y)
+
         if loc is None:
             self.DeselectAll()
             return
         else:
             r, c = loc
             
-        if self.last_selected:
+        if self.selected:
             if self.board.cell(r, c).selected:
                 i, j = self.last_selected[0]
                 self.Move(i, j, r, c)
+                self.DeselectAll()
                 self.switch()
-            self.DeselectAll()
+            else:
+                self.DeselectAll()
         else:
             if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
                 self.last_clicked.append((e.x, e.y))
@@ -97,6 +105,7 @@ class Brain:
     def Select(self, r: int, c: int, fill: str):
         self.board.mark(r, c, fill)
         self.last_selected.append((r, c))
+        self.selected = True
     
     def Deselect(self, r: int, c: int):
         self.board.cell(r, c).deselect()
@@ -105,6 +114,7 @@ class Brain:
         for loc in self.last_selected:
             self.Deselect(*loc)
         self.last_selected.clear()
+        self.selected = False
     
     def SwitchTurn(self):
         if self.TurnOf()==self.player0:
@@ -122,7 +132,7 @@ class Brain:
         self.TurnOf().GetPiece(r0, c0).move(r1, c1)
         self.__grid[r1][c1] = self.grid[r0][c0]
         self.__grid[r0][c0] = f"{NULL}{NULL}"
-        self.board.move(r0, c0, r1, c1)
+        self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
     def switch(self):
         if self.TurnOf() == self.player0:
