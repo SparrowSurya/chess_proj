@@ -7,7 +7,7 @@ class Cell:
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
         self.iy: int = row
-        self.pid: str = f"{NULL}{NULL}"
+        self.pid: str = NULL
         self.selected: bool = False
 
         self.fill: str = fill
@@ -61,7 +61,7 @@ class Cell:
     def clearimg(self):
         self.canvas.itemconfig(self.cell_img, image="")
         self.img = ""
-        self.pid = f"{NULL}{NULL}"
+        self.pid = NULL
     
     def move(self, dx: int, dy: int):
         self.__dx += dx

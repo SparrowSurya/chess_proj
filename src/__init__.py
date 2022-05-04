@@ -11,7 +11,7 @@ class Brain:
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
 
-        self.__grid: list[list[str]] = [['..' for _ in range(8)] for _ in range(8)]
+        self.__grid: list[list[str]] = [[NULL for _ in range(8)] for _ in range(8)]
         
         self.player0: Player = Player(self.board, P0)
         self.player1: Player = Player(self.board, P1)
@@ -36,7 +36,7 @@ class Brain:
                 pc = next(x)
                 cell = self.board.cell(i, j)
 
-                if pl==NULL or pc==NULL:
+                if f"{pl}{pc}"==NULL:
                     cell.clearimg()
                 elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
@@ -77,11 +77,14 @@ class Brain:
             r, c = loc
             
         if self.selected:
-            if self.board.cell(r, c).selected:
+            cell = self.board.cell(r, c)
+            if cell.selected:
                 i, j = self.last_selected[0]
                 self.Move(i, j, r, c)
                 self.DeselectAll()
                 self.switch()
+            elif cell.pid == NULL:
+                pass
             else:
                 self.DeselectAll()
         else:
@@ -131,7 +134,7 @@ class Brain:
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         self.TurnOf().GetPiece(r0, c0).move(r1, c1)
         self.__grid[r1][c1] = self.grid[r0][c0]
-        self.__grid[r0][c0] = f"{NULL}{NULL}"
+        self.__grid[r0][c0] = NULL
         self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
     def switch(self):

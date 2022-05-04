@@ -18,10 +18,10 @@ class Piece:
         r, c = self.r+dr, self.c+dc
         way = []
         while (r in range(8) and c in range(8)): # empty, enemy, friend
-            x = grid[r][c]
-            if x[0] == NULL: # empty
+            pid = grid[r][c]
+            if pid == NULL: # empty
                 way.append((r, c))
-            elif x[0] == self.player: # friend
+            elif pid[0] == self.player: # friend
                 return way, []
             else: # enemy
                 return way, [(r, c)]
@@ -47,10 +47,10 @@ class King(Piece):
             if r not in range(8) or c not in range(8):
                 continue
 
-            x = grid[r][c]
-            if x[0] == NULL: # empty
+            pid = grid[r][c]
+            if pid == NULL: # empty
                 Epos.append((r, c))
-            elif x[0] == self.player: # friend
+            elif pid[0] == self.player: # friend
                 continue
             else: # enemy
                 Apos.append((r, c))
@@ -93,10 +93,10 @@ class Knight(Piece):
             if r not in range(8) or c not in range(8):
                 continue
 
-            x = grid[r][c]
-            if x[0] == NULL: # empty
+            pid = grid[r][c]
+            if pid == NULL: # empty
                 Epos.append((r, c))
-            elif x[0] == self.player: # friend
+            elif pid[0] == self.player: # friend
                 continue
             else: # enemy
                 Apos.append((r, c))
@@ -158,15 +158,15 @@ class Pawn(Piece):
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
         r = self.r + self.dir
-        if grid[r][self.c][0] == NULL: # empty 1
+        if grid[r][self.c] == NULL: # empty 1
             Epos.append((r, self.c))
         if (c:=self.c+1) in range(8): # right enemy
-            if grid[r][c][0] not in (self.player, NULL):
+            if (pid:=grid[r][c])[0] != self.player and pid != NULL:
                 Apos.append((r, c))
         if (c:=self.c-1) in range(8): # left enemy
-            if grid[r][c][0] not in (self.player, NULL):
+            if (pid:=grid[r][c])[0] != self.player and pid != NULL:
                 Apos.append((r, c))
         if self.move0 and Epos:
-            if grid[r+self.dir][self.c][0] == NULL: # empty 2
+            if grid[r+self.dir][self.c] == NULL: # empty 2
                 Epos.append((r+self.dir, self.c))
         return Epos, Apos

@@ -9,7 +9,7 @@ REF = {
     'bishop' : 'b',
     'rook'   : 'r',
     'pawn'   : 'p',
-    'none'   : '.'
+    'none'   : '..'
 }
 
 
