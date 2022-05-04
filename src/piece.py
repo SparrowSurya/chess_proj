@@ -43,9 +43,17 @@ class King(Piece):
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
         for dr, dc in self.march_dir:
-            e, a = self.march(grid, dr, dc)
-            Epos.extend(e)
-            Apos.extend(a)
+            r, c = self.r+dr, self.c+dc
+            if r not in range(8) or c not in range(8):
+                continue
+
+            x = grid[r][c]
+            if x[0] == NULL: # empty
+                Epos.append((r, c))
+            elif x[0] == self.player: # friend
+                continue
+            else: # enemy
+                Apos.append((r, c))
         return Epos, Apos
 
 
