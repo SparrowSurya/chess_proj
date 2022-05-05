@@ -37,6 +37,7 @@ class Cell:
     def select(self, fill_color: str):
         self.canvas.itemconfig(self.cell_col, fill=fill_color)
         self.selected = True
+        self.canvas.tag_raise(self.cell_img)
     
     def deselect(self):
         self.canvas.itemconfig(self.cell_col, fill=self.fill)
@@ -66,7 +67,10 @@ class Cell:
     def move(self, dx: int, dy: int):
         self.__dx += dx
         self.__dy += dy
-        self.canvas.move(self.cell_img, self.__dx, self.__dy)
+        self.canvas.move(self.cell_img, dx, dy)
+    
+    def imcoords(self):
+        return self.canvas.coords(self.cell_img)
     
     def resetmove(self):
         self.canvas.move(self.cell_img, -self.__dx, -self.__dy)

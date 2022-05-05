@@ -16,11 +16,11 @@ class Brain:
         self.player0: Player = Player(self.board, P0)
         self.player1: Player = Player(self.board, P1)
 
-        self.last_clicked: list[int] = [] # [x, y]
+        self.last_clicked: list[int] = [-1, -1] # [x, y]
         self.last_selected: list[tuple[int, int]] = [] # [(r0, c0), (r1, c1), ...]
 
         self.selected: bool = False
-        self.mdrag: bool = False
+        self.pdrag: bool  = None
     
     @property
     def grid(self):
@@ -75,9 +75,8 @@ class Brain:
             return
         else:
             r, c = loc
-            
+        
         if self.selected and (cell:=self.board.cell(r, c)).pid[0] != self.TurnOf():
-            cell = self.board.cell(r, c)
             if cell.selected:
                 i, j = self.last_selected[0]
                 self.Move(i, j, r, c)
@@ -95,11 +94,49 @@ class Brain:
                 for i, j in Apos:
                     self.Select(i, j, KILL)
     
+    def MouseDrag(self, e: tk.Event):
+        x, y = self.last_clicked
+
+        if self.pdrag:
+            loc = self.last_selected[0]
+            self.board.cell(*loc).move(e.x-x, e.y-y)
+        elif self.pdrag is None:
+            loc = self.board.xy2rc(*self.last_clicked)
+
+            if loc is not None and self.board.cell(*loc).selected:
+                cell = self.board.cell(*loc)
+                ix, iy = cell.imcoords()
+                cell.move(x-ix, y-iy)
+                self.pdrag = True
+            else:
+                self.pdrag = False
+
+        self.last_clicked = [e.x, e.y]
+    
+    def Mouse_LCR(self, e: tk.Event):
+        if self.pdrag:
+            loc = self.board.xy2rc(e.x, e.y)
+            r0, c0 = self.last_selected[0]
+
+            if loc is None:
+                self.DeselectAll()
+                self.pdrag = None
+                self.board.cell(r0, c0).resetmove()
+                return
+            else:
+                r1, c1 = loc
+
+            cell = self.board.cell(r1, c1)
+            if cell.selected and (r0, c0)!=(r1, c1):
+                self.Move(r0, c0, r1, c1)
+                self.switch()
+            else:
+                self.board.cell(r0, c0).resetmove()
+            self.DeselectAll()
+        self.pdrag = None
+    
     def Mouse_SRC(self, e: tk.Event):
         self.DeselectAll()
-    
-    def MouseDrag(self, e: tk.Event):
-        pass
 
     def Select(self, r: int, c: int, fill: str):
         self.board.mark(r, c, fill)
@@ -128,10 +165,15 @@ class Brain:
         return pc.moves(self.grid)
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
-        self.TurnOf().GetPiece(r0, c0).move(r1, c1)
-        self.__grid[r1][c1] = self.grid[r0][c0]
+        fr, en = self.TurnOf(), self.TurnOf(True)
+
+        if en==(pc1:=self.__grid[r1][c1])[0]:
+            en.GetPiece(r1, c1, pc1[1]).alive = False
+
+        fr.GetPiece(r0, c0).move(r1, c1)
+        pc1 = self.__grid[r0][c0]
         self.__grid[r0][c0] = NULL
-        self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
+        self.board.move(r0, c0, r1, c1, pc1)
 
     def switch(self):
         if self.TurnOf() == self.player0:
