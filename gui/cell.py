@@ -8,7 +8,7 @@ class Cell:
         self.ix: int = column
         self.iy: int = row
         self.pid: str = NULL
-        self.selected: bool = False
+        self.selected: str = ''
 
         self.fill: str = fill
 
@@ -35,13 +35,21 @@ class Cell:
         )
     
     def select(self, fill_color: str):
+        if self.selected == cfg.CHECK:
+            return
         self.canvas.itemconfig(self.cell_col, fill=fill_color)
-        self.selected = True
+        self.selected = fill_color
         self.canvas.tag_raise(self.cell_img)
     
     def deselect(self):
+        if self.selected == cfg.CHECK:
+            return
         self.canvas.itemconfig(self.cell_col, fill=self.fill)
-        self.selected = False
+        self.selected = ''
+    
+    def uncheck(self):
+        self.selected = ''
+        self.canvas.itemconfig(self.cell_col, fill=self.fill)
     
     def activecol(self):
         return self.canvas.itemcget(self.cell_col, 'fill')
@@ -68,6 +76,9 @@ class Cell:
         self.__dx += dx
         self.__dy += dy
         self.canvas.move(self.cell_img, dx, dy)
+    
+    def coord(self):
+        return self.iy, self.ix
     
     def imcoords(self):
         return self.canvas.coords(self.cell_img)

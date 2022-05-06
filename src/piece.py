@@ -8,6 +8,10 @@ class Piece:
 
         self.move0: bool = True
         self.alive: bool = True
+    
+    @property
+    def loc(self):
+        return self.r, self.c
 
     def move(self, r: int, c: int):
         self.r, self.c = r, c

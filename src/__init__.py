@@ -21,6 +21,8 @@ class Brain:
 
         self.selected: bool = False
         self.pdrag: bool  = None
+
+        self.check: Player = None
     
     @property
     def grid(self):
@@ -90,17 +92,20 @@ class Brain:
                 self.MovePiece(i, j, r, c)
                 self.SwitchTurn()
             self.DeselectAll()
-        else:
-            if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
-                self.DeselectAll()
-                r, c = self.board.xy2rc(e.x, e.y)
-                Epos, Apos = self.GetMoves(r, c)
 
-                self.Select(r, c, CELL_SEL0)
-                for i, j in Epos:
-                    self.Select(i, j, CELL_SEL1)
-                for i, j in Apos:
-                    self.Select(i, j, KILL)
+        elif self.selected and (r, c) == self.last_selected[0]:
+            self.DeselectAll()
+
+        elif e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
+            self.DeselectAll()
+            r, c = self.board.xy2rc(e.x, e.y)
+            Epos, Apos = self.GetMoves(r, c)
+
+            self.Select(r, c, CELL_SEL0)
+            for i, j in Epos:
+                self.Select(i, j, CELL_SEL1)
+            for i, j in Apos:
+                self.Select(i, j, KILL)
     
     def MouseDrag(self, e: tk.Event):
         x, y = self.last_clicked
@@ -178,52 +183,56 @@ class Brain:
     def SwitchTurn(self):
         if self.TurnOf() == self.player0:
             self.player0.turn = False
-            self.player1.turn = True
+            (pl:=self.player1).turn = True
         else:
-            self.player0.turn = True
+            (pl:=self.player0).turn = True
             self.player1.turn = False
+
+        if self.IsCheck(pl):
+            self.check = pl
+            self.board.cell(*(pl.pieces[KING][0].loc)).select(CHECK)
 
     def IsCheck(self, player: Player, i: int=0):
         king = player.pieces[KING][i]
-        r, c = king.r, king.c
+        r, c = king.loc
 
         for dr, dc in MARCH[BISHOP]: # bishop
             i, j = r+dr, c+dc
             while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
                 if pid[1] in (QUEEN, BISHOP):
-                    return True, BISHOP
+                    return True
                 i, j = i+dr, j+dc
 
         for dr, dc in MARCH[ROOK]: # rook
             i, j = r+dr, c+dc
             while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
                 if pid[1] in (QUEEN, ROOK):
-                    return True, ROOK
+                    return True
                 i, j = i+dr, j+dc
         
         for dr, dc in MARCH[KING]: # king
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
                 continue
             if pid[1] is KING:
-                return True, KING
+                return True
         
         for dr, dc in MARCH[KNIGHT]: # knight
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
                 continue
             if pid[1] is KNIGHT:
-                return True, KNIGHT
+                return True
         
         d = -1 if player==P1 else 1
         if r+d in range(8) and c+1 in range(8): # pawn right
             pid=self.__grid[r+d][c+1]
             if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
-                return True, PAWN
+                return True
         if r+d in range(8) and c-1 in range(8): # pawn left
             pid=self.__grid[r+d][c-1]
             if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
-                return True, PAWN
+                return True
 
-        return False, NULL
+        return False
 
     def FilterMoves(self, ):
         pass
