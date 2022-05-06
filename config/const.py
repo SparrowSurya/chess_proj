@@ -1,28 +1,23 @@
 MARKING = ("12345678", "abcdefgh")
 
-REF = {
-    'player0': '0',
-    'player1': '1',
-    'king'   : 'k',
-    'queen'  : 'q',
-    'knight' : 'n',
-    'bishop' : 'b',
-    'rook'   : 'r',
-    'pawn'   : 'p',
-    'none'   : '..'
+
+P0     : str = '0'
+P1     : str = '1'
+KING   : str = 'k'
+QUEEN  : str = 'q'
+KNIGHT : str = 'n'
+BISHOP : str = 'b'
+ROOK   : str = 'r'
+PAWN   : str = 'p'
+NULL   : str = '..'
+
+MARCH = {
+    KING : ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)),
+    QUEEN : ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1)),
+    KNIGHT : ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2)),
+    BISHOP : ((1,1),(1,-1),(-1,1),(-1,-1)),
+    ROOK : ((1,0),(0,1),(-1,0),(0,-1))
 }
-
-
-P0     : str = REF['player0']
-P1     : str = REF['player1']
-KING   : str = REF['king']
-QUEEN  : str = REF['queen']
-KNIGHT : str = REF['knight']
-BISHOP : str = REF['bishop']
-ROOK   : str = REF['rook']
-PAWN   : str = REF['pawn']
-NULL   : str = REF['none']
-
 
 DEFAULT_GRID = "\
 0r0n0b0k0q0b0n0r\

@@ -26,6 +26,14 @@ class Brain:
     def grid(self):
         return self.__grid
     
+    def show(self):
+        print()
+        for i in range(8):
+            for j in range(8):
+                print(self.__grid[i][j], end=' ')
+            print()
+        print()
+    
     @grid.setter
     def grid(self, newgrid: str):
         x = iter(newgrid)
@@ -45,7 +53,7 @@ class Brain:
                     self.player1.NewPiece(pc, i,j)
                     cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), pid)
                 else:
-                    raise Exception("Invalid player name")
+                    raise Exception(f"Invalid player name: pid={pid}")
                     
                 cell.showimg()
                 self.__grid[i][j] = pid
@@ -79,8 +87,8 @@ class Brain:
         if self.selected and (cell:=self.board.cell(r, c)).pid[0] != self.TurnOf():
             if cell.selected:
                 i, j = self.last_selected[0]
-                self.Move(i, j, r, c)
-                self.switch()
+                self.MovePiece(i, j, r, c)
+                self.SwitchTurn()
             self.DeselectAll()
         else:
             if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
@@ -128,8 +136,8 @@ class Brain:
 
             cell = self.board.cell(r1, c1)
             if cell.selected and (r0, c0)!=(r1, c1):
-                self.Move(r0, c0, r1, c1)
-                self.switch()
+                self.MovePiece(r0, c0, r1, c1)
+                self.SwitchTurn()
             else:
                 self.board.cell(r0, c0).resetmove()
             self.DeselectAll()
@@ -151,34 +159,71 @@ class Brain:
             self.Deselect(*loc)
         self.last_selected.clear()
         self.selected = False
-    
-    def SwitchTurn(self):
-        if self.TurnOf()==self.player0:
-            self.player0.turn = False
-            self.player1.turn = True
-        else:
-            self.player0.turn = True
-            self.player1.turn = False
 
     def GetMoves(self, r: int, c: int, rev: bool = False):
         pc = self.TurnOf(rev).GetPiece(r, c)
         return pc.moves(self.grid)
 
-    def Move(self, r0: int, c0: int, r1: int, c1: int):
+    def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
         fr, en = self.TurnOf(), self.TurnOf(True)
 
-        if en==(pc1:=self.__grid[r1][c1])[0]:
-            en.GetPiece(r1, c1, pc1[1]).alive = False
+        if en==(pid1:=self.__grid[r1][c1])[0]:
+            en.GetPiece(r1, c1, pid1[1]).alive = False
 
         fr.GetPiece(r0, c0).move(r1, c1)
-        pc1 = self.__grid[r0][c0]
+        self.__grid[r1][c1] = self.__grid[r0][c0]
         self.__grid[r0][c0] = NULL
-        self.board.move(r0, c0, r1, c1, pc1)
+        self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
-    def switch(self):
+    def SwitchTurn(self):
         if self.TurnOf() == self.player0:
             self.player0.turn = False
             self.player1.turn = True
         else:
             self.player0.turn = True
             self.player1.turn = False
+
+    def IsCheck(self, player: Player, i: int=0):
+        king = player.pieces[KING][i]
+        r, c = king.r, king.c
+
+        for dr, dc in MARCH[BISHOP]: # bishop
+            i, j = r+dr, c+dc
+            while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
+                if pid[1] in (QUEEN, BISHOP):
+                    return True, BISHOP
+                i, j = i+dr, j+dc
+
+        for dr, dc in MARCH[ROOK]: # rook
+            i, j = r+dr, c+dc
+            while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
+                if pid[1] in (QUEEN, ROOK):
+                    return True, ROOK
+                i, j = i+dr, j+dc
+        
+        for dr, dc in MARCH[KING]: # king
+            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
+                continue
+            if pid[1] is KING:
+                return True, KING
+        
+        for dr, dc in MARCH[KNIGHT]: # knight
+            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
+                continue
+            if pid[1] is KNIGHT:
+                return True, KNIGHT
+        
+        d = -1 if player==P1 else 1
+        if r+d in range(8) and c+1 in range(8): # pawn right
+            pid=self.__grid[r+d][c+1]
+            if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
+                return True, PAWN
+        if r+d in range(8) and c-1 in range(8): # pawn left
+            pid=self.__grid[r+d][c-1]
+            if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
+                return True, PAWN
+
+        return False, NULL
+
+    def FilterMoves(self, ):
+        pass

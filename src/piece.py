@@ -1,4 +1,4 @@
-from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1
+from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
 
 class Piece:
     def __init__(self, player: str, row: int, col: int):
@@ -17,7 +17,7 @@ class Piece:
     def march(self, grid: list[list[str]], dr: int, dc: int):
         r, c = self.r+dr, self.c+dc
         way = []
-        while (r in range(8) and c in range(8)): # empty, enemy, friend
+        while (r in range(8) and c in range(8)):
             pid = grid[r][c]
             if pid == NULL: # empty
                 way.append((r, c))
@@ -32,7 +32,7 @@ class Piece:
 class King(Piece):
     alias: str = KING
     ischeck: bool = False
-    march_dir = ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1))
+    march_dir = MARCH[KING]
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -59,7 +59,7 @@ class King(Piece):
 
 class Queen(Piece):
     alias: str = QUEEN
-    march_dir = ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1))
+    march_dir = MARCH[QUEEN]
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -78,7 +78,7 @@ class Queen(Piece):
 
 class Knight(Piece):
     alias: str = KNIGHT
-    march_dir = ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2))
+    march_dir = MARCH[KNIGHT]
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -105,7 +105,7 @@ class Knight(Piece):
 
 class Rook(Piece):
     alias: str = ROOK
-    march_dir = ((1,0),(0,1),(-1,0),(0,-1))
+    march_dir = MARCH[ROOK]
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -124,7 +124,7 @@ class Rook(Piece):
 
 class Bishop(Piece):
     alias: str = BISHOP
-    march_dir = ((1,1),(1,-1),(-1,1),(-1,-1))
+    march_dir = MARCH[BISHOP]
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -147,7 +147,7 @@ class Pawn(Piece):
 
     def __init__(self, player: str, row: int, col: int):
         super().__init__(player, row, col)
-        self.dir = -1 if self.player==P1 else 1
+        self.mdir = -1 if self.player==P1 else 1
 
     def __call__(self):
         return f"{self.player}{self.alias}"
@@ -157,7 +157,7 @@ class Pawn(Piece):
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
-        r = self.r + self.dir
+        r = self.r + self.mdir
         if grid[r][self.c] == NULL: # empty 1
             Epos.append((r, self.c))
         if (c:=self.c+1) in range(8): # right enemy
@@ -167,6 +167,6 @@ class Pawn(Piece):
             if (pid:=grid[r][c])[0] != self.player and pid != NULL:
                 Apos.append((r, c))
         if self.move0 and Epos:
-            if grid[r+self.dir][self.c] == NULL: # empty 2
-                Epos.append((r+self.dir, self.c))
+            if grid[r+self.mdir][self.c] == NULL: # empty 2
+                Epos.append((r+self.mdir, self.c))
         return Epos, Apos
