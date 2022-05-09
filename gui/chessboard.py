@@ -53,7 +53,7 @@ class ChessBoard:
     
     @staticmethod
     def xy2rc(x_coord: int, y_coord: int):
-        """coords to cell coords"""
+        """coords(x,y) to cell coords(r,c)"""
         c, r = x_coord//cfg.SQSIZE, y_coord//cfg.SQSIZE
         if r in range(8) and c in range(8):
             return r, c
@@ -82,6 +82,7 @@ class ChessBoard:
         self.cell(r, c).select(fill_color)
     
     def move(self, r0: int, c0: int, r1: int, c1: int, pid: str):
+        """to move piece image to another cell"""
         cell0 = self.cell(r0, c0)
         img = cell0.img
         cell0.clearimg()

@@ -30,6 +30,7 @@ class Brain:
         return self.__grid
     
     def show(self):
+        """prints chess grid on console"""
         print()
         for i in range(8):
             for j in range(8):
@@ -39,6 +40,7 @@ class Brain:
     
     @grid.setter
     def grid(self, newgrid: str):
+        """sets the image as per the newgrid definition"""
         x = iter(newgrid)
         for i in range(8):
             for j in range(8):
@@ -62,6 +64,7 @@ class Brain:
                 self.__grid[i][j] = pid
     
     def StartDefault(self, p1: bool = True):
+        """to start a 1v1 match"""
         # reset board pieces 
         self.grid = DEFAULT_GRID
         if p1:
@@ -72,12 +75,14 @@ class Brain:
             self.player1.turn = False
     
     def TurnOf(self, rev: bool=False):
+        """returns the player object having current turn"""
         if rev:
             return self.player1 if self.player0.turn else self.player0
         else:
             return self.player0 if self.player0.turn else self.player1
 
     def Mouse_SLC(self, e: tk.Event):
+        """bind event with single left click"""
         self.last_clicked = [e.x, e.y]
         loc = self.board.xy2rc(e.x, e.y)
 
@@ -109,6 +114,7 @@ class Brain:
                 self.Select(i, j, KILL)
     
     def MouseDrag(self, e: tk.Event):
+        """bind event for left click drag"""
         x, y = self.last_clicked
 
         if self.pdrag:
@@ -128,6 +134,7 @@ class Brain:
         self.last_clicked = [e.x, e.y]
     
     def Mouse_LCR(self, e: tk.Event):
+        """bind event for mouse left click release"""
         if self.pdrag:
             loc = self.board.xy2rc(e.x, e.y)
             r0, c0 = self.last_selected[0]
@@ -150,27 +157,33 @@ class Brain:
         self.pdrag = None
     
     def Mouse_SRC(self, e: tk.Event):
+        """bind event with single right click"""
         self.DeselectAll()
 
     def Select(self, r: int, c: int, fill: str):
+        """to select the cell"""
         self.board.mark(r, c, fill)
         self.last_selected.append((r, c))
         self.selected = True
     
     def Deselect(self, r: int, c: int):
+        """to deselect the cell"""
         self.board.cell(r, c).deselect()
     
     def DeselectAll(self):
+        """to deselect all the selected cells"""
         for loc in self.last_selected:
             self.Deselect(*loc)
         self.last_selected.clear()
         self.selected = False
 
     def GetMoves(self, r: int, c: int, rev: bool = False):
+        """returns the filtered moves for piece"""
         pc = self.TurnOf(rev).GetPiece(r, c)
         return self.FilterMoves(*pc.moves(self.grid), (r, c))
 
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
+        """moves the piece"""
         fr, en = self.TurnOf(), self.TurnOf(True)
 
         if en==(pid1:=self.__grid[r1][c1])[0]:
@@ -182,6 +195,7 @@ class Brain:
         self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
     def SwitchTurn(self):
+        """switches the turn of players"""
         if self.TurnOf() == self.player0:
             self.player0.turn = False
             (pl:=self.player1).turn = True
@@ -253,6 +267,7 @@ class Brain:
         return False
 
     def FilterMoves(self, Epos, Apos, Ipos):
+        """to filter move"""
         Fpos = [[], []]
         for i, pos in enumerate((Epos, Apos)):
             for r, c in pos:
