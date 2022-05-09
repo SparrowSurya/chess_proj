@@ -1,4 +1,5 @@
 import tkinter as tk
+import copy
 
 from gui.chessboard import ChessBoard
 from gui import GetImgPath
@@ -167,7 +168,7 @@ class Brain:
 
     def GetMoves(self, r: int, c: int, rev: bool = False):
         pc = self.TurnOf(rev).GetPiece(r, c)
-        return pc.moves(self.grid)
+        return self.FilterMoves(*pc.moves(self.grid), (r, c))
 
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
         fr, en = self.TurnOf(), self.TurnOf(True)
@@ -188,51 +189,75 @@ class Brain:
             (pl:=self.player0).turn = True
             self.player1.turn = False
 
+        self.show()
         if self.IsCheck(pl):
             self.check = pl
             self.board.cell(*(pl.pieces[KING][0].loc)).select(CHECK)
 
-    def IsCheck(self, player: Player, i: int=0):
+    def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
+        """
+        checks the Check on player's king \n
+        move: [r0, c0, r1, c1] moves the piece(temporary) \n
+        i is used to get the king if player has more than one king \n
+        """
+
         king = player.pieces[KING][i]
         r, c = king.loc
 
+        grid = copy.deepcopy(self.grid)
+        if move is not None:
+            r0, c0, r1, c1 = move
+            grid[r1][c1] = grid[r0][c0]
+            grid[r0][c0] = NULL
+            if grid[r1][c1]==f"{player}{KING}":
+                r, c = r1, c1
+
         for dr, dc in MARCH[BISHOP]: # bishop
             i, j = r+dr, c+dc
-            while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
+            while (i in range(8) and j in range(8)) and (pid:=grid[i][j])[0]!=player:
                 if pid[1] in (QUEEN, BISHOP):
                     return True
                 i, j = i+dr, j+dc
 
         for dr, dc in MARCH[ROOK]: # rook
             i, j = r+dr, c+dc
-            while (i in range(8) and j in range(8)) and (pid:=self.__grid[i][j])[0]!=player:
+            while (i in range(8) and j in range(8)) and (pid:=grid[i][j])[0]!=player:
                 if pid[1] in (QUEEN, ROOK):
                     return True
                 i, j = i+dr, j+dc
         
         for dr, dc in MARCH[KING]: # king
-            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
-                continue
+            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
+                if (pid:=grid[i][j])[0]!=player:
+                    continue
             if pid[1] is KING:
                 return True
         
         for dr, dc in MARCH[KNIGHT]: # knight
-            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8) and (pid:=self.__grid[i][j])[0]!=player:
-                continue
+            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
+                if (pid:=grid[i][j])[0]!=player:
+                    continue
             if pid[1] is KNIGHT:
                 return True
         
         d = -1 if player==P1 else 1
         if r+d in range(8) and c+1 in range(8): # pawn right
-            pid=self.__grid[r+d][c+1]
+            pid=grid[r+d][c+1]
             if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
                 return True
         if r+d in range(8) and c-1 in range(8): # pawn left
-            pid=self.__grid[r+d][c-1]
+            pid=grid[r+d][c-1]
             if pid[0] not in (NULL[0], player) and pid[1] == PAWN:
                 return True
 
         return False
 
-    def FilterMoves(self, ):
-        pass
+    def FilterMoves(self, Epos, Apos, Ipos):
+        Fpos = [[], []]
+        for i, pos in enumerate((Epos, Apos)):
+            for r, c in pos:
+                if self.IsCheck(self.TurnOf(), move=(*Ipos, r, c)):
+                    continue
+                else:
+                    Fpos[i].append((r, c))
+        return Fpos

@@ -29,7 +29,7 @@ class Player:
             PAWN  : []
         }
     
-    def __call__(self):
+    def __repr__(self):
         return self.name
     
     def __eq__(self, name: str):
@@ -52,12 +52,13 @@ class Player:
                 if pic.alive and pic.r == r and pic.c == c:
                     return pic
 
-    def MovePiece(self, r0: int, c0: int, r1: int, c1: int, piece: str = None):
-        if piece is None:
-            piece = self.GetPiece(r0, c0)
+    def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
+        piece = self.GetPiece(r0, c0)
         piece.move(r1, c1)
 
     def NewPiece(self, piece: str, r: int, c: int):
+        if piece==KING and self.pieces.get(KING):
+            raise Exception("Player already has a king")
         obj = PIECE[piece]
         self.pieces[piece].append(obj(self.name, r, c))
 
