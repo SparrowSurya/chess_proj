@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import config as cfg
+from config.const import KING
 from gui.chessboard import ChessBoard
 from src import Brain
 

@@ -3,6 +3,8 @@ import config as cfg
 from config.const import NULL
 
 class Cell:
+    __slots__ = ('canvas', 'ix', 'iy', 'pid', 'selected', 'fill', '__dx', '__dy', 'img', 'cell_col', 'cell_img')
+    
     def __init__(self, canvas: tk.Canvas, row: int, column: int, fill: str, image=""):
         self.canvas: tk.Canvas = canvas
         self.ix: int = column
@@ -23,7 +25,7 @@ class Cell:
             (self.ix+1)*cfg.SQSIZE,
             (self.iy+1)*cfg.SQSIZE,
             fill=self.fill,
-            width=2,
+            width=0,
         )
 
         self.cell_img = self.canvas.create_image(

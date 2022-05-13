@@ -13,6 +13,8 @@ PIECE: dict[str, type] = {
 }
 
 class Player:
+    __slots__ = ('board', 'name', 'turn', 'last_move', 'pieces')
+
     def __init__(self, board: ChessBoard, name: str):
         self.board: ChessBoard = board
         self.name: str = name

@@ -6,6 +6,8 @@ from gui.cell import Cell
 
 
 class ChessBoard:
+    __slots__ = ('canvas', '__cells', 'board')
+
     def __init__(self, canvas:tk.Canvas):
         self.canvas = canvas
 

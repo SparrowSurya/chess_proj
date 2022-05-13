@@ -9,6 +9,13 @@ from src.player import Player
 
 
 class Brain:
+    __slots__ = (
+        'board', '__grid',
+        'player0', 'player1',
+        'last_clicked', 'last_selected',
+        'selected', 'pdrag', 'check'
+    )
+
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
 
