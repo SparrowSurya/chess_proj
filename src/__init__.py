@@ -110,6 +110,7 @@ class Brain:
             self.DeselectAll()
 
         elif e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
+            # CELL HIGHLIGHT
             self.DeselectAll()
             r, c = self.board.xy2rc(e.x, e.y)
             Epos, Apos = self.GetMoves(r, c)
@@ -193,8 +194,11 @@ class Brain:
         """moves the piece"""
         fr, en = self.TurnOf(), self.TurnOf(True)
 
-        if en==(pid1:=self.__grid[r1][c1])[0]:
+        if en==(pid1:=self.__grid[r1][c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).alive = False
+        
+        if self.check: # UNCHECK KING
+            self.board.cell(*(self.check.pieces[KING][0].loc)).uncheck()
 
         fr.GetPiece(r0, c0).move(r1, c1)
         self.__grid[r1][c1] = self.__grid[r0][c0]
@@ -213,7 +217,8 @@ class Brain:
         self.show()
         if self.IsCheck(pl):
             self.check = pl
-            self.board.cell(*(pl.pieces[KING][0].loc)).select(CHECK)
+            pc = pl.pieces[KING][0]
+            self.board.cell(*(pc.loc)).select(CHECK)
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """
