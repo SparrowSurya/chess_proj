@@ -13,7 +13,7 @@ class Brain:
         'board', '__grid',
         'player0', 'player1',
         'last_clicked', 'last_selected',
-        'selected', 'pdrag', 'check'
+        'selected', 'pdrag', 'check', '_moves'
     )
 
     def __init__(self, board: ChessBoard):
@@ -31,6 +31,8 @@ class Brain:
         self.pdrag: bool  = None
 
         self.check: Player = None
+
+        self._moves: dict = {} # to pre fetch moves (also used for cache and end game detection)
     
     @property
     def grid(self):
@@ -80,6 +82,8 @@ class Brain:
         else:
             self.player0.turn = True
             self.player1.turn = False
+        
+        self.moves_pre_fetch()
     
     def TurnOf(self, rev: bool=False):
         """returns the player object having current turn"""
@@ -112,10 +116,10 @@ class Brain:
         elif e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
             # CELL HIGHLIGHT
             self.DeselectAll()
-            r, c = self.board.xy2rc(e.x, e.y)
-            Epos, Apos = self.GetMoves(r, c)
+            loc = self.board.xy2rc(e.x, e.y)
+            Epos, Apos = self._moves[loc]
 
-            self.Select(r, c, CELL_SEL0)
+            self.Select(*loc, CELL_SEL0)
             for i, j in Epos:
                 self.Select(i, j, CELL_SEL1)
             for i, j in Apos:
@@ -128,6 +132,7 @@ class Brain:
         if self.pdrag:
             loc = self.last_selected[0]
             self.board.cell(*loc).move(e.x-x, e.y-y)
+
         elif self.pdrag is None:
             loc = self.board.xy2rc(*self.last_clicked)
 
@@ -162,7 +167,6 @@ class Brain:
             else:
                 self.board.cell(r0, c0).resetmove()
             self.DeselectAll()
-        self.pdrag = None
     
     def Mouse_SRC(self, e: tk.Event):
         """bind event with single right click"""
@@ -185,10 +189,10 @@ class Brain:
         self.last_selected.clear()
         self.selected = False
 
-    def GetMoves(self, r: int, c: int, rev: bool = False):
-        """returns the filtered moves for piece"""
-        pc = self.TurnOf(rev).GetPiece(r, c)
-        return self.FilterMoves(*pc.moves(self.grid), (r, c))
+    # def GetMoves(self, r: int, c: int, rev: bool = False):
+    #     """returns the filtered moves for piece"""
+    #     pc = self.TurnOf(rev).GetPiece(r, c)
+    #     return self.FilterMoves(*pc.moves(self.grid), (r, c))
 
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
         """moves the piece"""
@@ -215,10 +219,18 @@ class Brain:
             self.player1.turn = False
 
         self.show()
+        
+        # check is calculated before pre fetching moves for the turn
         if self.IsCheck(pl):
+            print('check')
             self.check = pl
             pc = pl.pieces[KING][0]
             self.board.cell(*(pc.loc)).select(CHECK)
+        
+        self._moves.clear()
+        if self.moves_pre_fetch():
+            print("MATCH ENDEDS")
+            self.EndMatch()
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """
@@ -288,3 +300,20 @@ class Brain:
                 else:
                     Fpos[i].append((r, c))
         return Fpos
+    
+    def moves_pre_fetch(self) -> bool:
+        """returns bool value if there is no move to move"""
+        res = False
+        pl = self.TurnOf()
+
+        for pcs in pl.pieces.values():
+            for pc in pcs:
+                if pc.alive:
+                    loc = pc.loc
+                    e,a = self.FilterMoves(*(pc.moves(self.grid)), loc)
+                    self._moves[loc] = (e,a)
+                    res = e or a
+        return not res
+    
+    def EndMatch(self):
+        pass

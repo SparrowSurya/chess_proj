@@ -39,18 +39,20 @@ class Cell:
     def select(self, fill_color: str):
         """selecting cell by colouring it, CHECK is a special case"""
         if self.selected == cfg.CHECK:
-            return
-        self.canvas.itemconfig(self.cell_col, fill=fill_color)
-        self.selected = fill_color
-        self.canvas.tag_raise(self.cell_img)
+            self.canvas.itemconfig(self.cell_col, fill=cfg.CELL_SEL0)
+        else:
+            self.canvas.itemconfig(self.cell_col, fill=fill_color)
+            self.selected = fill_color
+            self.canvas.tag_raise(self.cell_img)
     
     def deselect(self):
         """giving cell its original color, CHECK is a special case"""
         if self.selected == cfg.CHECK:
-            return
-        self.canvas.itemconfig(self.cell_col, fill=self.fill)
-        self.selected = ''
-    
+            self.canvas.itemconfig(self.cell_col, fill=cfg.CHECK)
+        else:
+            self.canvas.itemconfig(self.cell_col, fill=self.fill)
+            self.selected = ''
+        
     def uncheck(self):
         """to handle specific case in select and deselect"""
         self.selected = ''
