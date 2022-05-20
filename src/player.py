@@ -13,7 +13,7 @@ PIECE: dict[str, type] = {
 }
 
 class Player:
-    __slots__ = ('board', 'name', 'turn', 'last_move', 'pieces')
+    __slots__ = ('board', 'name', 'turn', 'last_move', '__stats', 'pieces')
 
     def __init__(self, board: ChessBoard, name: str):
         self.board: ChessBoard = board
@@ -22,7 +22,8 @@ class Player:
         self.turn: bool = False
         self.last_move: list[int] = [] # [r0, c0, r1, c1]
 
-        self.pieces: dict[str, list] = {
+        self.__stats: list[int] = [0, 0] # [total, dead]
+        self.pieces: dict[str, list[King|Queen|Knight|Rook|Bishop|Pawn]] = {
             KING  : [],
             QUEEN : [],
             KNIGHT: [],
@@ -36,12 +37,26 @@ class Player:
     
     def __eq__(self, name: str):
         return self.name == name
+    
+    @property
+    def alives(self):
+        return self.__stats[0] - self.__stats[1]
+    
+    @property
+    def total(self):
+        return self.__stats[0]
+
+    @property
+    def deaths(self):
+        return self.__stats[1]
 
     def IsOwner(self, piece_id: str):
         return piece_id[0] == self.name
     
-    def kill(self, r: int, c: int):
-        self.GetPiece(r, c).alive = False
+    def kill(self, r: int, c: int, pic: str = None):
+        if (pc:=self.GetPiece(r, c, pic)).alive is True:
+            pc.alive = False
+            self.__stats[1] += 1
 
     def GetPiece(self, r: int, c: int, piece: str = None):
         if piece is None:
@@ -63,6 +78,7 @@ class Player:
             raise Exception("Player already has a king")
         obj = PIECE[piece]
         self.pieces[piece].append(obj(self.name, r, c))
+        self.__stats[0] += 1
 
     def Promote(self, ):
         pass

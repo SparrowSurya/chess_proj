@@ -27,7 +27,7 @@ class Brain:
         self.last_clicked: list[int] = [-1, -1] # [x, y]
         self.last_selected: list[tuple[int, int]] = [] # [(r0, c0), (r1, c1), ...]
 
-        self.selected: bool = False
+        self.selected: int = 0 # 0-nothing; 1-active: -1:passive
         self.pdrag: bool  = None
 
         self.check: Player = None
@@ -103,28 +103,38 @@ class Brain:
         else:
             r, c = loc
         
-        if self.selected and (cell:=self.board.cell(r, c)).pid[0] != self.TurnOf():
-            if cell.selected:
-                i, j = self.last_selected[0]
-                self.MovePiece(i, j, r, c)
+        if self.selected:
+            self.selected = -1
+            if self.board.cell(r,c).selected and (r,c)!=self.last_selected[0]:
+                self.MovePiece(*self.last_selected[0], r, c)
+                self.DeselectAll()
                 self.SwitchTurn()
-            self.DeselectAll()
+                self.EndMatch()
+            elif self.grid[r][c][0]==self.TurnOf() and (r,c)!=self.last_selected[0]:
+                loc = self.board.xy2rc(e.x, e.y)
+                self.DeselectAll()
+                Epos, Apos = self._moves[loc]
 
-        elif self.selected and (r, c) == self.last_selected[0]:
-            self.DeselectAll()
+                self.Select(*loc, CELL_SEL0)
+                for i, j in Epos:
+                    self.Select(i, j, CELL_SEL1)
+                for i, j in Apos:
+                    self.Select(i, j, KILL)
+                self.selected = 1
 
-        elif e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf():
-            # CELL HIGHLIGHT
-            self.DeselectAll()
-            loc = self.board.xy2rc(e.x, e.y)
-            Epos, Apos = self._moves[loc]
+        else:
+            if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf(): # HIGHLIGHT MOVES 
+                loc = self.board.xy2rc(e.x, e.y)
+                Epos, Apos = self._moves[loc]
 
-            self.Select(*loc, CELL_SEL0)
-            for i, j in Epos:
-                self.Select(i, j, CELL_SEL1)
-            for i, j in Apos:
-                self.Select(i, j, KILL)
-    
+                self.Select(*loc, CELL_SEL0)
+                for i, j in Epos:
+                    self.Select(i, j, CELL_SEL1)
+                for i, j in Apos:
+                    self.Select(i, j, KILL)
+                self.selected = 1
+        self.pdrag = None
+
     def MouseDrag(self, e: tk.Event):
         """bind event for left click drag"""
         x, y = self.last_clicked
@@ -163,10 +173,16 @@ class Brain:
             cell = self.board.cell(r1, c1)
             if cell.selected and (r0, c0)!=(r1, c1):
                 self.MovePiece(r0, c0, r1, c1)
+                self.DeselectAll()
                 self.SwitchTurn()
+                self.EndMatch()
             else:
                 self.board.cell(r0, c0).resetmove()
+                self.DeselectAll()
+
+        elif self.pdrag is None and self.selected == -1:
             self.DeselectAll()
+
     
     def Mouse_SRC(self, e: tk.Event):
         """bind event with single right click"""
@@ -176,7 +192,6 @@ class Brain:
         """to select the cell"""
         self.board.mark(r, c, fill)
         self.last_selected.append((r, c))
-        self.selected = True
     
     def Deselect(self, r: int, c: int):
         """to deselect the cell"""
@@ -187,12 +202,7 @@ class Brain:
         for loc in self.last_selected:
             self.Deselect(*loc)
         self.last_selected.clear()
-        self.selected = False
-
-    # def GetMoves(self, r: int, c: int, rev: bool = False):
-    #     """returns the filtered moves for piece"""
-    #     pc = self.TurnOf(rev).GetPiece(r, c)
-    #     return self.FilterMoves(*pc.moves(self.grid), (r, c))
+        self.selected = 0
 
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
         """moves the piece"""
@@ -219,18 +229,10 @@ class Brain:
             self.player1.turn = False
 
         self.show()
-        
-        # check is calculated before pre fetching moves for the turn
         if self.IsCheck(pl):
-            print('check')
             self.check = pl
             pc = pl.pieces[KING][0]
             self.board.cell(*(pc.loc)).select(CHECK)
-        
-        self._moves.clear()
-        if self.moves_pre_fetch():
-            print("MATCH ENDEDS")
-            self.EndMatch()
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """
@@ -312,8 +314,27 @@ class Brain:
                     loc = pc.loc
                     e,a = self.FilterMoves(*(pc.moves(self.grid)), loc)
                     self._moves[loc] = (e,a)
-                    res = e or a
+                    res = e or a or res
         return not res
     
     def EndMatch(self):
-        pass
+        """determines whether game should be running or stopped"""
+        self._moves.clear()
+
+        if self.moves_pre_fetch(): # 0 moves
+            print("MATCH ENDED")
+
+        fr, en = self.TurnOf().deaths, self.TurnOf().deaths
+        left = {
+            KING: [],
+            QUEEN: [],
+            BISHOP: [],
+            KNIGHT: [],
+            ROOK: [],
+            PAWN: []
+        }
+        # king vs king >>> 1,1
+        # king+minor piece with king >>> 1, 2
+        # lone king vs all the pieces >>> 1, 1+
+        # king+2knights vs king >>> 1, 3
+        # king+minor piece vs king+minor piece >>> 2, 2
