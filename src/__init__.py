@@ -322,19 +322,32 @@ class Brain:
         self._moves.clear()
 
         if self.moves_pre_fetch(): # 0 moves
-            print("MATCH ENDED")
+            print("[MATCH ENDED]:- no moves to play")
 
-        fr, en = self.TurnOf().deaths, self.TurnOf().deaths
-        left = {
-            KING: [],
-            QUEEN: [],
-            BISHOP: [],
-            KNIGHT: [],
-            ROOK: [],
-            PAWN: []
-        }
-        # king vs king >>> 1,1
-        # king+minor piece with king >>> 1, 2
-        # lone king vs all the pieces >>> 1, 1+
-        # king+2knights vs king >>> 1, 3
-        # king+minor piece vs king+minor piece >>> 2, 2
+        fr, en = self.TurnOf(), self.TurnOf(True)
+        fd, ed = fr.alives, en.alives
+        __ = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]}
+        x = iter(self.grid)
+        for _ in range(8):
+            for _ in range(8):
+                pl, pc = next(x), next(x)
+                if pl is fr:
+                    __[pc][0] += 1
+                else:
+                    __[pc][1] += 1
+        # special cases
+        if fd == ed == 1:
+            print("[MATCH ENDED]:- king vs king")
+
+        elif (fd==2 and __[QUEEN][0]==0 and en==1) or (en==2 and __[QUEEN][1]==0 and fd==1):
+            print("[MATCH ENDED]:- king vs minor piece with king")
+
+        elif (__[KNIGHT][0]==2 and fd==3 and en==1) or (__[KNIGHT][1]==2 and en==3 and fd==1):
+            print("[MATCH ENDED]:- king and 2 knights vs king")
+        
+        elif (fd==2 and en==2 and __[QUEEN][0]==0) or (en==2 and fd==2 and __[QUEEN][1]==0):
+            print("[MATCH ENDED]:- king and minor piece vs king and minor piece")
+
+        elif (fd==1 and ed>1) or (en==1 and fd>1):
+            print("[MATCH ENDED]:- lone king vs all the pieces")
+
