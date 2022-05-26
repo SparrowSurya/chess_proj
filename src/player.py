@@ -80,5 +80,8 @@ class Player:
         self.pieces[piece].append(obj(self.name, r, c))
         self.__stats[0] += 1
 
-    def Promote(self, ):
-        pass
+    def Promote(self, r: int, c: int, to: str):
+        pc = self.GetPiece(r, c, PAWN)
+        pc.__class__ = PIECE[to]
+        self.pieces[PAWN].remove(pc)
+        self.pieces[to].append(pc)

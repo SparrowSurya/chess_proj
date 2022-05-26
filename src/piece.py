@@ -1,7 +1,7 @@
 from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
 
 class Piece:
-    __slots__ = ('player', 'r', 'c', 'move0', 'alive', 'ischeck', 'can_move')
+    __slots__ = ('player', 'r', 'c', 'move0', 'alive', 'ischeck', 'canmove')
 
     def __init__(self, player: str, row: int, col: int):
         self.player: str = player
@@ -149,7 +149,7 @@ class Bishop(Piece):
 
 class Pawn(Piece):
     alias: str = PAWN
-    canmove: bool = False
+    canmove: bool = True
 
     def __init__(self, player: str, row: int, col: int):
         super().__init__(player, row, col)
@@ -160,6 +160,12 @@ class Pawn(Piece):
 
     def __eq__(self, pid: str):
         return self.alias == pid[1]
+    
+    def move(self, r: int, c: int):
+        super().move(r, c)
+        if self.c+self.mdir not in range(0, 8):
+            print(123)
+            self.canmove = False
 
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []

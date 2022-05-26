@@ -72,6 +72,9 @@ class Brain:
                 cell.showimg()
                 self.__grid[i][j] = pid
     
+    def LoadImages(self):
+        pass
+    
     def StartDefault(self, p1: bool = True):
         """to start a 1v1 match"""
         # reset board pieces 
@@ -214,13 +217,19 @@ class Brain:
         if self.check: # UNCHECK KING
             self.board.cell(*(self.check.pieces[KING][0].loc)).uncheck()
 
-        fr.GetPiece(r0, c0).move(r1, c1)
-        self.__grid[r1][c1] = self.__grid[r0][c0]
+        pc = fr.GetPiece(r0, c0)
+        pc.move(r1, c1)
+        pid2 = self.__grid[r1][c1] = self.__grid[r0][c0]
         self.__grid[r0][c0] = NULL
         self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
+        # if self.grid[r1][c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION >>>!ERROR
+        #     typ = self.AskPromotion()
+        #     fr.Promote(r1, c1, typ)
+        #     self.board.cell(r1, c1).newimg(tk.PhotoImage(file=GetImgPath(fr, typ)), pid2)
+
     def SwitchTurn(self):
-        """switches the turn of players"""
+        """switches the turn of players and also checks the Check on king"""
         if self.TurnOf() == self.player0:
             self.player0.turn = False
             (pl:=self.player1).turn = True
@@ -293,7 +302,7 @@ class Brain:
         return False
 
     def FilterMoves(self, Epos, Apos, Ipos):
-        """to filter move"""
+        """filters the move: Epos-empty, Apos-attack, Ipos-initial"""
         Fpos = [[], []]
         for i, pos in enumerate((Epos, Apos)):
             for r, c in pos:
@@ -304,7 +313,7 @@ class Brain:
         return Fpos
     
     def moves_pre_fetch(self) -> bool:
-        """returns bool value if there is no move to move"""
+        """stores the moves and returns bool value if there is no move to move"""
         res = False
         pl = self.TurnOf()
 
@@ -326,28 +335,31 @@ class Brain:
 
         fr, en = self.TurnOf(), self.TurnOf(True)
         fd, ed = fr.alives, en.alives
-        __ = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]}
-        x = iter(self.grid)
-        for _ in range(8):
-            for _ in range(8):
-                pl, pc = next(x), next(x)
+        stat = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]} # [fr, en]
+
+        for row in self.grid:
+            for (pl, pc) in row:
+                if pl == pc: continue # to prevent NULL
                 if pl is fr:
-                    __[pc][0] += 1
+                    stat[pc][0] += 1
                 else:
-                    __[pc][1] += 1
+                    stat[pc][1] += 1
+
         # special cases
         if fd == ed == 1:
             print("[MATCH ENDED]:- king vs king")
 
-        elif (fd==2 and __[QUEEN][0]==0 and en==1) or (en==2 and __[QUEEN][1]==0 and fd==1):
+        elif (fd==2 and stat[QUEEN][0]==0 and en==1) or (en==2 and stat[QUEEN][1]==0 and fd==1):
             print("[MATCH ENDED]:- king vs minor piece with king")
 
-        elif (__[KNIGHT][0]==2 and fd==3 and en==1) or (__[KNIGHT][1]==2 and en==3 and fd==1):
+        elif (stat[KNIGHT][0]==2 and fd==3 and en==1) or (stat[KNIGHT][1]==2 and en==3 and fd==1):
             print("[MATCH ENDED]:- king and 2 knights vs king")
         
-        elif (fd==2 and en==2 and __[QUEEN][0]==0) or (en==2 and fd==2 and __[QUEEN][1]==0):
+        elif (fd==2 and en==2 and stat[QUEEN][0]==0) or (en==2 and fd==2 and stat[QUEEN][1]==0):
             print("[MATCH ENDED]:- king and minor piece vs king and minor piece")
 
         elif (fd==1 and ed>1) or (en==1 and fd>1):
             print("[MATCH ENDED]:- lone king vs all the pieces")
 
+    def AskPromotion(self):
+        return input("Enter Piece ID: ")

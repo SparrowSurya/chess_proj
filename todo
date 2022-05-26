@@ -1,0 +1,59 @@
+❌✔️ ⚠️ ❗ 
+
+-----------------------------------------------------------------------------------------------------------
+📋 TASKS:
+-----------------------------------------------------
+special moves
+    pawn promotion  (current)
+    en-passon
+    castelling
+
+menus + other gui additions
+
+gui class for gui.__init__
+
+❗ no two colurs be the same
+
+
+
+-----------------------------------------------------------------------------------------------------------
+⚠️ PROBLEMS:
+-----------------------------------------------------
+current:
+    asking promotion in invalid position
+
+
+
+-----------------------------------------------------------------------------------------------------------
+🛠️ CHANGE:
+-----------------------------------------------------
+change the way of displying image
+    > by loading all images at start to prevent repetition of process of loading and converting to PhotoImage
+
+
+
+
+-----------------------------------------------------------------------------------------------------------
+📝 LATER:
+-----------------------------------------------------
+make colours based upon hex code so as to be good in future use
+
+-- drag drop and click to move has some flaw (as per my expectation)
+
+end game
+    win/lose
+        timeout
+        resignation
+        timeout
+    draw
+        ✔️ stalemate
+        ✔️ insufficient material
+                king vs king
+                king+minor piece with king
+                king+2knights vs king
+                king+minor piece vs king+minor piece
+                lone king vs all the pieces
+        50 move-rule
+        repetition
+        agreement
+
