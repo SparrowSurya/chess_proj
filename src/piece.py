@@ -159,12 +159,13 @@ class Pawn(Piece):
         return f"{self.player}{self.alias}"
 
     def __eq__(self, pid: str):
+        print(f"PID: {pid}")
         return self.alias == pid[1]
     
     def move(self, r: int, c: int):
         super().move(r, c)
-        if self.c+self.mdir not in range(0, 8):
-            print(123)
+        if self.r+self.mdir not in range(0, 8):
+            print('loc:', self.loc, "\tdir:", self.mdir)
             self.canmove = False
 
     def moves(self, grid: list[list[str]]):

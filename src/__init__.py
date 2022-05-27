@@ -223,10 +223,10 @@ class Brain:
         self.__grid[r0][c0] = NULL
         self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
 
-        # if self.grid[r1][c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION >>>!ERROR
-        #     typ = self.AskPromotion()
-        #     fr.Promote(r1, c1, typ)
-        #     self.board.cell(r1, c1).newimg(tk.PhotoImage(file=GetImgPath(fr, typ)), pid2)
+        if self.grid[r1][c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
+            typ = self.AskPromotion()
+            fr.Promote(r1, c1, typ)
+            self.board.cell(r1, c1).newimg(tk.PhotoImage(file=GetImgPath(fr.__call__(), typ)), pid2)
 
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""
@@ -362,4 +362,7 @@ class Brain:
             print("[MATCH ENDED]:- lone king vs all the pieces")
 
     def AskPromotion(self):
-        return input("Enter Piece ID: ")
+        try:
+            return input("Enter Piece ID: ")
+        except KeyError:
+            return self.AskPromotion()

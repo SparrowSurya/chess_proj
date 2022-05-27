@@ -34,7 +34,7 @@ class Player:
     
     def __repr__(self):
         return self.name
-    
+
     def __eq__(self, name: str):
         return self.name == name
     
