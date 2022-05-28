@@ -1,6 +1,7 @@
 from config.configure import Default, uConfig
 
-IPATH = "assets/images/" + uConfig["ipath"]
+rpath = "assets/images/"
+ipath = rpath + uConfig["ipath"]
 
 SQSIZE = int(Default['size'])
 CELL_COL1 = Default['col1']

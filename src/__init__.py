@@ -2,15 +2,14 @@ import tkinter as tk
 import copy
 
 from gui.chessboard import ChessBoard
-from gui import GetImgPath
+from gui.img import Image
 from config import *
 from config.const import *
 from src.player import Player
 
-
 class Brain:
     __slots__ = (
-        'board', '__grid',
+        'board', '__grid', 'Img',
         'player0', 'player1',
         'last_clicked', 'last_selected',
         'selected', 'pdrag', 'check', '_moves'
@@ -18,6 +17,7 @@ class Brain:
 
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
+        self.Img: Image = Image()
 
         self.__grid: list[list[str]] = [[NULL for _ in range(8)] for _ in range(8)]
         
@@ -62,10 +62,10 @@ class Brain:
                     cell.clearimg()
                 elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), pid)
+                    cell.newimg(self.Img.img(pl, pc), pid)
                 elif pl==self.player1:
                     self.player1.NewPiece(pc, i,j)
-                    cell.newimg(tk.PhotoImage(file=GetImgPath(pl, pc)), pid)
+                    cell.newimg(self.Img.img(pl, pc), pid)
                 else:
                     raise Exception(f"Invalid player name: pid={pid}")
                     
@@ -226,7 +226,7 @@ class Brain:
         if self.grid[r1][c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
             typ = self.AskPromotion()
             fr.Promote(r1, c1, typ)
-            self.board.cell(r1, c1).newimg(tk.PhotoImage(file=GetImgPath(fr.__call__(), typ)), pid2)
+            self.board.cell(r1, c1).newimg(self.Img.img(fr.__call__(), typ), pid2)
 
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""

@@ -31,8 +31,6 @@ sometimes the drag drop becomes glitchy showing piece at improper position (in g
 -----------------------------------------------------------------------------------------------------------
 🛠️ CHANGE:
 -----------------------------------------------------
-change the way of displying new image
-    > by loading all images at start to prevent repetition of process of loading and converting to PhotoImage
 
 
 
