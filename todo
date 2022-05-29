@@ -12,16 +12,18 @@ special moves
 
 menus + other gui additions
 
-gui class for gui.__init__
+gui class for gui.__init__ (current)
 
 ❗ no two colurs be the same
+
+tile highlight wont be having solid color an overlay will be used for that
 
 
 
 -----------------------------------------------------------------------------------------------------------
 ⚠️ PROBLEMS:
 -----------------------------------------------------
-current:
+CURRENT:
     none
 
 sometimes the drag drop becomes glitchy showing piece at improper position (in gui only)
@@ -39,6 +41,8 @@ sometimes the drag drop becomes glitchy showing piece at improper position (in g
 📝 LATER:
 -----------------------------------------------------
 make colours based upon hex code so as to be good in future use
+
+to make custom color picker (most probably circular one) instead tkinter.colorchooser 
 
 -- drag drop and click to move has some flaw (as per my expectation)
 
