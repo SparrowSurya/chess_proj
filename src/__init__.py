@@ -12,7 +12,7 @@ class Brain:
         'board', '__grid', 'Img',
         'player0', 'player1',
         'last_clicked', 'last_selected',
-        'selected', 'pdrag', 'check', '_moves'
+        'selected', 'pdrag', 'check', '__moves'
     )
 
     def __init__(self, board: ChessBoard):
@@ -32,11 +32,11 @@ class Brain:
 
         self.check: Player = None
 
-        self._moves: dict = {} # to pre fetch moves (also used for cache and end game detection)
+        self.__moves: dict[tuple, tuple] = {} # to pre fetch moves (also used for cache and end game detection)
     
     @property
     def grid(self):
-        return self.__grid
+        return copy.deepcopy(self.__grid)
     
     def show(self):
         """prints chess grid on console"""
@@ -71,9 +71,6 @@ class Brain:
                     
                 cell.showimg()
                 self.__grid[i][j] = pid
-    
-    def LoadImages(self):
-        pass
     
     def StartDefault(self, p1: bool = True):
         """to start a 1v1 match"""
@@ -116,7 +113,7 @@ class Brain:
             elif self.grid[r][c][0]==self.TurnOf() and (r,c)!=self.last_selected[0]:
                 loc = self.board.xy2rc(e.x, e.y)
                 self.DeselectAll()
-                Epos, Apos = self._moves[loc]
+                Epos, Apos = self.__moves[loc]
 
                 self.Select(*loc, CELL_SEL0)
                 for i, j in Epos:
@@ -128,7 +125,7 @@ class Brain:
         else:
             if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf(): # HIGHLIGHT MOVES 
                 loc = self.board.xy2rc(e.x, e.y)
-                Epos, Apos = self._moves[loc]
+                Epos, Apos = self.__moves[loc]
 
                 self.Select(*loc, CELL_SEL0)
                 for i, j in Epos:
@@ -244,16 +241,12 @@ class Brain:
             self.board.cell(*(pc.loc)).select(CHECK)
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
-        """
-        checks the Check on player's king \n
-        move: [r0, c0, r1, c1] moves the piece(temporary) \n
-        i is used to get the king if player has more than one king \n
-        """
+        """checks the Check on player's king
+        move: [r0, c0, r1, c1] moves the piece(temporary)
+        :i is used to get the king if player has more than one king"""
+        r, c = player.pieces[KING][i].loc
 
-        king = player.pieces[KING][i]
-        r, c = king.loc
-
-        grid = copy.deepcopy(self.grid)
+        grid = self.grid
         if move is not None:
             r0, c0, r1, c1 = move
             grid[r1][c1] = grid[r0][c0]
@@ -279,6 +272,8 @@ class Brain:
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
                 if (pid:=grid[i][j])[0]!=player:
                     continue
+            else:
+                continue
             if pid[1] is KING:
                 return True
         
@@ -286,7 +281,10 @@ class Brain:
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
                 if (pid:=grid[i][j])[0]!=player:
                     continue
+            else:
+                continue
             if pid[1] is KNIGHT:
+                print(i, j, r, c)
                 return True
         
         d = -1 if player==P1 else 1
@@ -316,22 +314,22 @@ class Brain:
         """stores the moves and returns bool value if there is no move to move"""
         res = False
         pl = self.TurnOf()
+        self.__moves.clear()
 
         for pcs in pl.pieces.values():
             for pc in pcs:
                 if pc.alive:
                     loc = pc.loc
                     e,a = self.FilterMoves(*(pc.moves(self.grid)), loc)
-                    self._moves[loc] = (e,a)
+                    self.__moves[loc] = (e,a)
                     res = e or a or res
         return not res
     
     def EndMatch(self):
         """determines whether game should be running or stopped"""
-        self._moves.clear()
-
         if self.moves_pre_fetch(): # 0 moves
             print("[MATCH ENDED]:- no moves to play")
+            return
 
         fr, en = self.TurnOf(), self.TurnOf(True)
         fd, ed = fr.alives, en.alives
@@ -348,18 +346,23 @@ class Brain:
         # special cases
         if fd == ed == 1:
             print("[MATCH ENDED]:- king vs king")
+            return
 
         elif (fd==2 and stat[QUEEN][0]==0 and en==1) or (en==2 and stat[QUEEN][1]==0 and fd==1):
             print("[MATCH ENDED]:- king vs minor piece with king")
+            return
 
         elif (stat[KNIGHT][0]==2 and fd==3 and en==1) or (stat[KNIGHT][1]==2 and en==3 and fd==1):
             print("[MATCH ENDED]:- king and 2 knights vs king")
+            return
         
         elif (fd==2 and en==2 and stat[QUEEN][0]==0) or (en==2 and fd==2 and stat[QUEEN][1]==0):
             print("[MATCH ENDED]:- king and minor piece vs king and minor piece")
+            return
 
         elif (fd==1 and ed>1) or (en==1 and fd>1):
             print("[MATCH ENDED]:- lone king vs all the pieces")
+            return
 
     def AskPromotion(self):
         try:
