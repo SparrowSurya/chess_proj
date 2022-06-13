@@ -32,7 +32,7 @@ class Cell:
             (2*self.ix +1)*cfg.SQSIZE //2,
             (2*self.iy +1)*cfg.SQSIZE //2,
             anchor=tk.CENTER,
-            state=tk.NORMAL,
+            state=tk.HIDDEN,
             image=self.img
         )
     
@@ -103,3 +103,6 @@ class Cell:
         self.canvas.move(self.cell_img, -self.__dx, -self.__dy)
         self.__dx = 0
         self.__dy = 0
+
+    def config(self, key: str, value: str, **kwargs):
+        pass

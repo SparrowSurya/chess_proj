@@ -5,21 +5,24 @@ from gui.chessboard import ChessBoard
 from gui.img import Image
 from config import *
 from config.const import *
+from src.chessgrid import ChessGrid
 from src.player import Player
 
 class Brain:
     __slots__ = (
-        'board', '__grid', 'Img',
+        'board', 'grid', 'Img',
         'player0', 'player1',
         'last_clicked', 'last_selected',
-        'selected', 'pdrag', 'check', '__moves'
+        'selected', 'pdrag', 'check', '__moves',
+        'inMatch'
     )
 
     def __init__(self, board: ChessBoard):
         self.board: ChessBoard = board
         self.Img: Image = Image()
+        self.inMatch: bool = False
+        self.grid: ChessGrid = ChessGrid()
 
-        self.__grid: list[list[str]] = [[NULL for _ in range(8)] for _ in range(8)]
         
         self.player0: Player = Player(self.board, P0)
         self.player1: Player = Player(self.board, P1)
@@ -33,29 +36,17 @@ class Brain:
         self.check: Player = None
 
         self.__moves: dict[tuple, tuple] = {} # to pre fetch moves (also used for cache and end game detection)
+
     
-    @property
-    def grid(self):
-        return copy.deepcopy(self.__grid)
-    
-    def show(self):
-        """prints chess grid on console"""
-        print()
-        for i in range(8):
-            for j in range(8):
-                print(self.__grid[i][j], end=' ')
-            print()
-        print()
-    
-    @grid.setter
-    def grid(self, newgrid: str):
-        """sets the image as per the newgrid definition"""
-        x = iter(newgrid)
+    def NewGrid(self, newgrid: str):
+        """sets the image as per the newgrid"""
+        self.grid.grid = newgrid
+        g = iter(self.grid)
+
         for i in range(8):
             for j in range(8):
 
-                pl = next(x)
-                pc = next(x)
+                pl, pc = next(g)
                 cell = self.board.cell(i, j)
 
                 if (pid:=f"{pl}{pc}")==NULL:
@@ -70,19 +61,18 @@ class Brain:
                     raise Exception(f"Invalid player name: pid={pid}")
                     
                 cell.showimg()
-                self.__grid[i][j] = pid
     
     def StartDefault(self, p1: bool = True):
         """to start a 1v1 match"""
         # reset board pieces 
-        self.grid = DEFAULT_GRID
+        self.NewGrid(DEFAULT_GRID)
         if p1:
             self.player0.turn = False
             self.player1.turn = True
         else:
             self.player0.turn = True
             self.player1.turn = False
-        
+        self.inMatch = True
         self.moves_pre_fetch()
     
     def TurnOf(self, rev: bool=False):
@@ -94,6 +84,8 @@ class Brain:
 
     def Mouse_SLC(self, e: tk.Event):
         """bind event with single left click"""
+        if not self.inMatch: return
+        
         self.last_clicked = [e.x, e.y]
         loc = self.board.xy2rc(e.x, e.y)
 
@@ -110,7 +102,7 @@ class Brain:
                 self.DeselectAll()
                 self.SwitchTurn()
                 self.EndMatch()
-            elif self.grid[r][c][0]==self.TurnOf() and (r,c)!=self.last_selected[0]:
+            elif self.grid[r, c][0]==self.TurnOf() and (r,c)!=self.last_selected[0]:
                 loc = self.board.xy2rc(e.x, e.y)
                 self.DeselectAll()
                 Epos, Apos = self.__moves[loc]
@@ -123,7 +115,7 @@ class Brain:
                 self.selected = 1
 
         else:
-            if e.widget==self.board.board and self.__grid[r][c][0]==self.TurnOf(): # HIGHLIGHT MOVES 
+            if e.widget==self.board.board and self.grid[r, c][0]==self.TurnOf(): # HIGHLIGHT MOVES 
                 loc = self.board.xy2rc(e.x, e.y)
                 Epos, Apos = self.__moves[loc]
 
@@ -137,6 +129,8 @@ class Brain:
 
     def MouseDrag(self, e: tk.Event):
         """bind event for left click drag"""
+        if not self.inMatch: return
+        
         x, y = self.last_clicked
 
         if self.pdrag:
@@ -158,6 +152,8 @@ class Brain:
     
     def Mouse_LCR(self, e: tk.Event):
         """bind event for mouse left click release"""
+        if not self.inMatch: return
+        
         if self.pdrag:
             loc = self.board.xy2rc(e.x, e.y)
             r0, c0 = self.last_selected[0]
@@ -186,6 +182,8 @@ class Brain:
     
     def Mouse_SRC(self, e: tk.Event):
         """bind event with single right click"""
+        if not self.inMatch: return
+        
         self.DeselectAll()
 
     def Select(self, r: int, c: int, fill: str):
@@ -208,7 +206,7 @@ class Brain:
         """moves the piece"""
         fr, en = self.TurnOf(), self.TurnOf(True)
 
-        if en==(pid1:=self.__grid[r1][c1])[0]: # KILL
+        if en==(pid1:=self.grid[r1, c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).alive = False
         
         if self.check: # UNCHECK KING
@@ -216,11 +214,11 @@ class Brain:
 
         pc = fr.GetPiece(r0, c0)
         pc.move(r1, c1)
-        pid2 = self.__grid[r1][c1] = self.__grid[r0][c0]
-        self.__grid[r0][c0] = NULL
-        self.board.move(r0, c0, r1, c1, self.__grid[r1][c1])
+        pid2 = self.grid[r1, c1] = self.grid[r0, c0]
+        del self.grid[r0, c0]
+        self.board.move(r0, c0, r1, c1, self.grid[r1, c1])
 
-        if self.grid[r1][c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
+        if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
             typ = self.AskPromotion()
             fr.Promote(r1, c1, typ)
             self.board.cell(r1, c1).newimg(self.Img.img(fr.__call__(), typ), pid2)
@@ -234,7 +232,7 @@ class Brain:
             (pl:=self.player0).turn = True
             self.player1.turn = False
 
-        self.show()
+        print(self.grid)
         if self.IsCheck(pl):
             self.check = pl
             pc = pl.pieces[KING][0]
@@ -246,7 +244,7 @@ class Brain:
         :i is used to get the king if player has more than one king"""
         r, c = player.pieces[KING][i].loc
 
-        grid = self.grid
+        grid = self.grid.grid
         if move is not None:
             r0, c0, r1, c1 = move
             grid[r1][c1] = grid[r0][c0]
@@ -335,7 +333,7 @@ class Brain:
         fd, ed = fr.alives, en.alives
         stat = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]} # [fr, en]
 
-        for row in self.grid:
+        for row in self.grid.grid:
             for (pl, pc) in row:
                 if pl == pc: continue # to prevent NULL
                 if pl is fr:

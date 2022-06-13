@@ -1,4 +1,5 @@
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
 
 from src import Brain
 from gui.chessboard import ChessBoard
@@ -6,14 +7,14 @@ import config as cfg
 
 
 class Game():
-
+    
     def __init__(self):
-        self.__root: Tk = Tk()
+        self.__root: tk.Tk = tk.Tk()
         self.__root.title("Chess")
         self.__root.geometry("+640+20")
         # self.self.__root.state("zoomed")
 
-        self.viewport: Canvas = Canvas(
+        self.viewport: tk.Canvas = tk.Canvas(
             self.__root,
             bg='#7d4512',
             height=cfg.SQSIZE*8+cfg.BOARD_BORDER,
@@ -31,5 +32,10 @@ class Game():
         self.__root.bind('<B1-Motion>', self.game.MouseDrag)
         self.__root.bind('<ButtonRelease-1>', self.game.Mouse_LCR)
 
+
     def run(self):
         self.__root.mainloop()
+
+    def config(self, key: str, value: str, **kwargs):
+        """method to configure the game with proper gui change and attribute update"""
+        pass

@@ -23,7 +23,7 @@ class Player:
         self.last_move: list[int] = [] # [r0, c0, r1, c1]
 
         self.__stats: list[int] = [0, 0] # [total, dead]
-        self.pieces: dict[str, list[King|Queen|Knight|Rook|Bishop|Pawn]] = {
+        self.pieces: dict[str, list] = {
             KING  : [],
             QUEEN : [],
             KNIGHT: [],

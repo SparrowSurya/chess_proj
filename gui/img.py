@@ -34,7 +34,6 @@ class Image():
         npath = rpath+new
 
         if PATH.isdir(npath):
-            self.__img.clear()
             self.__img = {
                 P0: {
                         KING:   PhotoImage(file=f'{npath}/0K.png'),
