@@ -32,7 +32,7 @@ class Player:
             PAWN  : []
         }
     
-    def __repr__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, name: str):

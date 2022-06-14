@@ -10,8 +10,29 @@
 
 ---
 
-### About:
-The game will have 3 stages of development as described. 
-+ 1. Simple chess game with proper customization of interface for user.
-+ 2. To have better AI (based upon the calculation of best move).
-+ 3. Using socket programming to have match between two online players with text communication (might add voice).
+### Stage-I Aim:
++ complete chess game with all features
++ giving user the ability to make and save their defined chess piece positions
++ fully customisable gui (colors, pieces, background etc.)
+- will be using cutom color picker for realtime view rather tkinter color chooser
++ PIL addition for some attractiveness in Interface as using the tkinter canvas
+
+---
+
+### Stage-II Aim:
++ to have match against pc (might add some levels that how pc should play)
+
+---
+
+### Stage-III Aim:
++ online mode for match
++ not sure but would like to add a voice communication
+
+---
+
+### Additional:
++ add some statistics display after each game
++ add a hint option or kind of like what can be the better move
++ add an option to save match to replay
++ sound effects
++ ...

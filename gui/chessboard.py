@@ -90,4 +90,17 @@ class ChessBoard:
         cell0.clearimg()
         self.cell(r1, c1).newimg(img, pid)
     
-    
+    # special
+    def AskPromotion(self, func, **kwargs):
+        print("ASKING PROMOTION")
+        temp = tk.Frame(self.board, bg='yellow', width=self.canvas.winfo_width(), height=self.canvas.winfo_height())
+        temp.place(x=self.canvas.winfo_rootx(), y=self.canvas.winfo_rooty())
+        
+        def cmd():
+            print('PROMOTING')
+            func(**kwargs, rank=const.QUEEN)
+            temp.destroy()
+            return
+
+        tk.Button(temp, text='press', command=cmd).pack()
+

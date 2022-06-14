@@ -5,7 +5,7 @@ from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, P0, P1
 from config import ipath, rpath
 
 class Image():
-    __slots__ = ("__img",)
+    __slots__ = ("__img", "rpath") # making rawpath to be included as class personal attribute
 
     def __init__(self) -> None:
         self.__img = {
@@ -27,10 +27,12 @@ class Image():
                 }
             }
 
-    def img(self, player: str, piece: str):
-        return self.__img[player][piece]
+    def __getitem__(self, pid: str):
+        if len(pid)==2:
+            pl, pc = pid
+            return self.__img[pl][pc]
     
-    def update(self, new: str):
+    def update(self, new: str): # to be replaced by dunder method in future after implementing config method
         npath = rpath+new
 
         if PATH.isdir(npath):

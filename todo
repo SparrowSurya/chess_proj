@@ -23,17 +23,20 @@ tile highlight wont be having solid color an overlay will be used for that
 -----------------------------------------------------------------------------------------------------------
 ⚠️ PROBLEMS:
 -----------------------------------------------------
+ANNOYING:
+    sometimes the drag drop becomes glitchy showing piece at improper position (in gui only)
+
 CURRENT:
-    none
+    make sure that during pawn promotion it have no characteristics of pawn but of the desired piece
+    still checks for canmove attribute
 
-sometimes the drag drop becomes glitchy showing piece at improper position (in gui only)
-
+    the gui implementation for AskPromotion has been implemented properly
 
 
 -----------------------------------------------------------------------------------------------------------
 🛠️ CHANGE:
 -----------------------------------------------------
-
+In future will be using pillow library to give some attractive looking interface
 
 
 

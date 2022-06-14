@@ -48,20 +48,19 @@ class Brain:
 
                 pl, pc = next(g)
                 cell = self.board.cell(i, j)
+                cell.showimg()
 
                 if (pid:=f"{pl}{pc}")==NULL:
                     cell.clearimg()
                 elif pl==self.player0:
                     self.player0.NewPiece(pc, i,j)
-                    cell.newimg(self.Img.img(pl, pc), pid)
+                    cell.newimg(self.Img[pl, pc], pid)
                 elif pl==self.player1:
                     self.player1.NewPiece(pc, i,j)
-                    cell.newimg(self.Img.img(pl, pc), pid)
+                    cell.newimg(self.Img[pl, pc], pid)
                 else:
                     raise Exception(f"Invalid player name: pid={pid}")
-                    
-                cell.showimg()
-    
+
     def StartDefault(self, p1: bool = True):
         """to start a 1v1 match"""
         # reset board pieces 
@@ -219,9 +218,7 @@ class Brain:
         self.board.move(r0, c0, r1, c1, self.grid[r1, c1])
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
-            typ = self.AskPromotion()
-            fr.Promote(r1, c1, typ)
-            self.board.cell(r1, c1).newimg(self.Img.img(fr.__call__(), typ), pid2)
+            self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1), pid=pid2)
 
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""
@@ -282,7 +279,6 @@ class Brain:
             else:
                 continue
             if pid[1] is KNIGHT:
-                print(i, j, r, c)
                 return True
         
         d = -1 if player==P1 else 1
@@ -362,8 +358,6 @@ class Brain:
             print("[MATCH ENDED]:- lone king vs all the pieces")
             return
 
-    def AskPromotion(self):
-        try:
-            return input("Enter Piece ID: ")
-        except KeyError:
-            return self.AskPromotion()
+    def Promote(self, *, player: Player, rank: str, pos: tuple[int], pid: str):
+        player.Promote(*pos, rank)
+        self.board.cell(*pos).newimg(self.Img[player.name, rank], pid)
