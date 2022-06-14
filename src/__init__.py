@@ -220,6 +220,13 @@ class Brain:
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
             self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1), pid=pid2)
 
+    def Promote(self, *, player: Player, rank: str, pos: tuple[int], pid: str):
+        r, c = pos
+        player.Promote(*pos, rank)
+        self.board.cell(*pos).newimg(self.Img[player.name, rank], pid)
+        self.grid[r, c] = pid # self.grid[*pos] = pid will work on 3.11 or higher # NOT WORKING
+        print('PROMOTION DONE')
+
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""
         if self.TurnOf() == self.player0:
@@ -357,7 +364,3 @@ class Brain:
         elif (fd==1 and ed>1) or (en==1 and fd>1):
             print("[MATCH ENDED]:- lone king vs all the pieces")
             return
-
-    def Promote(self, *, player: Player, rank: str, pos: tuple[int], pid: str):
-        player.Promote(*pos, rank)
-        self.board.cell(*pos).newimg(self.Img[player.name, rank], pid)

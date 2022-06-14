@@ -92,6 +92,8 @@ class ChessBoard:
     
     # special
     def AskPromotion(self, func, **kwargs):
+        func(**kwargs, rank=const.QUEEN)
+        return
         print("ASKING PROMOTION")
         temp = tk.Frame(self.board, bg='yellow', width=self.canvas.winfo_width(), height=self.canvas.winfo_height())
         temp.place(x=self.canvas.winfo_rootx(), y=self.canvas.winfo_rooty())
