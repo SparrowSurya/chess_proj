@@ -218,14 +218,14 @@ class Brain:
         self.board.move(r0, c0, r1, c1, self.grid[r1, c1])
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
-            self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1), pid=pid2)
+            self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1))
 
-    def Promote(self, *, player: Player, rank: str, pos: tuple[int], pid: str):
+    def Promote(self, *, player: Player, rank: str, pos: tuple[int]):
         r, c = pos
+        pid = f"{player.name}{rank}"
         player.Promote(*pos, rank)
         self.board.cell(*pos).newimg(self.Img[player.name, rank], pid)
-        self.grid[r, c] = pid # self.grid[*pos] = pid will work on 3.11 or higher # NOT WORKING
-        print('PROMOTION DONE')
+        self.grid[r, c] = pid 
 
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""

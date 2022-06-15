@@ -27,13 +27,7 @@ ANNOYING:
     sometimes the drag drop becomes glitchy showing piece at improper position (in gui only)
 
 CURRENT:
-    grid dont get updated (src/__init__.py line 227) ie still shows pawn instead queen (4 now hardcoded for proper result)
-    even through same statement working in same file in line 216
-
-    make sure that during pawn promotion it have no characteristics of pawn but of the desired piece
-    still checks for canmove attribute
-
-    the gui implementation for AskPromotion has been implemented properly
+    the gui implementation for AskPromotion has not been implemented properly
 
 
 -----------------------------------------------------------------------------------------------------------
