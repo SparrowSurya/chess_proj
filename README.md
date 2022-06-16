@@ -2,6 +2,12 @@
 
 ---
 ---
+### Info:
++ External package used: pillow library
++ Code tested in windows OS
++ Python Version: 3.9.5
+
+---
 
 ### Stages:
 + I: 1VS1 (currently)

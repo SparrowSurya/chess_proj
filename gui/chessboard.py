@@ -122,8 +122,8 @@ class ChessBoard:
         img = ToImageTk(im)
         
         temp = self.board.create_image(
-            self.board.winfo_rootx(),
-            self.board.winfo_rooty(),
+            0,
+            0,
             image=img,
             anchor=tk.NW,
             state=tk.NORMAL
