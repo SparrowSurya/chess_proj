@@ -3,10 +3,11 @@ import tkinter as tk
 import config as cfg
 import config.const as const
 from gui.cell import Cell
+from utils.graphics import *
 
 
 class ChessBoard:
-    __slots__ = ('canvas', '__cells', 'board')
+    __slots__ = ('canvas', '__cells', 'board', 'temp', 'img')
 
     def __init__(self, canvas:tk.Canvas):
         self.canvas = canvas
@@ -17,12 +18,12 @@ class ChessBoard:
         for i in range(8):
             x = cfg.BOARD_BORDER//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
             y = cfg.BOARD_BORDER//4
-            canvas.create_text(
+            self.canvas.create_text(
                 x,y, anchor=tk.CENTER, fill='white',
                 text=const.MARKING[1][i],
                 font=cfg.MARKING_FONT
             )
-            canvas.create_text(
+            self.canvas.create_text(
                 x, 3*y+cfg.SQSIZE*8, anchor=tk.CENTER, fill='white',
                 text=const.MARKING[1][i],
                 font=cfg.MARKING_FONT
@@ -32,18 +33,18 @@ class ChessBoard:
         for i in range(8):
             x = cfg.BOARD_BORDER//4
             y = cfg.BOARD_BORDER//2 + (cfg.SQSIZE)*i + cfg.SQSIZE//2
-            canvas.create_text(
+            self.canvas.create_text(
                 x, y, anchor=tk.CENTER, fill='white',
                 text=const.MARKING[0][i],
                 font=cfg.MARKING_FONT
             )
-            canvas.create_text(
+            self.canvas.create_text(
                 3*x+cfg.SQSIZE*8, y, anchor=tk.CENTER, fill='white',
                 text=const.MARKING[0][i],
                 font=cfg.MARKING_FONT
             )
     
-        self.board: tk.Canvas = tk.Canvas(canvas, height=cfg.SQSIZE*8, width=cfg.SQSIZE*8, highlightthickness=0)
+        self.board: tk.Canvas = tk.Canvas(self.canvas, height=cfg.SQSIZE*8, width=cfg.SQSIZE*8, highlightthickness=0)
         self.board.place(x=cfg.BOARD_BORDER//2, y=cfg.BOARD_BORDER//2)
 
         for y in range(8):
@@ -52,6 +53,19 @@ class ChessBoard:
                 cell = Cell(self.board, y, x, self.get_fill_col(y, x))
                 tmp.append(cell)
             self.__cells.append(tmp)
+
+        ###
+        wd = ht = cfg.SQSIZE*8
+        self.img = ToImageTk(FlatRectangle(wd, ht, "#FF00FF", 1))
+                
+        self.temp = self.board.create_image(
+            self.canvas.winfo_rootx(),
+            self.canvas.winfo_rooty(),
+            image=self.img,
+            anchor=tk.NW,
+            state=tk.NORMAL
+        )
+        self.board.tag_raise(self.temp)
     
     @staticmethod
     def xy2rc(x_coord: int, y_coord: int):
@@ -92,17 +106,29 @@ class ChessBoard:
     
     # special
     def AskPromotion(self, func, **kwargs):
-        func(**kwargs, rank=const.QUEEN) # temporary
-        return
         print("ASKING PROMOTION")
-        temp = tk.Frame(self.board, bg='yellow', width=self.canvas.winfo_width(), height=self.canvas.winfo_height())
-        temp.place(x=self.canvas.winfo_rootx(), y=self.canvas.winfo_rooty())
+        wd = ht = cfg.SQSIZE*8
+        print(wd, ht)
         
         def cmd():
             print('PROMOTING')
+            self.board.delete(temp)
+            btn.destroy()
             func(**kwargs, rank=const.QUEEN)
-            temp.destroy()
             return
 
-        tk.Button(temp, text='press', command=cmd).pack()
+        im = FlatRectangle(wd, ht, "#FF00FF", 1)
+        im.save("temp.png")
+        img = ToImageTk(im)
+        
+        temp = self.board.create_image(
+            self.board.winfo_rootx(),
+            self.board.winfo_rooty(),
+            image=img,
+            anchor=tk.NW,
+            state=tk.NORMAL
+        )
+        self.board.tag_raise(temp)
 
+        btn = tk.Button(self.board, text='press', command=cmd)
+        btn.place(x=wd/2, y=ht/2)

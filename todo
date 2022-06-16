@@ -27,7 +27,7 @@ ANNOYING:
     sometimes the drag drop becomes glitchy showing piece at improper position (in gui only)
 
 CURRENT:
-    the gui implementation for AskPromotion has not been implemented properly
+    image dont covers the chessboard tiles
 
 
 -----------------------------------------------------------------------------------------------------------
@@ -63,3 +63,4 @@ end game
         repetition
         agreement
 
+new method for moving piece in code side (will also help in replay)

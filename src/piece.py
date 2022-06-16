@@ -159,7 +159,7 @@ class Pawn(Piece):
         return f"{self.player}{self.alias}"
 
     def __eq__(self, pid: str):
-        return self.alias == pid[1]
+        return False if not isinstance(pid, str) else self.alias == pid[1]
     
     def move(self, r: int, c: int):
         super().move(r, c)
