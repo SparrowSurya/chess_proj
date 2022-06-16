@@ -54,18 +54,18 @@ class ChessBoard:
                 tmp.append(cell)
             self.__cells.append(tmp)
 
-        ###
-        wd = ht = cfg.SQSIZE*8
-        self.img = ToImageTk(FlatRectangle(wd, ht, "#FF00FF", 1))
+        
+        # wd = ht = cfg.SQSIZE*8
+        # self.img = ToImageTk(FlatRectangle(wd, ht, "#FF00FF", 1))
                 
-        self.temp = self.board.create_image(
-            self.canvas.winfo_rootx(),
-            self.canvas.winfo_rooty(),
-            image=self.img,
-            anchor=tk.NW,
-            state=tk.NORMAL
-        )
-        self.board.tag_raise(self.temp)
+        # self.temp = self.board.create_image(
+        #     self.canvas.winfo_rootx(),
+        #     self.canvas.winfo_rooty(),
+        #     image=self.img,
+        #     anchor=tk.NW,
+        #     state=tk.NORMAL
+        # )
+        # self.board.tag_raise(self.temp)
     
     @staticmethod
     def xy2rc(x_coord: int, y_coord: int):
