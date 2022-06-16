@@ -59,8 +59,8 @@ class ChessBoard:
         # self.img = ToImageTk(FlatRectangle(wd, ht, "#FF00FF", 1))
                 
         # self.temp = self.board.create_image(
-        #     self.canvas.winfo_rootx(),
-        #     self.canvas.winfo_rooty(),
+        #     self.board.winfo_rootx(),
+        #     self.board.winfo_rooty(),
         #     image=self.img,
         #     anchor=tk.NW,
         #     state=tk.NORMAL
