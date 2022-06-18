@@ -1,31 +1,33 @@
 import tkinter as tk
-import copy
 
 from gui.chessboard import ChessBoard
 from gui.img import Image
-from config import *
+from config import cfg
 from config.const import *
 from src.chessgrid import ChessGrid
 from src.player import Player
 
 class Brain:
     __slots__ = (
-        'board', 'grid', 'Img',
+        'display', 'board', 'grid', 'Img', 'cfg',
         'player0', 'player1',
-        'last_clicked', 'last_selected',
-        'selected', 'pdrag', 'check', '__moves',
-        'inMatch'
+        'last_clicked', 'last_selected', 'selected', 'pdrag', 'check', 'inMatch', 'paused',
+        '__moves'
     )
 
-    def __init__(self, board: ChessBoard):
-        self.board: ChessBoard = board
+    def __init__(self, display: tk.Frame, config: cfg):
+        self.display: tk.Frame = display
+        self.cfg: cfg = config
+
+        self.board: ChessBoard = ChessBoard(self.display, self.cfg)
         self.Img: Image = Image()
-        self.inMatch: bool = False
         self.grid: ChessGrid = ChessGrid()
 
-        
         self.player0: Player = Player(self.board, P0)
         self.player1: Player = Player(self.board, P1)
+
+        self.inMatch: bool = False
+        self.paused: bool = False
 
         self.last_clicked: list[int] = [-1, -1] # [x, y]
         self.last_selected: list[tuple[int, int]] = [] # [(r0, c0), (r1, c1), ...]
@@ -83,7 +85,7 @@ class Brain:
 
     def Mouse_SLC(self, e: tk.Event):
         """bind event with single left click"""
-        if not self.inMatch: return
+        if not self.inMatch or self.paused: return
         
         self.last_clicked = [e.x, e.y]
         loc = self.board.xy2rc(e.x, e.y)
@@ -106,11 +108,11 @@ class Brain:
                 self.DeselectAll()
                 Epos, Apos = self.__moves[loc]
 
-                self.Select(*loc, CELL_SEL0)
+                self.Select(*loc, self.cfg[ACTIVE])
                 for i, j in Epos:
-                    self.Select(i, j, CELL_SEL1)
+                    self.Select(i, j, self.cfg[COLOR_S1])
                 for i, j in Apos:
-                    self.Select(i, j, KILL)
+                    self.Select(i, j, self.cfg[COLOR_KILL])
                 self.selected = 1
 
         else:
@@ -118,17 +120,17 @@ class Brain:
                 loc = self.board.xy2rc(e.x, e.y)
                 Epos, Apos = self.__moves[loc]
 
-                self.Select(*loc, CELL_SEL0)
+                self.Select(*loc, self.cfg[COLOR_S0])
                 for i, j in Epos:
-                    self.Select(i, j, CELL_SEL1)
+                    self.Select(i, j, self.cfg[COLOR_S1])
                 for i, j in Apos:
-                    self.Select(i, j, KILL)
+                    self.Select(i, j, self.cfg[COLOR_KILL])
                 self.selected = 1
         self.pdrag = None
 
     def MouseDrag(self, e: tk.Event):
         """bind event for left click drag"""
-        if not self.inMatch: return
+        if not self.inMatch or self.paused: return
         
         x, y = self.last_clicked
 
@@ -151,7 +153,7 @@ class Brain:
     
     def Mouse_LCR(self, e: tk.Event):
         """bind event for mouse left click release"""
-        if not self.inMatch: return
+        if not self.inMatch or self.paused: return
         
         if self.pdrag:
             loc = self.board.xy2rc(e.x, e.y)
@@ -181,7 +183,7 @@ class Brain:
     
     def Mouse_SRC(self, e: tk.Event):
         """bind event with single right click"""
-        if not self.inMatch: return
+        if not self.inMatch or self.paused: return
         
         self.DeselectAll()
 
@@ -217,7 +219,8 @@ class Brain:
         del self.grid[r0, c0]
         self.board.move(r0, c0, r1, c1, self.grid[r1, c1])
 
-        if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION 
+        if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
+            self.paused = True
             self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1))
 
     def Promote(self, *, player: Player, rank: str, pos: tuple[int]):
@@ -225,7 +228,8 @@ class Brain:
         pid = f"{player.name}{rank}"
         player.Promote(*pos, rank)
         self.board.cell(*pos).newimg(self.Img[player.name, rank], pid)
-        self.grid[r, c] = pid 
+        self.grid[r, c] = pid
+        self.paused = False
 
     def SwitchTurn(self):
         """switches the turn of players and also checks the Check on king"""
@@ -240,7 +244,7 @@ class Brain:
         if self.IsCheck(pl):
             self.check = pl
             pc = pl.pieces[KING][0]
-            self.board.cell(*(pc.loc)).select(CHECK)
+            self.board.cell(*(pc.loc)).select(self.cfg[COLOR_CHECK])
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """checks the Check on player's king

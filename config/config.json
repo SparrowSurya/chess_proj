@@ -1,27 +1,9 @@
 {
-    "DEFAULT": {
-        "size": 80,
-        "col1" : "#efd6ae",
-        "col2" : "#b7865d",
-        "sel0" : "yellow",
-        "sel1" : "green",
-        "sel2" : "cyan",
-        "check" : "red",
-        "kill" : "orange",
-        "board_border": 48,
-        "marking_font": ["times new roman", 18, "bold"]
-    },
-    
-    "RESET": {
-        "size": 80,
-        "col1" : "white",
-        "col2" : "black",
-        "sel0" : "yellow",
-        "sel1" : "green",
-        "sel2" : "cyan",
-        "check" : "red",
-        "kill" : "orange",
-        "board_border": 48,
-        "marking_font": ["times new roman", 18, "bold"]
-    }
+    "color1" : "#efd6ae",
+    "color2" : "#b7865d",
+    "select" : "#ffff00",
+    "highlight" : "#00fff2",
+    "check" : "#ff0000",
+    "kill" : "#ff8800",
+    "border_color" : "#7d4512"
 }

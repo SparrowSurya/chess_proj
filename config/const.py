@@ -1,4 +1,4 @@
-MARKING = ("12345678", "abcdefgh")
+MARKING = ("12345678", "hgfedcba")
 
 
 P0     : str = '0'
@@ -11,12 +11,25 @@ ROOK   : str = 'r'
 PAWN   : str = 'p'
 NULL   : str = '..'
 
+NORMAL = 'normal'
+SELECT = 'select'
+HIGHLIGHT = 'highlight'
+COLOR_C1 = 'color1' # cell color type 1
+COLOR_C2 = 'color2' # cell color type 2
+COLOR_KILL = 'kill'
+COLOR_CHECK = 'check'
+COLOR_BORDER = 'border_color'
+
+CELLSIZE = 80
+BORDER_WIDTH = 48
+FONT_BORDER = ("times new roman", 18, "bold")
+
 MARCH = {
-    KING : ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)),
-    QUEEN : ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1)),
+    KING   : ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)),
+    QUEEN  : ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1)),
     KNIGHT : ((-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1),(2,1),(1,2)),
     BISHOP : ((1,1),(1,-1),(-1,1),(-1,-1)),
-    ROOK : ((1,0),(0,1),(-1,0),(0,-1))
+    ROOK   : ((1,0),(0,1),(-1,0),(0,-1))
 }
 
 DEFAULT_GRID = "\
