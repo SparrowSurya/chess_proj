@@ -1,36 +1,41 @@
 # file for custom color chooser to replace tkinter colorchooser as to get real time updates
 
 import math
-from tkinter import *
+import tkinter as tk
 from typing import Callable
 
 
-class ColorPicker:
+class ColorPicker(tk.Frame):
     """
     A class to create custom color picker dialogue box. It will support the realtime color value provider.
     Option to select wheel. 
 
-    Param: -file: (will be removed in future)
+    Param: -file: (will be removed in future after image being generated using PIL)
         must be an alpha square image of a color wheel.
     
     Param to be added in future:
         -color: to make default pointer pointing to that color .
         -xy: to make default pointer pointing to color a that location if lies in color wheel else will point to default ie #ffffff
     """
-    def __init__(self, file: str):
-        self.__file = file
+
+    def __init__(self, file: str, master: tk.Frame = None, *args, **kwargs):
+        if master is not None: # ERROR
+            self.__root = tk.Frame.__init__(master, *args, **kwargs)
+            # self.__root = master
+
+        else: # Seperate Window
+            self.__root = tk.Tk()
+            self.__root.title("ColorPicker")
+            self.__root.config(bg='#000000')
+        
+        self.__file = file # will be replaced in future as soon as rgb wheel gets created
+
         self.__ptr: list = []
-
-        # WINDOW
-        self.__root = Tk()
-        self.__root.title("ColorPicker")
-        self.__root.config(bg='#000000')
-
         # POINTER CONFIGURATION
         self.__r: int = 16 # radius
 
         # COLORWHEEL IMAGE
-        self.__img: PhotoImage = PhotoImage(file=self.__file)
+        self.__img: tk.PhotoImage = tk.PhotoImage(file=self.__file) # modification to be done after __file gets removed
         wd, ht = self.__img.width(), self.__img.height()
 
         if wd!=ht:
@@ -38,7 +43,7 @@ class ColorPicker:
         self.size: int = wd
 
         # CANVAS
-        self.__canvas: Canvas = Canvas(
+        self.__canvas: tk.Canvas = tk.Canvas(
             self.__root,
             bg="#999999",
             width=  self.size + self.__r*2 + 2,
@@ -48,14 +53,14 @@ class ColorPicker:
         self.__canvas.pack()
 
         # COLORWHEEL
-        self.ColorWheel = self.__canvas.create_image(self.__r+1, self.__r+1, image=self.__img, anchor=NW)
+        self.ColorWheel = self.__canvas.create_image(self.__r+1, self.__r+1, image=self.__img, anchor=tk.NW)
 
         # RECENT POINTER
         self.recent = None
 
         # EVENT BINDING WITH CANVAS
         self.__canvas.bind('<Button-1>', self.Button_12)
-        self.__canvas.bind('<B1-Motion>', lambda _e: self.Button_12(_e, bypass_range=True))
+        self.__canvas.bind('<B1-Motion>', lambda _e: self.Button_12(_e, bypass_limit=True))
 
 
     def new_ptr_coord(self, xy: tuple[int, int] = None) -> tuple[int, int]:
@@ -68,19 +73,22 @@ class ColorPicker:
             width=3,
             outline="#EEEEEE",
             fill=self.color(x, y),
-            state=NORMAL
+            state=tk.NORMAL
         )
         self.__ptr.append(_id)
         self.recent = _id
         return _id
     
-    def normalise(self, xy: tuple[int, int]) ->tuple[int, int]:
-        """Corrects the x, y coordinates when not in proper place"""
+    def normalise(self, xy: tuple[int, int], *, edgesnap: bool = False) ->tuple[int, int]:
+        """Returns the x, y coordinates."""
         try:
-            x, y = xy
-            if xy is None or self.__img.transparency_get(*xy): # IsAlpha
+            if xy is None:
                 x = y = self.size//2 + self.__r +1
-        except TclError: # lies outside image
+            elif self.onwheel(*xy):
+                x, y = xy
+            elif edgesnap:
+                raise tk.TclError
+        except tk.TclError: # lies outside image
             cx = cy = self.__r + self.size//2 + 1
             r = self.size//2
             k = math.dist((cx, cy), xy) - r
@@ -95,7 +103,7 @@ class ColorPicker:
         x0, y0, *_t = self.__canvas.coords(_id)
         dx, dy = x-x0-self.__r, y-y0-self.__r
         self.__canvas.move(_id, dx, dy)
-        self.__canvas.itemconfig(_id, fill=color, state=NORMAL)
+        self.__canvas.itemconfig(_id, fill=color, state=tk.NORMAL)
         self.col = color
         self.recent = _id
     
@@ -103,7 +111,7 @@ class ColorPicker:
         """Returns hexadecimal color for x,y."""
         try:
             return "#%02x%02x%02x" % self.__img.get(x-1-self.__r, y-1-self.__r)
-        except TclError:
+        except tk.TclError:
             return None
     
     def onwheel(self, x: int, y: int):
@@ -117,7 +125,7 @@ class ColorPicker:
 
             dist = math.sqrt((x-x0)**2 + (y-y0)**2)
             return False if dist>self.size//2 else True
-        except TclError:
+        except tk.TclError:
             return False
     
     def color_ptr(self, x: int, y: int):
@@ -126,18 +134,18 @@ class ColorPicker:
         _id.remove(self.ColorWheel) if self.ColorWheel in _id else None
         return _id[0] if _id else self.recent
     
-    def Button_12(self, _e: Event, *, bypass_range: bool = False):
+    def Button_12(self, _e: tk.Event, *, bypass_limit: bool = False):
         """Function binded to single-left-click and single-left-drag.\n
-        bypass_range: if True then on clicking outside colorwheel it will show movement to the color pointer.
+        bypass_limit: if True then on clicking outside colorwheel it will show movement to the color pointer.
         """
         valid = self.onwheel(_e.x, _e.y)
         _id = self.color_ptr(_e.x, _e.y)
         
         if valid: # Mouse in ColorWheel
             self._move(_id, _e.x, _e.y)
-        else:
-            if bypass_range:
-                self._move(self.recent, *self.normalise((_e.x, _e.y)))
+        elif bypass_limit:
+            self._move(self.recent, *self.normalise((_e.x, _e.y), edgesnap=True))
+        # self.sync_color()
     
     def set_color(self, _id, hex_color: str):
         """Sets location of color pointer ie _id to given color."""
@@ -157,10 +165,13 @@ class ColorPicker:
 if __name__ == '__main__':
     widget = ColorPicker("assets/colorwheel.png")
     widget.new_ptr_coord()
-    mainloop()
+    tk.mainloop()
 
 
 """NOTE:
 Aim to add 2 or wheels of each kind used in daily applications.
 PIL might be used in future.
+
+ERROR:
+for now providing a different root dont work.
 """

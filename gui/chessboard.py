@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from config import *
 from gui.cell import Cell
-from utils.graphics import *
+from lib.graphics import ToImageTk, CircularGradient
 
 
 class ChessBoard:
