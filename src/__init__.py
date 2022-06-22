@@ -8,12 +8,6 @@ from src.chessgrid import ChessGrid
 from src.player import Player
 
 class Brain:
-    __slots__ = (
-        'display', 'board', 'grid', 'Img', 'cfg',
-        'player0', 'player1',
-        'last_clicked', 'last_selected', 'selected', 'pdrag', 'check', 'inMatch', 'paused',
-        '__moves'
-    )
 
     def __init__(self, display: tk.Frame, config: cfg):
         self.display: tk.Frame = display

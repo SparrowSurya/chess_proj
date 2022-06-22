@@ -24,6 +24,10 @@ CELLSIZE = 80
 BORDER_WIDTH = 48
 FONT_BORDER = ("times new roman", 18, "bold")
 
+IDLE = 'idle'
+PLAY = 'playing'
+PAUSE = 'paused'
+
 MARCH = {
     KING   : ((1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)),
     QUEEN  : ((1,1),(1,-1),(-1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1)),

@@ -3,7 +3,7 @@ import copy
 from config.const import NULL
 
 class ChessGrid():
-    __slots__ = ('__grid',)
+
     def __init__(self):
         self.__grid: list[list[str]] = [[NULL for _ in range(8)] for _ in range(8)]
     

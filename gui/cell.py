@@ -3,7 +3,6 @@ from config import cfg
 from config.const import NORMAL, NULL, CELLSIZE, COLOR_CHECK, COLOR_KILL, SELECT
 
 class Cell:
-    __slots__ = ('board', 'r', 'c', 'pid', 'selected', 'highlighted', 'fill', '__dx', '__dy', 'img', 'color', 'image')
     
     def __init__(self, board: tk.Canvas, config: cfg, row: int, column: int, fill: str, img=""):
         self.board: tk.Canvas = board

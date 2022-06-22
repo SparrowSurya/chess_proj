@@ -5,8 +5,6 @@ from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, P0, P1
 from config import ROOT_PATH, REL_IMG_PATH, IMG_DIR
 
 class Image():
-    __slots__ = ("__img",)
-
     __root_path   : str = ROOT_PATH
     __rel_path    : str = REL_IMG_PATH
     __current_path: str = IMG_DIR

@@ -1,7 +1,6 @@
 from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
 
 class Piece:
-    __slots__ = ('player', 'r', 'c', 'move0', 'alive', 'ischeck', 'canmove')
 
     def __init__(self, player: str, row: int, col: int):
         self.player: str = player

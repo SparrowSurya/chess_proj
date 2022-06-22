@@ -7,7 +7,6 @@ from lib.graphics import ToImageTk, CircularGradient
 
 
 class ChessBoard:
-    __slots__ = ('cfg', 'canvas', '__cells', 'board', 'screen', 'shade')
 
     def __init__(self, master:tk.Frame, config: cfg):
         self.master: tk.Frame = master
