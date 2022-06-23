@@ -22,27 +22,26 @@ _ColorPicker (base class)
 # designing base class widget for color picker
 import tkinter as tk
 
-class _ColorPicker(tk.Frame):
+class _ColorPicker:
     """
     Base class for ColorChooser subclasses.
     """
 
     def __init__(self, master=None, title='ColorPicker', **kw_attr):
         if master is None:
-            self.__root = tk.Toplevel()
-            self.__root.title(title)
-            self.__root.wm_attributes('-resizable', (False, False))
+            self._root = tk.Toplevel()
+            self._root.title(title)
             if kw_attr:
-                for key, val in kw_attr: self.__root.wm_attributes(key, val)
+                for key, val in kw_attr: self._root.wm_attributes(key, val)
         else:
-            self.__root = master
-    
+            self._root = master
+
     @classmethod
     def fromFrame(cls, master, **kwargs):
         """Construct a frame widget with the parent MASTER.
 
         Valid resource names: background, bd, bg, borderwidth, class, colormap, container, cursor, height, highlightbackground, highlightcolor, highlightthickness, relief, takefocus, visual, width."""
-        tk.Frame.__init__(master=master, **kwargs)
+        return cls(master=master, **kwargs)
     
     @classmethod
     def fromLabelFrame(cls, master, **kwargs):
@@ -55,15 +54,16 @@ class _ColorPicker(tk.Frame):
         WIDGET-SPECIFIC OPTIONS
 
             background, class, colormap, container, height, labelanchor, labelwidget, visual, width"""
-        tk.LabelFrame.__init__(master=master, **kwargs)
+        return cls(master=master, **kwargs)
     
     @classmethod
     def fromCanvas(cls, master, **kwargs):
         """Construct a canvas widget with the parent MASTER.
 
         Valid resource names: background, bd, bg, borderwidth, closeenough, confine, cursor, height, highlightbackground, highlightcolor, highlightthickness, insertbackground, insertborderwidth, insertofftime, insertontime, insertwidth, offset, relief, scrollregion, selectbackground, selectborderwidth, selectforeground, state, takefocus, width, xscrollcommand, xscrollincrement, yscrollcommand, yscrollincrement."""
-        tk.Canvas.__init__(master=master, **kwargs)
+        return cls(master=master, **kwargs)
 
     @property
-    def master(self): return self.__root
+    def master(self): return self._root
 
+    
