@@ -3,29 +3,23 @@
 ---
 
 ### Status:
-+ `src\__init__.py` is full of errors due to some major changes.
-+ configuration rework.
-+ match will have its own class to seperate the custom startup match.
-    <p>
-    since same board will be used to play match and to have <i>custom startup match.</i>
-    </p>
-+ `utils\graphics.py` will be currently used for the shdow effect in pawn promotion.
-    <p>
-    For now focus on goog looking gui has been paused. Flat colors will be used for now.
-    </p>
+
+    Major changes are being done.
+    GUI will provide Interface. Brain will use the gui layout to bind the actions etc.
+    lib directory colorpicker module progress has been paused.
 
 ---
 
 ### Info:
 + External package used: pillow library 
 <br>
-```sh
+```bash
 pip install pillow
 ```
 
 + Code tested in windows 10 Home edition
 + Python Version: 3.9.5
-+ tkinter package
++ python tkinter package
 
 ---
 
@@ -39,19 +33,13 @@ pip install pillow
 ### Stage-I Aim:
 + complete chess game with all features.
 + giving user the ability to make and save their defined chess piece positions.
-+ fully customisable gui (colors, pieces, background etc.)
-    <p>
-    will be using cutom color picker for realtime view rather tkinter color chooser.
-    </p>
++ fully customisable gui (colors, pieces, background etc.); will be using cutom color picker for realtime view rather tkinter color chooser.
 + PIL addition for some attractiveness in Interface as using the tkinter canvas
 
 ---
 
 ### Stage-II Aim:
-+ to have match against pc.
-    <p>
-    might add some levels that how pc should play.
-    </p>
++ to have match against pc; might add some levels that how pc should play.
 
 ---
 
@@ -67,18 +55,3 @@ pip install pillow
 + add an option to save match to replay.
 + sound effects.
 + ...
-
----
-
-### Progress:
-+ Board design
-+ Pieces addition
-+ Drag-Drop or Click-Click to move piece
-+ Moves Filter (to prevent our king to be attacked)
-+ Check
-+ End game (just got printed in console noting more yet)
-    <p><ul>
-    <li> Stalemate </li>
-    <li> Insufficient pieces to End Game </li>
-    </ul></p>
-+ Pawn Promotion <b>WIP</b>

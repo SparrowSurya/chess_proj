@@ -1,5 +1,6 @@
 import math
 import colorsys
+from typing import Literal
 from PIL import Image, ImageTk, ImageColor
 
 
@@ -88,3 +89,10 @@ def HueSatColorWheel(size: int):
             img.putpixel((x, y), (r, g, b, 255))
     return img
 
+
+def LinearGradient(width: int, height: int, rgba: tuple[int], direction: Literal['x', 'y']):
+    if direction=='x': dx, dy = 1, 0
+    elif direction=='y': dx, dy = 0, 1
+    else: raise Exception("Invalid option -direction")
+
+    

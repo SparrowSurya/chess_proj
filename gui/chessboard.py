@@ -24,45 +24,45 @@ class ChessBoard:
 
         # horizontal marking
         for i in range(8):
-            x = self.cfg[COLOR_BORDER]//2 + (self.cfg[CELLSIZE])*i + self.cfg[CELLSIZE]//2
-            y = self.cfg[COLOR_BORDER]//4
+            x = BORDER_WIDTH//2 + CELLSIZE*i + CELLSIZE//2
+            y = BORDER_WIDTH//4
             self.canvas.create_text(
                 x,y, anchor=tk.CENTER, fill='white',
                 text=MARKING[1][i],
-                font=self.cfg[FONT_BORDER]
+                font=FONT_BORDER
             )
             self.canvas.create_text(
-                x, 3*y+self.cfg[CELLSIZE]*8, anchor=tk.CENTER, fill='white',
+                x, 3*y+CELLSIZE*8, anchor=tk.CENTER, fill='white',
                 text=MARKING[1][i],
-                font=self.cfg[FONT_BORDER]
+                font=FONT_BORDER
             )
 
         # vertical marking
         for i in range(8):
-            x = self.cfg[COLOR_BORDER]//4
-            y = self.cfg[COLOR_BORDER]//2 + (self.cfg[CELLSIZE])*i + self.cfg[CELLSIZE]//2
+            x = BORDER_WIDTH//4
+            y = BORDER_WIDTH//2 + (CELLSIZE)*i + CELLSIZE//2
             self.canvas.create_text(
                 x, y, anchor=tk.CENTER, fill='white',
                 text=MARKING[0][i],
-                font=self.cfg[FONT_BORDER]
+                font=FONT_BORDER
             )
             self.canvas.create_text(
-                3*x+self.cfg[CELLSIZE]*8, y, anchor=tk.CENTER, fill='white',
+                3*x+CELLSIZE*8, y, anchor=tk.CENTER, fill='white',
                 text=MARKING[0][i],
-                font=self.cfg[FONT_BORDER]
+                font=FONT_BORDER
             )
     
-        self.board: tk.Canvas = tk.Canvas(self.canvas, height=self.cfg[CELLSIZE]*8, width=self.cfg[CELLSIZE]*8, highlightthickness=0)
-        self.board.place(x=self.cfg[COLOR_BORDER]//2, y=self.cfg[COLOR_BORDER]//2)
+        self.board: tk.Canvas = tk.Canvas(self.canvas, height=CELLSIZE*8, width=CELLSIZE*8, highlightthickness=0)
+        self.board.place(x=BORDER_WIDTH//2, y=BORDER_WIDTH//2)
 
         for y in range(8):
             tmp = []
             for x in range(8):
-                cell = Cell(self.board, y, x, self.get_fill_col(y, x))
+                cell = Cell(self.board, self.cfg, y, x, self.get_fill_col(y, x))
                 tmp.append(cell)
             self.__cells.append(tmp)
 
-        self.shade = ToImageTk(CircularGradient(self.cfg[CELLSIZE]*8, self.cfg[CELLSIZE]*8, ("#000000", "#330066"), (0, 1)))
+        self.shade = ToImageTk(CircularGradient(CELLSIZE*8, CELLSIZE*8, ("#000000", "#330066"), (0, 1)))
         self.screen = self.board.create_image(
             0, 0,
             image=self.shade,
@@ -70,11 +70,11 @@ class ChessBoard:
             state=tk.HIDDEN
         )
 
-        # self.AskPromotion(None, k=None) # testing for WIP
+        self.AskPromotion(None, k=None) # testing for WIP
 
     def xy2rc(self, x_coord: int, y_coord: int):
         """Coords(x,y) to cell coords(r,c)."""
-        c, r = x_coord//self.cfg[CELLSIZE], y_coord//self.cfg[CELLSIZE]
+        c, r = x_coord//CELLSIZE, y_coord//CELLSIZE
         if r in range(8) and c in range(8):
             return r, c
         else:
@@ -107,7 +107,9 @@ class ChessBoard:
     
     def AskPromotion(self, func, **kwargs):
         """Special method to ask for pawn promotion."""
-        wd = ht = self.cfg[CELLSIZE]*8
+        # new method for selection will be implemented
+        
+        wd = ht = CELLSIZE*8
         ranks = {'queen': QUEEN, 'knight': KNIGHT, 'bishop': BISHOP, 'rook': ROOK}
         _rank = []
 

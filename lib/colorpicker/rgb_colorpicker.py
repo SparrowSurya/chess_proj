@@ -3,9 +3,9 @@ import tkinter as tk
 from typing import Callable
 
 from lib.graphics import ToImageTk, HueSatColorWheel
+from .base import _ColorPicker
 
-
-class ColorPicker(tk.Frame):
+class ColorPicker(_ColorPicker):
     """
     A class to create custom color picker dialogue box. It will support the realtime color value provider.
     Option to select wheel. 
@@ -15,23 +15,16 @@ class ColorPicker(tk.Frame):
         -xy: to make default color pointer pointing to color at that location if lies in color wheel else will point to default ie #ffffff
     """
 
-    def __init__(self, master= None, *args, **kwargs):
-        if master is not None: # ERROR
-            self.__master = master
-            self.__root = tk.Frame.__init__(self.__master, *args, **kwargs)
-
-        else: # Seperate Window
-            self.__root = tk.Tk()
-            self.__root.title("ColorPicker")
-            self.__root.config(bg='#000000')
+    def __init__(self, master= None, title="RGB", *args, **kwargs):
+        super().__init__(master, title)
         
         self.__ptr: list = []
         self.__r: int = 16 # radius of color pointer
-        self.size = 256 # dimensions of image
+        self.size = 210 # dimensions of image
 
         # CANVAS
         self.__widget: tk.Canvas = tk.Canvas(
-            self.__root,
+            self._root,
             bg="#999999",
             width=  self.size + self.__r*2 + 2,
             height= self.size + self.__r*2 + 2,
@@ -53,7 +46,7 @@ class ColorPicker(tk.Frame):
         self.__widget.bind('<Button-1>', self.Button_12)
         self.__widget.bind('<B1-Motion>', lambda _e: self.Button_12(_e, bypass_limit=True))
 
-        if isinstance(self.__root, tk.Tk): self.__root.mainloop()
+        if isinstance(self._root, tk.Tk): self._root.mainloop()
 
     
     def pix(self, x: int, y: int):
@@ -134,6 +127,7 @@ class ColorPicker(tk.Frame):
         self.__widget.itemconfig(_id, fill=color, state=tk.NORMAL)
         self.col = color
         self.recent = _id
+        self.call()
     
     def color(self, x: int, y: int):
         """Returns hexadecimal color for x,y. x,y is wrt to colorwheel widget."""
@@ -162,16 +156,14 @@ class ColorPicker(tk.Frame):
             self._move(_id, _e.x, _e.y)
         elif bypass_limit:
             self._move(self.recent, *self.normalise((_e.x, _e.y), edgesnap=True))
-        # self.sync_color()
     
     def set_color(self, _id, hex_color: str):
         """Sets location of color pointer ie _id to given color."""
         pass
-    
-    def sync_color(self, func: Callable, *, args: dict, ):
-        """Sync to the latest color chosen """
-        pass
 
+    def call(self):
+        """Returns the realtime selected color 'HEX'."""
+        return self._call(self.__widget.itemcget(self.recent, 'fill'))
 
 
 """NOTE:

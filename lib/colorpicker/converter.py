@@ -1,25 +1,29 @@
-""""
+"""
 ColorConversion module.
 
 Provide each color system conversion to RGB and vice-versa.
 
-Format:
-    HEX -> str '#XXXXXX'
-    RGB -> float [0, 255]
-    HSV -> float hue[0, 360) [0, 100]
-    HSL -> float hue[0, 360) [0, 100]
-    CMYK -> float [0, 100]
+Format
+    :HEX -> str '#XXXXXX'
+    :RGB -> float [0, 255] int(for HEX only)
+    :HSV -> float hue[0, 360) [0, 100]
+    :HSL -> float hue[0, 360) [0, 100]
+    :CMYK -> float [0, 100]
 
 """
 
+__all__ = (
+    "rgb_2_hex", "rgb_2_hsv", "rgb_2_hsl", "rgb_2_cmyk",
+    "hex_2_rgb", "hsv_2_rgb", "hsl_2_rgb", "cmyk_2_rgb"
+)
 
-def rgb_2_hex(r: float, g: float, b: float) -> str:
+def rgb_2_hex(r: int, g: int, b: int) -> str:
     """Returns HEX color code"""
     return '#%02x%02x%02x' % (r, g, b)
 
-def hex_2_rgb(color: str) -> tuple[float, float, float]:
+def hex_2_rgb(color: str) -> tuple[int, int, int]:
     """Accepts HEX color code"""
-    return tuple(color[i+1:i+3] for i in range(0, 3, 2))
+    return tuple(int(color[i:i+2], base=16) for i in range(1, 7, 2))
 
 def rgb_2_hsv(r: float, g: float, b: float) -> tuple[float, float, float]:
     """Returns HSV.
@@ -120,7 +124,7 @@ def cmyk_2_rgb(c: float, m: float, y: float, k: float) -> tuple[float, float, fl
     b = 255*(1-y)*(1-k)
     return r, g, b
 
-def rgb_2_cmyk(r: float, g: float, b: float) -> tuple(float, float, float):
+def rgb_2_cmyk(r: float, g: float, b: float) -> tuple[float, float, float]:
     """"Accepts CMYK
         c: [0, 100]
         m: [0, 100]
@@ -133,4 +137,3 @@ def rgb_2_cmyk(r: float, g: float, b: float) -> tuple(float, float, float):
     m = (1-g-k)/(1-k)
     y = (1-b-k)/(1-k)
     return c*100, m*100, y*100, k*100
-

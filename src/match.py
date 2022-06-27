@@ -24,4 +24,3 @@ class Match:
 
         self.__moves: dict[tuple, tuple] = {} # piece_pos -> (moves, attacks)
 
-    # def new(self, )

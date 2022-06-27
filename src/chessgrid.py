@@ -2,6 +2,7 @@ import copy
 
 from config.const import NULL
 
+
 class ChessGrid():
 
     def __init__(self):
