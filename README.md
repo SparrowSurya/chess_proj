@@ -12,7 +12,7 @@
 
 ### Info:
 + External package used: pillow library 
-<br>
+
 ```bash
 pip install pillow
 ```
