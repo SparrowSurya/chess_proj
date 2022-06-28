@@ -1,4 +1,4 @@
-MARKING = ("12345678", "hgfedcba")
+MARKING = ("87654321", "abcdefgh")
 
 
 P0     : str = '0'

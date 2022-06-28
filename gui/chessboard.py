@@ -70,7 +70,6 @@ class ChessBoard:
             state=tk.HIDDEN
         )
 
-        self.AskPromotion(None, k=None) # testing for WIP
 
     def xy2rc(self, x_coord: int, y_coord: int):
         """Coords(x,y) to cell coords(r,c)."""
