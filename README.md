@@ -5,8 +5,7 @@
 ### Status:
 
     Major changes are being done.
-    GUI will provide Interface. Brain will use the gui layout to bind the actions etc.
-    lib directory colorpicker module progress has been paused.
+    pid_seq_2_list function in src/utils.py has improper pattern ⚠️raises error
 
 ---
 

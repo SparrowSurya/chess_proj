@@ -47,8 +47,8 @@ class Match:
 
     def Start(self, setup: str = None):
         """Start game with given arrangement."""
-        self.Grid = setup if setup is not None else DEFAULT_GRID
-        itr = self.Grid.__iter__()
+        self.Grid.grid = setup if setup is not None else DEFAULT_GRID
+        itr = iter(self.Grid)
         for r in range(8):
             for c in range(8):
                 pid = next(itr)

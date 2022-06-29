@@ -10,8 +10,12 @@ class GUI(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Chess")
+        self.resizable(False, False)
 
         self.cfg: cfg = cfg()
+
+        self.menubar = tk.Menu(self)
+        self.config(menu=self.menubar)
 
         # basic container
         self._main: tk.Frame = tk.Frame(
@@ -26,13 +30,14 @@ class GUI(tk.Tk):
         self._main_board = tk.Frame(
             self._main,
             bg='orange',#'#7d4512',
-            height=CELLSIZE*8+BORDER_WIDTH,
-            width=CELLSIZE*8+BORDER_WIDTH,
-            highlightthickness=0
         )
         self._main_board.pack()
 
         self.chessboard: ChessBoard = ChessBoard(self._main_board, self.cfg)
         self.chessboard.canvas.pack()
 
-    
+
+    def NewMenu(self, name: str):
+        menu = tk.Menu(self.menubar, tearoff=False)
+        self.menubar.add_cascade(label=name, menu=menu)
+        return menu

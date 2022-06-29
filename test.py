@@ -1,8 +1,8 @@
-from gui import GUI
+from src import Game
 
 def main():
-    game = GUI()
-    game.mainloop()
+    game = Game()
+    game.gui.mainloop()
 
 
 if __name__ == "__main__":

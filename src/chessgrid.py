@@ -19,7 +19,7 @@ class ChessGrid():
     @grid.setter
     def grid(self, newgrid: str):
         arr = pid_seq_2_list(newgrid)
-        self.__grid = [arr[i:i+8] for i in range(8)]
+        self.__grid = [arr[i*8:(i+1)*8] for i in range(8)]
     
     def __iter__(self):
         for i in range(8):
