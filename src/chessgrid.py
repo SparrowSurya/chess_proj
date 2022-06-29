@@ -1,6 +1,7 @@
 import copy
 
 from config.const import NULL
+from lib.utils import *
 
 
 class ChessGrid():
@@ -17,9 +18,8 @@ class ChessGrid():
     
     @grid.setter
     def grid(self, newgrid: str):
-        self.__grid = copy.deepcopy(
-            list(s.split(' ') for s in newgrid.split('\n'))
-        )
+        arr = pid_seq_2_list(newgrid)
+        self.__grid = [arr[i:i+8] for i in range(8)]
     
     def __iter__(self):
         for i in range(8):

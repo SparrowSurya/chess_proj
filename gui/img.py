@@ -3,6 +3,7 @@ from os import path as PATH
 
 from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, P0, P1
 from config import ROOT_PATH, REL_IMG_PATH, IMG_DIR
+from lib.utils import *
 
 class Image():
     __root_path   : str = ROOT_PATH
@@ -42,9 +43,9 @@ class Image():
         return self.__current_path
 
     def __getitem__(self, pid: str):
-        if len(pid)==2:
-            pl, pc = pid
-            return self.__img[pl][pc]
+        check_pid(pid)
+        pl, pc = pid
+        return self.__img[pl][pc]
     
     @current_dir.setter
     def current_path(self, new: str): # to be replaced by dunder method in future after implementing config method

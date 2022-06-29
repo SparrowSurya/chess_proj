@@ -209,7 +209,7 @@ class Brain:
 
         pc = fr.GetPiece(r0, c0)
         pc.move(r1, c1)
-        pid2 = self.grid[r1, c1] = self.grid[r0, c0]
+        self.grid[r1, c1] = self.grid[r0, c0]
         del self.grid[r0, c0]
         self.board.move(r0, c0, r1, c1, self.grid[r1, c1])
 

@@ -3,7 +3,7 @@ from gui.chessboard import ChessBoard
 from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN
 from src.piece import King, Queen, Knight, Bishop, Rook, Pawn
 
-PIECE: dict[str, type] = {
+PIECE: dict[str, Piece] = {
     KING: King,
     QUEEN: Queen,
     KNIGHT: Knight,
@@ -14,15 +14,14 @@ PIECE: dict[str, type] = {
 
 class Player:
 
-    def __init__(self, board: ChessBoard, name: str):
-        self.board: ChessBoard = board
+    def __init__(self, name: str):
         self.name: str = name
 
         self.turn: bool = False
         self.last_move: list[int] = [] # [r0, c0, r1, c1]
 
         self.__stats: list[int] = [0, 0] # [total, dead]
-        self.pieces: dict[str, list] = {
+        self.pieces: dict[str, list[Piece]] = {
             KING  : [],
             QUEEN : [],
             KNIGHT: [],

@@ -23,13 +23,12 @@ def validate_pid_seq(seq: str) -> bool:
     """Check the given pid sequence as per chessgrid. Raises error in case of Invalid."""
     return bool(PID_SEQ.match(seq))
 
-def pid_seq_2_list(seq: str):
+def pid_seq_2_list(seq: str) -> list[str]:
     """Returns the list of pids seq. Raises error if the  seq isnt valid as per chess seq."""
     validate_pid_seq(seq)
     return re.split("(?=[0-1]|[\.]{2})", seq)[1:]
 
 
-# ENCODING CHESS GRID DEFAULT
 
 """
 src: https://youtu.be/Q9_dS8H2rU8
