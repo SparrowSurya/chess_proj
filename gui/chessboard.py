@@ -100,10 +100,10 @@ class ChessBoard:
         parameter fill_type is the type of mark."""
         self.cell(r, c).select(fill_type)
     
-    def move(self, r0: int, c0: int, r1: int, c1: int, pid: str):
+    def move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the image at cell (r0, c0) to cell(r1, c1)."""
         cell0 = self.cell(r0, c0)
-        img = cell0.img
+        pid, img = cell0.pid, cell0.img
         cell0.clear_img()
         self.cell(r1, c1).newimg(img, pid)
     

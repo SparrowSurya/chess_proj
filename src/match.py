@@ -120,6 +120,13 @@ class Match:
             elif (r, c) == self.last_sel[0]:
                 self.MakeSelections(r, c)
                 self.sel_flag = 1
+            elif self.grid[r, c]!=NULL:
+                self.MakeSelections(r, c)
+                self.sel_flag = 1
+            else:
+                self.Deselect(all=True)
+                self.drag = False
+                return
         else:
             if self.grid[r, c][0] == self.TurnOf():
                 self.MakeSelections(r, c)
@@ -187,11 +194,10 @@ class Match:
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the piece if there. Handles capture, uncheck king and pawn promotion."""
-        if (pid:=self.grid[r0, c0])!=NULL and self.__status==PLAY:
+        if (pid:=self.grid[r0, c0])==NULL and self.__status==IDLE and (r0, c0)==(r1, c1):
             return
 
         fr, en = self.TurnOf(), self.TurnOf(True)
-
         if en==(pid1:=self.grid[r1, c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).alive = False
         
@@ -199,9 +205,11 @@ class Match:
             loc = self.check.pieces[KING][0].loc
             self.board.cell(*loc).uncheck()
 
+        # MOVE
         pc = fr.GetPiece(r0, c0)
         pc.move(r1, c1)
         self.grid[r1, c1] = pid
+        self.board.move(r0, c0, r1, c1)
         del self.grid[r0, c0]
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
@@ -212,6 +220,7 @@ class Match:
     def Select(self, r: int, c: int, fill_type: str):
         """Highlights the cell."""
         self.board.mark(r, c, fill_type)
+        self.last_sel.append((r, c))
 
     def Deselect(self, r: int= None, c: int= None, *, all: bool = False):
         """If all is true ignores r,c else simply deselects all."""

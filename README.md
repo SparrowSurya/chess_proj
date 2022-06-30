@@ -4,7 +4,8 @@
 
 ### Status:
 
-    added functions for board to respone. limitation: the Click function gets called when click is on board decided by src.
+    check on king dont triggers check color but move filter works well.
+    drag is broken. 
 
 ---
 
