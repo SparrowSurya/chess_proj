@@ -23,7 +23,7 @@ class Piece:
         r, c = self.r+dr, self.c+dc
         way = []
         while (r in range(8) and c in range(8)):
-            pid = grid[r, c]
+            pid = grid[r][c]
             if pid == NULL: # empty
                 way.append((r, c))
             elif pid[0] == self.player: # friend
@@ -52,7 +52,7 @@ class King(Piece):
             if r not in range(8) or c not in range(8):
                 continue
 
-            pid = grid[r, c]
+            pid = grid[r][c]
             if pid == NULL: # empty
                 Epos.append((r, c))
             elif pid[0] == self.player: # friend
@@ -98,7 +98,7 @@ class Knight(Piece):
             if r not in range(8) or c not in range(8):
                 continue
 
-            pid = grid[r, c]
+            pid = grid[r][c]
             if pid == NULL: # empty
                 Epos.append((r, c))
             elif pid[0] == self.player: # friend
@@ -168,15 +168,19 @@ class Pawn(Piece):
     def moves(self, grid: list[list[str]]):
         Epos, Apos = [], []
         r = self.r + self.mdir
-        if grid[r, self.c] == NULL: # empty 1
+
+        if grid[r][self.c] == NULL: # empty 1
             Epos.append((r, self.c))
+            
         if (c:=self.c+1) in range(8): # right enemy
-            if (pid:=grid[r, c])[0] != self.player and pid != NULL:
+            if (pid:=grid[r][c])[0] != self.player and pid != NULL:
                 Apos.append((r, c))
+                
         if (c:=self.c-1) in range(8): # left enemy
-            if (pid:=grid[r, c])[0] != self.player and pid != NULL:
+            if (pid:=grid[r][c])[0] != self.player and pid != NULL:
                 Apos.append((r, c))
+                
         if self.move0 and Epos:
-            if grid[r+self.mdir, self.c] == NULL: # empty 2
+            if grid[r+self.mdir][self.c] == NULL: # empty 2
                 Epos.append((r+self.mdir, self.c))
         return Epos, Apos

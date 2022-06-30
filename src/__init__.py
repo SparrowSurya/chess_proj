@@ -42,23 +42,22 @@ class Game:
     
     def Mouse_SLC(self, e:tk.Event):
         """Handles mouse single left click."""
-        print("CLICKED", e.x, e.y)
-        if self.match.status is PLAY and e.widget==self.gui.chessboard.board:
+        if self.match.status is not IDLE and e.widget==self.gui.chessboard.board:
             self.match.Clicked('<SLC>', e.x, e.y)
 
     def Mouse_LD(self, e: tk.Event):
         """bind event for left click drag"""
-        if self.match.status is PLAY and e.widget==self.gui.chessboard:
+        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
             self.match.Clicked('<LD>', e.x, e.y)
 
     def Mouse_LCR(self, e: tk.Event):
         """bind event for mouse left click release"""
-        if self.match.status is PLAY and e.widget==self.gui.chessboard:
+        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
             self.match.Clicked('<LCR>', e.x, e.y)
 
     def Mouse_SRC(self, e: tk.Event):
         """bind event with single right click"""
-        if self.match.status is PLAY and e.widget==self.gui.chessboard:
+        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
             self.match.Clicked('<SRC>', e.x, e.y)
 
 

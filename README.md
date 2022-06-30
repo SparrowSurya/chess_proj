@@ -4,8 +4,7 @@
 
 ### Status:
 
-    Major changes are being done.
-    selection of piece dont happens as there are mo moves prefetched after calling prefetch function ⚠️raises error
+    added functions for board to respone. limitation: the Click function gets called when click is on board decided by src.
 
 ---
 

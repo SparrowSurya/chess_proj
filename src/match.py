@@ -51,15 +51,25 @@ class Match:
         itr = iter(self.grid)
         for r in range(8):
             for c in range(8):
-                pid = next(itr)
-                if pid!=NULL: self.board.cell(r, c).newimg(self.img[pid], pid)
+                if (pid:=next(itr))!=NULL:
+                    self.LoadPiece(r, c, *pid)
         self.p1.turn = True
         self.p0.turn = False
         self.__status = PLAY
         self.PreFetchMoves()
-        print(self.grid)
-        for k,v in self.__moves.items(): print(k, v)
-        print("prefetched")
+        self.Check()
+    
+    def LoadPiece(self, r: int, c: int, player: str, piece: str):
+        """Loads the piece in player pieces."""
+        pid = get_pid(player, piece)
+        self.board.cell(r, c).newimg(self.img[pid], pid)
+        if player==P0: self.p0.NewPiece(piece, r, c)
+        elif player==P1: self.p1.NewPiece(piece, r, c)
+        else:
+            raise Exception(
+                "[Invalid Player name] \n",
+                f"player name: {player}"
+            )
     
     def TurnOf(self, rev: bool=False):
         """returns the player object having current turn"""
@@ -72,12 +82,15 @@ class Match:
         """switches the turn of players and also checks the Check on king"""
         if self.TurnOf() == self.p0:
             self.p0.turn = False
-            (pl:=self.p1).turn = True
+            self.p1.turn = True
         else:
-            (pl:=self.p0).turn = True
+            self.p0.turn = True
             self.p1.turn = False
-
         print(self.grid)
+
+    def Check(self):
+        """Checks the check on king and displays if there."""
+        pl = self.TurnOf()
         if self.IsCheck(pl):
             self.check = pl
             pc = pl.pieces[KING][0]
@@ -85,18 +98,92 @@ class Match:
     
     def Clicked(self, click_type: str, x: int, y: int):
         """Takes Click decision."""
-        self.MakeSelections(*self.board.xy2rc(x, y))
+        func = {
+            '<SLC>': self._SLC,
+            '<LD>' : self._LD,
+            '<LCR>': self._LCR,
+            '<SRC>': self._SRC
+        }[click_type]
+        func(x, y)
     
-    def MakeSelections(self, r: int, c: int):
-        self.Deselect(all=True)
-        # Epos, Apos = self.__moves[(r, c)]
-        Epos, Apos = self.__moves[(r, c)]
+    def _SLC(self, x: int, y: int):
+        """Underlying function for mouse single left click."""
+        self.last_loc = [x, y]
+        r, c = self.board.xy2rc(x, y)
+        if self.last_sel:
+            self.sel_flag = -1
+            if (r,c) in self.last_sel[1:]:
+                self.Move(*self.last_sel[0], r, c)
+                self.Deselect(all=True)
+                self.SwitchTurn()
+                self.IsMatchEnd()
+            elif (r, c) == self.last_sel[0]:
+                self.MakeSelections(r, c)
+                self.sel_flag = 1
+        else:
+            if self.grid[r, c][0] == self.TurnOf():
+                self.MakeSelections(r, c)
+                self.sel_flag = 1
+        self.drag = None
+    
+    def _LD(self, x: int, y: int):
+        """Underlying function for mouse left click drag."""
+        x1, y1 = self.last_loc
+        if self.drag:
+            pos = self.last_sel[0]
+            self.board.cell(*pos).move(x-x1, y-y1)
+        elif self.drag is None:
+            pos = self.board.xy2rc(*self.last_loc)
+            if pos in self.last_sel:
+                cell = self.board.cell(*pos)
+                ix, iy = cell.COORDS_IMG
+                cell.move(x-ix, y-iy)
+                self.drag = True
+            else:
+                self.drag = False
+        self.last_loc = [x, y]
 
+    def _LCR(self, x: int, y: int):
+        """Underlying function for mouse left click release."""
+        if self.drag:
+            pos = self.board.xy2rc(x, y)
+            r0, c0 = self.last_sel[0]
+
+            if pos is None:
+                self.Deselect(all=True)
+                self.drag = None
+                self.board.cell(r0, c0).reset_move()
+                return
+            else:
+                r1, c1 = pos
+
+            cell = self.board.cell(r1, c1)
+            if cell.selected and (r0, c0)!=(r1, c1):
+                self.Move(r0, c0, r1, c1)
+                self.Deselect(all=True)
+                self.SwitchTurn()
+                self.IsMatchEnd()
+            else:
+                self.board.cell(r0, c0).reset_move()
+                self.Deselect(all=True)
+
+        elif self.drag is None and self.sel_flag == -1:
+            self.Deselect(all=True)
+
+    def _SRC(self, x: int, y: int):
+        """Underlying function for mouse right click."""
+        self.Deselect(all=True)
+        
+    def MakeSelections(self, r: int, c: int):
+        if self.grid[r, c] == NULL: return False
+        self.Deselect(all=True)
+        Epos, Apos = self.__moves[(r, c)]
         self.Select(r, c, SELECT)
         for i, j in Epos:
             self.Select(i, j, HIGHLIGHT)
         for i, j in Apos:
             self.Select(i, j, COLOR_CAPTURE)
+        return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the piece if there. Handles capture, uncheck king and pawn promotion."""
@@ -230,7 +317,7 @@ class Match:
                     res = e or a or res
         return not res
     
-    def EndMatch(self):
+    def IsMatchEnd(self):
         """determines whether game should be running or stopped"""
         if self.PreFetchMoves(): # 0 moves
             print("[MATCH ENDED]:- no moves to play")

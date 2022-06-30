@@ -85,3 +85,10 @@ class Player:
         new_pc = obj(self.name, old_pc.r, old_pc.c)
         new_pc.move0 = False
         self.pieces[rank].append(new_pc)
+
+    def Reset(self):
+        for pc in self.pieces.keys():
+            self.pieces[pc].clear()
+        self.turn = None
+        self.last_move = []
+        self.__stats = [0, 0]
