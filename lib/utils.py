@@ -10,16 +10,25 @@ def get_pid(player: str, piece: str) -> str:
     if len(_pid)==2 and PID.fullmatch(_pid):
         return _pid
     else:
-        raise Exception(f"Invalid player: {player} or piece:{piece}")
+        raise Exception(
+            f"[Invalid Parameter] \n",
+            f"player: {player} or piece:{piece}"
+        )
 
 def check_pid(_pid: str) -> bool:
     """Check the given pid. Raises error in case of Invalid."""
     if not isinstance(_pid, str):
-        raise Exception(f"Invalid parameter type; pid:{_pid} type:{type(_pid)}")
+        raise Exception(
+            f"[Invalid parameter type] \n",
+            f"pid:{_pid} type:{type(_pid)}"
+        )
     elif bool(PID.fullmatch(_pid)):
         return True
     else:
-        raise Exception(f"Invalid piece_id: '{_pid}'")
+        raise Exception(
+            f"[Invalid Parameter] \n", 
+            f"piece_id: '{_pid}'"
+        )
 
 def validate_pid_seq(seq: str) -> bool:
     """Check the given pid sequence as per chessgrid. Raises error in case of Invalid."""

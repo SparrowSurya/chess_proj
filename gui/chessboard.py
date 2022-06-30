@@ -72,12 +72,15 @@ class ChessBoard:
 
 
     def xy2rc(self, x_coord: int, y_coord: int):
-        """Coords(x,y) to cell coords(r,c)."""
+        """Coords(x,y) to cell coords(r,c)if fails raises error"""
         c, r = x_coord//CELLSIZE, y_coord//CELLSIZE
         if r in range(8) and c in range(8):
             return r, c
         else:
-            return None
+            raise Exception(
+                "[Invalid coordinates] \n", 
+                f"no cell exists at that given coordinates:({x_coord}, {y_coord})"
+            )
 
     def get_fill_col(self, r: int, c: int):
         """Returns cell colour based on its location."""

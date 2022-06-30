@@ -52,18 +52,15 @@ class Player:
         return piece_id[0] == self.name
     
     def kill(self, r: int, c: int, pic: str = None):
+        #! havent thought what to do if king is passed 
         if (pc:=self.GetPiece(r, c, pic)).alive is True:
             pc.alive = False
             self.__stats[1] += 1
 
     def GetPiece(self, r: int, c: int, piece: str = None):
-        if piece is None:
-            for key in self.pieces.keys():
-                for pic in self.pieces[key]:
-                    if pic.alive and pic.r == r and pic.c == c:
-                        return pic
-        else:
-            for pic in self.pieces[piece]:
+        pieces = self.pieces.keys() if piece is None else [piece]
+        for key in pieces:
+            for pic in self.pieces[key]:
                 if pic.alive and pic.r == r and pic.c == c:
                     return pic
 
@@ -73,7 +70,10 @@ class Player:
 
     def NewPiece(self, piece: str, r: int, c: int):
         if piece==KING and self.pieces.get(KING):
-            raise Exception("Player already has a king")
+            raise Exception(
+                "[King Overload] \n",
+                "Player already has a king"
+            )
         obj = PIECE[piece]
         self.pieces[piece].append(obj(self.name, r, c))
         self.__stats[0] += 1

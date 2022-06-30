@@ -11,12 +11,12 @@ ROOK   : str = 'r'
 PAWN   : str = 'p'
 NULL   : str = '..'
 
-NORMAL = 'normal'
-SELECT = 'select'
-HIGHLIGHT = 'highlight'
+NORMAL = 'normal' # to regain its normal color
+SELECT = 'select' # to show selection
+HIGHLIGHT = 'highlight' # to highlighted ie indirect selection
 COLOR_C1 = 'color1' # cell color type 1
 COLOR_C2 = 'color2' # cell color type 2
-COLOR_KILL = 'kill'
+COLOR_UNSECURE = 'unsecure'
 COLOR_CHECK = 'check'
 COLOR_BORDER = 'border_color'
 

@@ -5,7 +5,7 @@
 ### Status:
 
     Major changes are being done.
-    pid_seq_2_list function in src/utils.py has improper pattern ⚠️raises error
+    selection of piece dont happens as there are mo moves prefetched after calling prefetch function ⚠️raises error
 
 ---
 

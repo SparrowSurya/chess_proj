@@ -93,6 +93,9 @@ def HueSatColorWheel(size: int):
 def LinearGradient(width: int, height: int, rgba: tuple[int], direction: Literal['x', 'y']):
     if direction=='x': dx, dy = 1, 0
     elif direction=='y': dx, dy = 0, 1
-    else: raise Exception("Invalid option -direction")
-
+    else: raise Exception(
+        "[Invalid option] \n",
+        f"direction: ({dx, dy})"
+    )
+    pass
     

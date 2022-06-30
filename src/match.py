@@ -10,9 +10,9 @@ from lib.utils import *
 class Match:
 
     def __init__(self, chessboard: ChessBoard, chessgrid: ChessGrid, image_dict: Image):
-        self.Board = chessboard
-        self.Grid = chessgrid
-        self.Img = image_dict
+        self.board = chessboard
+        self.grid = chessgrid
+        self.img = image_dict
         
         self.p0: Player = Player(P0)
         self.p1: Player = Player(P1)
@@ -25,7 +25,7 @@ class Match:
         self.drag: bool = None
         self.check: Player = None
 
-        self.__moves: dict[tuple, tuple] = {} # piece_pos -> (moves, attacks)
+        self.__moves: dict[tuple, tuple] = {} # (r, c) -> (moves, attacks)
 
 
     @property
@@ -47,16 +47,19 @@ class Match:
 
     def Start(self, setup: str = None):
         """Start game with given arrangement."""
-        self.Grid.grid = setup if setup is not None else DEFAULT_GRID
-        itr = iter(self.Grid)
+        self.grid.grid = setup if setup is not None else DEFAULT_GRID
+        itr = iter(self.grid)
         for r in range(8):
             for c in range(8):
                 pid = next(itr)
-                if pid!=NULL: self.Board.cell(r, c).newimg(self.Img[pid], pid)
+                if pid!=NULL: self.board.cell(r, c).newimg(self.img[pid], pid)
         self.p1.turn = True
         self.p0.turn = False
         self.__status = PLAY
         self.PreFetchMoves()
+        print(self.grid)
+        for k,v in self.__moves.items(): print(k, v)
+        print("prefetched")
     
     def TurnOf(self, rev: bool=False):
         """returns the player object having current turn"""
@@ -74,48 +77,63 @@ class Match:
             (pl:=self.p0).turn = True
             self.p1.turn = False
 
-        print(self.Grid)
+        print(self.grid)
         if self.IsCheck(pl):
             self.check = pl
             pc = pl.pieces[KING][0]
-            self.Board.cell(*(pc.loc)).select(self.Board.cfg[COLOR_CHECK])
+            self.board.cell(*(pc.loc)).select(COLOR_CHECK)
+    
+    def Clicked(self, click_type: str, x: int, y: int):
+        """Takes Click decision."""
+        self.MakeSelections(*self.board.xy2rc(x, y))
+    
+    def MakeSelections(self, r: int, c: int):
+        self.Deselect(all=True)
+        # Epos, Apos = self.__moves[(r, c)]
+        Epos, Apos = self.__moves[(r, c)]
+
+        self.Select(r, c, SELECT)
+        for i, j in Epos:
+            self.Select(i, j, HIGHLIGHT)
+        for i, j in Apos:
+            self.Select(i, j, COLOR_UNSECURE)
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the piece if there. Handles capture, uncheck king and pawn promotion."""
-        if (pid:=self.Grid[r0, c0])!=NULL and self.__status==PLAY:
+        if (pid:=self.grid[r0, c0])!=NULL and self.__status==PLAY:
             return
 
         fr, en = self.TurnOf(), self.TurnOf(True)
 
-        if en==(pid1:=self.Grid[r1, c1])[0]: # KILL
+        if en==(pid1:=self.grid[r1, c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).alive = False
         
         if self.check: # UNCHECK KING
             loc = self.check.pieces[KING][0].loc
-            self.Board.cell(*loc).uncheck()
+            self.board.cell(*loc).uncheck()
 
         pc = fr.GetPiece(r0, c0)
         pc.move(r1, c1)
-        self.Grid[r1, c1] = pid
-        del self.Grid[r0, c0]
+        self.grid[r1, c1] = pid
+        del self.grid[r0, c0]
 
-        if self.Grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
+        if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
             self.paused = True
-            self.Board.AskPromotion(self.Promote, player=fr, pos=(r1,c1))
+            self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1))
 
 
     def Select(self, r: int, c: int, fill_type: str):
         """Highlights the cell."""
-        self.Board.mark(r, c, fill_type)
+        self.board.mark(r, c, fill_type)
 
     def Deselect(self, r: int= None, c: int= None, *, all: bool = False):
         """If all is true ignores r,c else simply deselects all."""
         if all:
             for loc in self.last_sel:
-                self.Board.cell(*loc).deselect()
+                self.board.cell(*loc).deselect()
             self.last_sel.clear()
         else:
-            self.Board.cell(r, c).deselect()
+            self.board.cell(r, c).deselect()
 
     def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """checks the Check on player's king
@@ -123,7 +141,7 @@ class Match:
         :i is used to get the king if player has more than one king"""
         r, c = player.pieces[KING][i].loc
 
-        grid = self.Grid.grid
+        grid = self.grid.grid
         if move is not None:
             r0, c0, r1, c1 = move
             grid[r1][c1] = grid[r0][c0]
@@ -181,8 +199,8 @@ class Match:
         r, c = pos
         pid = get_pid(player.name, rank)
         player.Promote(*pos, rank)
-        self.Board.cell(*pos).newimg(self.Img[player.name, rank], pid)
-        self.Grid[r, c] = pid
+        self.board.cell(*pos).newimg(self.img[player.name, rank], pid)
+        self.grid[r, c] = pid
         self.paused = False
 
 
@@ -207,7 +225,7 @@ class Match:
             for pc in pcs:
                 if pc.alive:
                     loc = pc.loc
-                    e,a = self.FilterMoves(*(pc.moves(self.Grid)), loc)
+                    e,a = self.FilterMoves(*(pc.moves(self.grid.grid)), loc)
                     self.__moves[loc] = (e,a)
                     res = e or a or res
         return not res
@@ -222,7 +240,7 @@ class Match:
         fd, ed = fr.alives, en.alives
         stat = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]} # [fr, en]
 
-        for row in self.Grid.grid:
+        for row in self.grid.grid:
             for (pl, pc) in row:
                 if pl == pc: continue # to prevent NULL
                 if pl is fr:

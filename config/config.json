@@ -4,6 +4,6 @@
     "select" : "#ffff00",
     "highlight" : "#00fff2",
     "check" : "#ff0000",
-    "kill" : "#ff8800",
+    "unsecure" : "#ff8800",
     "border_color" : "#7d4512"
 }
