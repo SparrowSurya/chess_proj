@@ -76,7 +76,7 @@ class Cell:
     
     def newimg(self, image: tk.PhotoImage, pid: str):
         """Sets new image."""
-        self.board.itemconfig(self.image, image=image)
+        self.board.itemconfig(self.image, image=image, state=tk.NORMAL)
         self.img = image
         self.pid = pid
     

@@ -28,8 +28,7 @@ def validate_pid_seq(seq: str) -> bool:
 def pid_seq_2_list(seq: str) -> list[str]:
     """Returns the list of pids seq. Raises error if the  seq isnt valid as per chess seq."""
     validate_pid_seq(seq)
-    k = re.split("(?=[01]|[\.\.])", seq)[1:]
-    print(k)
+    k = PID.findall(seq)
     return k
 
 

@@ -52,7 +52,7 @@ class Match:
         for r in range(8):
             for c in range(8):
                 pid = next(itr)
-                self.Board.cell(r, c).newimg(self.Img[pid], pid)
+                if pid!=NULL: self.Board.cell(r, c).newimg(self.Img[pid], pid)
         self.p1.turn = True
         self.p0.turn = False
         self.__status = PLAY

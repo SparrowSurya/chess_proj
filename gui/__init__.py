@@ -27,10 +27,7 @@ class GUI(tk.Tk):
         self._main.pack()
 
         # chessboard lies in this widget
-        self._main_board = tk.Frame(
-            self._main,
-            bg='orange',#'#7d4512',
-        )
+        self._main_board = tk.Frame(self._main)
         self._main_board.pack()
 
         self.chessboard: ChessBoard = ChessBoard(self._main_board, self.cfg)

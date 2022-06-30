@@ -17,7 +17,7 @@ class Game:
         self.img = Image()
         self.match = Match(self.gui.chessboard, self.chessboard, self.img)
 
-        # self.match.Start(DEFAULT_GRID) Debug purpose
+        self.match.Start(DEFAULT_GRID) # Debug purpose
     
     def _guisetup(self):
         
