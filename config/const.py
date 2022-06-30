@@ -16,7 +16,7 @@ SELECT = 'select' # to show selection
 HIGHLIGHT = 'highlight' # to highlighted ie indirect selection
 COLOR_C1 = 'color1' # cell color type 1
 COLOR_C2 = 'color2' # cell color type 2
-COLOR_UNSECURE = 'unsecure'
+COLOR_CAPTURE = 'unsecure'
 COLOR_CHECK = 'check'
 COLOR_BORDER = 'border_color'
 

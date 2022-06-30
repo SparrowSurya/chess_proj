@@ -117,7 +117,7 @@ class Game:
                 for i, j in Epos:
                     self.Select(i, j, self.cfg[COLOR_S1])
                 for i, j in Apos:
-                    self.Select(i, j, self.cfg[COLOR_UNSECURE])
+                    self.Select(i, j, self.cfg[COLOR_CAPTURE])
                 self.selected = 1
 
         else:
@@ -129,7 +129,7 @@ class Game:
                 for i, j in Epos:
                     self.Select(i, j, self.cfg[COLOR_S1])
                 for i, j in Apos:
-                    self.Select(i, j, self.cfg[COLOR_UNSECURE])
+                    self.Select(i, j, self.cfg[COLOR_CAPTURE])
                 self.selected = 1
         self.pdrag = None
 

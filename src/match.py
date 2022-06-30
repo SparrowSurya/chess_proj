@@ -96,7 +96,7 @@ class Match:
         for i, j in Epos:
             self.Select(i, j, HIGHLIGHT)
         for i, j in Apos:
-            self.Select(i, j, COLOR_UNSECURE)
+            self.Select(i, j, COLOR_CAPTURE)
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the piece if there. Handles capture, uncheck king and pawn promotion."""

@@ -1,6 +1,6 @@
 import tkinter as tk
 from config import cfg
-from config.const import NORMAL, NULL, CELLSIZE, COLOR_CHECK, COLOR_UNSECURE, SELECT
+from config.const import NORMAL, NULL, CELLSIZE, COLOR_CHECK, COLOR_CAPTURE, SELECT
 
 class Cell:
     
@@ -62,7 +62,7 @@ class Cell:
     
     def danger(self):
         """Marks cell as risk to be attacked."""
-        self.__Mark_cell(COLOR_UNSECURE)
+        self.__Mark_cell(COLOR_CAPTURE)
 
     def uncheck(self):
         """To handle special case in select and deselect ie to remove check."""
