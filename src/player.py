@@ -1,5 +1,4 @@
 from src.piece import *
-from gui.chessboard import ChessBoard
 from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN
 from src.piece import King, Queen, Knight, Bishop, Rook, Pawn
 

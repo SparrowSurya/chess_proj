@@ -4,7 +4,7 @@
 
 ### Status:
 
-    check on king dont triggers check color but move filter works well.
+    all mouse action function will be rewritten.
     drag is broken. 
 
 ---

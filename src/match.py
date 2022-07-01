@@ -45,12 +45,21 @@ class Match:
         """FOr handelling interruption between the match."""
         # taking decision based on the status
 
-    def Start(self, setup: str = None):
-        """Start game with given arrangement."""
+    def Start(self, setup: str = None, turn: bool = P1):
+        """Start game with given arrangement. ifgame is already running then ignores."""
+        if self.__status == PLAY: return
         self.grid.grid = setup if setup is not None else DEFAULT_GRID
-        self.p0.Reset(False) and self.p1.Reset(True)
-        itr = iter(self.grid)
+        if turn==P1:
+            self.p0.Reset(False) and self.p1.Reset(True)
+        elif turn==P0:
+            self.p0.Reset(True) and self.p1.Reset(False)
+        else:
+            raise Exception(
+                "[Invalid Player name] \n",
+                f"player name: {turn}"
+            )
 
+        itr = iter(self.grid)
         for r in range(8):
             for c in range(8):
                 if (pid:=next(itr))!=NULL:
@@ -58,8 +67,7 @@ class Match:
 
         self.__status = PLAY
         self.IsMatchEnd()
-        self.PreFetchMoves()
-        self.Check()
+        self.Check(self.p0)
     
     def LoadPiece(self, r: int, c: int, player: str, piece: str):
         """Loads the piece in player pieces."""
@@ -90,14 +98,15 @@ class Match:
             self.p1.turn = False
         print(self.grid)
 
-    def Check(self):
-        """Checks the check on king and displays if there."""
-        pl = self.TurnOf()
-        if self.IsCheck(pl):
+    def Check(self, player: Player):
+        """Checks the check on player's king and displays if there."""
+        if self._IsCheck(player):
             print("[CHECK]")
-            self.check = pl
-            pc = pl.pieces[KING][0]
-            self.board.cell(*(pc.loc)).c
+            self.check = player
+            pc = player.pieces[KING][0]
+            self.board.cell(*(pc.loc)).check()
+            return True
+        return False
     
     def Clicked(self, click_type: str, x: int, y: int):
         """Takes Click decision."""
@@ -196,7 +205,7 @@ class Match:
         return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
-        """Moves the piece if there. Handles capture, uncheck king and pawn promotion."""
+        """Moves the piece if there. Handles capture, uncheck king, pawn promotion and checks whether acheck is given."""
         if (pid:=self.grid[r0, c0])==NULL and self.__status==IDLE and (r0, c0)==(r1, c1):
             return
 
@@ -217,7 +226,8 @@ class Match:
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
             self.paused = True
-            self.board.AskPromotion(self.Promote, player=fr, pos=(r1,c1))
+            self.board.AskPromotion(self._Promote, player=fr, pos=(r1,c1))
+        self.Check(en)
 
 
     def Select(self, r: int, c: int, fill_type: str):
@@ -234,7 +244,7 @@ class Match:
         else:
             self.board.cell(r, c).deselect()
 
-    def IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
+    def _IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """checks the Check on player's king
         move: [r0, c0, r1, c1] moves the piece(temporary)
         :i is used to get the king if player has more than one king"""
@@ -293,28 +303,28 @@ class Match:
         return False
 
 
-    def Promote(self, *, player: Player, rank: str, pos: tuple[int]):
+    def _Promote(self, *, player: Player, rank: str, pos: tuple[int]):
         """Promoting function. To be called by board after receiving Input."""
         r, c = pos
         pid = get_pid(player.name, rank)
-        player.Promote(*pos, rank)
+        player._Promote(*pos, rank)
         self.board.cell(*pos).newimg(self.img[player.name, rank], pid)
         self.grid[r, c] = pid
         self.paused = False
 
 
-    def FilterMoves(self, Epos, Apos, Ipos):
+    def _FilterMoves(self, Epos, Apos, Ipos):
         """filters the move: Epos-empty, Apos-attack, Ipos-initial"""
         Fpos = [[], []]
         for i, pos in enumerate((Epos, Apos)):
             for r, c in pos:
-                if self.IsCheck(self.TurnOf(), move=(*Ipos, r, c)):
+                if self._IsCheck(self.TurnOf(), move=(*Ipos, r, c)):
                     continue
                 else:
                     Fpos[i].append((r, c))
         return Fpos
     
-    def PreFetchMoves(self) -> bool:
+    def _PreFetchMoves(self) -> bool:
         """stores the moves and returns bool value if there is no move to move"""
         res = False
         pl = self.TurnOf()
@@ -324,14 +334,14 @@ class Match:
             for pc in pcs:
                 if pc.alive:
                     loc = pc.loc
-                    e,a = self.FilterMoves(*(pc.moves(self.grid.grid)), loc)
+                    e,a = self._FilterMoves(*(pc.moves(self.grid.grid)), loc)
                     self.__moves[loc] = (e,a)
                     res = e or a or res
         return not res
     
     def IsMatchEnd(self):
-        """determines whether game should be running or stopped"""
-        if self.PreFetchMoves(): # 0 moves
+        """Determines whether game should be running or stopped. Also pre fetches the moves."""
+        if self._PreFetchMoves(): # 0 moves
             print("[MATCH ENDED]:- no moves to play")
             return
 
@@ -374,8 +384,7 @@ CYCLE:
 start
     resetting players pieces and assigning turn on the fly
     set grid, load pieces in gui and backend
-    checking match end symptoms
-    prefetchmoves with filter applied
+    match end detection and prefetch on fly with move filtered
     check
 
 after move
@@ -386,8 +395,9 @@ after move
         unchecks the king if happens
         actual move in gui and backend
         pawn promotion is check if pawn is moved
+        check detection
     cells unhighlights
     turns gets switched
-    match end detection
+    match end detection and prefetch on fly with move filtered
 
 """
