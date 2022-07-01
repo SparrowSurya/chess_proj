@@ -1,6 +1,6 @@
 import tkinter as tk
 from config import cfg
-from config.const import NORMAL, NULL, CELLSIZE, COLOR_CHECK, COLOR_CAPTURE, SELECT
+from config.const import *
 
 class Cell:
     
@@ -36,11 +36,7 @@ class Cell:
         )
     
     def select(self, color_type: str) -> str:
-        """
-        Selecting cell by colouring it.
-        Check is a special case.
-        Returns currently selected color.
-        """
+        """Selecting cell by colouring it. Check is a special case. Returns currently selected color."""
         if self.highlighted == self.cfg[COLOR_CHECK]:
             self.__Mark_cell(SELECT)
         else:
@@ -50,19 +46,23 @@ class Cell:
         return self.ACTIVE_COLOR
     
     def deselect(self):
-        """
-        Cell back to its original color.
-        Check is a special case.
-        """
-        if self.highlighted == self.cfg[COLOR_CHECK]:
+        """Cell back to its original color. Check is a special case."""
+        if self.highlighted:
             self.__Mark_cell(COLOR_CHECK)
         else:
             self.__Mark_cell(NORMAL)
         self.selected = False
     
+    def check(self):
+        """Marks cell as check."""
+        if self.pid[1]==KING:
+            self.__Mark_cell(COLOR_CHECK)
+            self.highlighted = True
+    
     def danger(self):
         """Marks cell as risk to be attacked."""
-        self.__Mark_cell(COLOR_CAPTURE)
+        if self.pid[1]!=KING:
+            self.__Mark_cell(COLOR_CAPTURE)
 
     def uncheck(self):
         """To handle special case in select and deselect ie to remove check."""
@@ -130,6 +130,9 @@ class Cell:
         """Changes the cell color. Is called by every cell status method"""
         if color_type is NORMAL:
             self.board.itemconfig(self.color, fill=self.fill)
+        elif color_type is COLOR_CHECK:
+            self.board.itemconfig(self.color, fill=self.cfg[color_type])
+            self.highlighted = True
         else:
             self.board.itemconfig(self.color, fill=self.cfg[color_type])
     

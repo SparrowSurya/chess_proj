@@ -48,14 +48,16 @@ class Match:
     def Start(self, setup: str = None):
         """Start game with given arrangement."""
         self.grid.grid = setup if setup is not None else DEFAULT_GRID
+        self.p0.Reset(False) and self.p1.Reset(True)
         itr = iter(self.grid)
+
         for r in range(8):
             for c in range(8):
                 if (pid:=next(itr))!=NULL:
                     self.LoadPiece(r, c, *pid)
-        self.p1.turn = True
-        self.p0.turn = False
+
         self.__status = PLAY
+        self.IsMatchEnd()
         self.PreFetchMoves()
         self.Check()
     
@@ -92,9 +94,10 @@ class Match:
         """Checks the check on king and displays if there."""
         pl = self.TurnOf()
         if self.IsCheck(pl):
+            print("[CHECK]")
             self.check = pl
             pc = pl.pieces[KING][0]
-            self.board.cell(*(pc.loc)).select(COLOR_CHECK)
+            self.board.cell(*(pc.loc)).c
     
     def Clicked(self, click_type: str, x: int, y: int):
         """Takes Click decision."""
@@ -364,3 +367,27 @@ class Match:
         elif (fd==1 and ed>1) or (en==1 and fd>1):
             print("[MATCH ENDED]:- lone king vs all the pieces")
             return
+
+"""
+CYCLE:
+
+start
+    resetting players pieces and assigning turn on the fly
+    set grid, load pieces in gui and backend
+    checking match end symptoms
+    prefetchmoves with filter applied
+    check
+
+after move
+    clicked gets called on fly
+    move happens
+        move conditions checked
+        kill gets checked
+        unchecks the king if happens
+        actual move in gui and backend
+        pawn promotion is check if pawn is moved
+    cells unhighlights
+    turns gets switched
+    match end detection
+
+"""

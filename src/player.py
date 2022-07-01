@@ -86,9 +86,9 @@ class Player:
         new_pc.move0 = False
         self.pieces[rank].append(new_pc)
 
-    def Reset(self):
+    def Reset(self, turn: bool = None):
         for pc in self.pieces.keys():
             self.pieces[pc].clear()
-        self.turn = None
+        self.turn = turn
         self.last_move = []
         self.__stats = [0, 0]
