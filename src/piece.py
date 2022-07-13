@@ -1,4 +1,4 @@
-from config.const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
+from const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
 
 class Piece:
 

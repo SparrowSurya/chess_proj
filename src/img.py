@@ -12,22 +12,23 @@ class Image():
     __current_path: str = IMG_DIR
 
     def __init__(self) -> None:
+        _path = self.fullpath
         self.__img = {
             P0: {
-                    KING:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0K.png'),
-                    QUEEN:  PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0Q.png'),
-                    KNIGHT: PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0N.png'),
-                    BISHOP: PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0B.png'),
-                    ROOK:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0R.png'),
-                    PAWN:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\0P.png')
+                    KING:   PhotoImage(file=f'{_path}\\0K.png'),
+                    QUEEN:  PhotoImage(file=f'{_path}\\0Q.png'),
+                    KNIGHT: PhotoImage(file=f'{_path}\\0N.png'),
+                    BISHOP: PhotoImage(file=f'{_path}\\0B.png'),
+                    ROOK:   PhotoImage(file=f'{_path}\\0R.png'),
+                    PAWN:   PhotoImage(file=f'{_path}\\0P.png')
                 },
             P1: {
-                    KING:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1K.png'),
-                    QUEEN:  PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1Q.png'),
-                    KNIGHT: PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1N.png'),
-                    BISHOP: PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1B.png'),
-                    ROOK:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1R.png'),
-                    PAWN:   PhotoImage(file=f'{self.__root_path}{self.__rel_path}\\1P.png')
+                    KING:   PhotoImage(file=f'{_path}\\1K.png'),
+                    QUEEN:  PhotoImage(file=f'{_path}\\1Q.png'),
+                    KNIGHT: PhotoImage(file=f'{_path}\\1N.png'),
+                    BISHOP: PhotoImage(file=f'{_path}\\1B.png'),
+                    ROOK:   PhotoImage(file=f'{_path}\\1R.png'),
+                    PAWN:   PhotoImage(file=f'{_path}\\1P.png')
                 }
             }
     

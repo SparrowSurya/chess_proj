@@ -1,6 +1,6 @@
 import copy
 
-from config.const import NULL
+from const import NULL
 from lib.utils import *
 
 

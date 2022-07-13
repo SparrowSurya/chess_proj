@@ -4,11 +4,7 @@
 
 ### Status:
 
-    gui, config will be moved to src
-    the game will run as a script rather a class or function
-
     class Cell will be merged inside Chessboard class
-    const.py will have same path as test.py
 
     all mouse action function will be rewritten.
     drag is broken. 
