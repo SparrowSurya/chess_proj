@@ -1,6 +1,6 @@
 import tkinter as tk
 from config import cfg
-from config.const import *
+from const import *
 
 class Cell:
     

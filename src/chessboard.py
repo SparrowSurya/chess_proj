@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from config import *
-from gui.cell import Cell
+from src.cell import Cell
 from lib.graphics import ToImageTk, CircularGradient
 
 

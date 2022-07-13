@@ -2,13 +2,13 @@ import json
 from os import path
 from typing import Any
 
-from config.const import *
+from const import *
 
-address, filename = path.split(__file__)
-ROOT_PATH = path.split(address)[0]
 
-FILE = f"{address}\\config.json"
-UFILE = f"{address}\\uconfig.json"
+ROOT_PATH = path.split(__file__)[0]
+
+FILE = f"{ROOT_PATH}\\data\\config.json"
+UFILE = f"{ROOT_PATH}\\data\\uconfig.json"
 
 
 with open(FILE, 'r') as f:
@@ -17,7 +17,7 @@ with open(FILE, 'r') as f:
 with open(UFILE, 'r') as f:
     _uConfig = json.loads(f.read())
 
-REL_IMG_PATH = "/assets/images/"
+
 IMG_DIR = _uConfig['img_dir']
 
 

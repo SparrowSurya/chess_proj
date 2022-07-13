@@ -1,62 +1,97 @@
 import tkinter as tk
 
-from gui import GUI
-from config.const import *
-from gui.img import Image
+from const import *
+from src.img import Image
 from src.chessgrid import ChessGrid
 from src.match import Match
 
 
-class Game:
-
+"""
+class GUI(tk.Tk):
+    
     def __init__(self):
-        self.gui = GUI()
-        self._guisetup()
+        super().__init__()
+        self.title("Chess")
+        self.resizable(False, False)
 
-        self.chessboard = ChessGrid()
-        self.img = Image()
-        self.match = Match(self.gui.chessboard, self.chessboard, self.img)
-        self._bind()
+        self.cfg: cfg = cfg()
+
+        self.menubar = tk.Menu(self)
+        self.config(menu=self.menubar)
+
+        # basic container
+        self._main: tk.Frame = tk.Frame(
+            self,
+            bg="#FFFFFF",
+            relief=tk.SOLID,
+            border=5
+        )
+        self._main.pack()
+
+        # chessboard lies in this widget
+        self._main_board = tk.Frame(self._main)
+        self._main_board.pack()
+
+        self.chessboard: ChessBoard = ChessBoard(self._main_board, self.cfg)
+        self.chessboard.canvas.pack()
+
+
+    def NewMenu(self, name: str):
+        menu = tk.Menu(self.menubar, tearoff=False)
+        self.menubar.add_cascade(label=name, menu=menu)
+        return menu
+"""
+
+# class Game:
+
+#     def __init__(self):
+#         self.gui = GUI()
+#         self._guisetup()
+
+#         self.chessboard = ChessGrid()
+#         self.img = Image()
+#         self.match = Match(self.gui.chessboard, self.chessboard, self.img)
+#         self._bind()
     
-    def _guisetup(self):
-        """Setup method for gui"""
-        self.file_menu = self.gui.NewMenu('File')
-        self.file_menu.add_command(label='New')
-        self.file_menu.add_command(label='Open')
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label='Save')
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label='Settings')
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label='Exit', command=self.gui.quit)
+#     def _guisetup(self):
+#         """Setup method for gui"""
+#         self.file_menu = self.gui.NewMenu('File')
+#         self.file_menu.add_command(label='New')
+#         self.file_menu.add_command(label='Open')
+#         self.file_menu.add_separator()
+#         self.file_menu.add_command(label='Save')
+#         self.file_menu.add_separator()
+#         self.file_menu.add_command(label='Settings')
+#         self.file_menu.add_separator()
+#         self.file_menu.add_command(label='Exit', command=self.gui.quit)
 
-        self.options_menu = self.gui.NewMenu('Options')
-        self.options_menu.add_command(label='Play', command=lambda: self.match.Start(DEFAULT_GRID))
+#         self.options_menu = self.gui.NewMenu('Options')
+#         self.options_menu.add_command(label='Play', command=lambda: self.match.Start(DEFAULT_GRID))
     
-    def _bind(self):
-        """Bind gui mouse/keyboard actions."""
-        self.gui.bind("<Button-1>", self.Mouse_SLC)
-        # self.gui.chessboard.board.bind("<Button-1>", self.Mouse_SLC)
+#     def _bind(self):
+#         """Bind gui mouse/keyboard actions."""
+#         self.gui.bind("<Button-1>", self.Mouse_SLC)
+#         # self.gui.chessboard.board.bind("<Button-1>", self.Mouse_SLC)
     
-    def Mouse_SLC(self, e:tk.Event):
-        """Handles mouse single left click."""
-        if self.match.status is not IDLE and e.widget==self.gui.chessboard.board:
-            self.match.Clicked('<SLC>', e.x, e.y)
+#     def Mouse_SLC(self, e:tk.Event):
+#         """Handles mouse single left click."""
+#         if self.match.status is not IDLE and e.widget==self.gui.chessboard.board:
+#             self.match.Clicked('<SLC>', e.x, e.y)
 
-    def Mouse_LD(self, e: tk.Event):
-        """bind event for left click drag"""
-        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
-            self.match.Clicked('<LD>', e.x, e.y)
+#     def Mouse_LD(self, e: tk.Event):
+#         """bind event for left click drag"""
+#         if self.match.status is not IDLE and e.widget==self.gui.chessboard:
+#             self.match.Clicked('<LD>', e.x, e.y)
 
-    def Mouse_LCR(self, e: tk.Event):
-        """bind event for mouse left click release"""
-        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
-            self.match.Clicked('<LCR>', e.x, e.y)
+#     def Mouse_LCR(self, e: tk.Event):
+#         """bind event for mouse left click release"""
+#         if self.match.status is not IDLE and e.widget==self.gui.chessboard:
+#             self.match.Clicked('<LCR>', e.x, e.y)
 
-    def Mouse_SRC(self, e: tk.Event):
-        """bind event with single right click"""
-        if self.match.status is not IDLE and e.widget==self.gui.chessboard:
-            self.match.Clicked('<SRC>', e.x, e.y)
+#     def Mouse_SRC(self, e: tk.Event):
+#         """bind event with single right click"""
+#         if self.match.status is not IDLE and e.widget==self.gui.chessboard:
+#             self.match.Clicked('<SRC>', e.x, e.y)
 
 
 '''

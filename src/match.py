@@ -1,10 +1,8 @@
-from collections import namedtuple
-
-from gui.img import Image
-from gui.chessboard import ChessBoard
+from src.img import Image
+from src.chessboard import ChessBoard
 from src.chessgrid import ChessGrid
 from src.player import Player
-from config.const import *
+from const import *
 from lib.utils import *
 
 class Match:
@@ -26,15 +24,6 @@ class Match:
         self.check: Player = None
 
         self.__moves: dict[tuple, tuple] = {} # (r, c) -> (moves, attacks)
-
-
-    @property
-    def stats(self):
-        """Returns current stats if players are playing."""
-        if self.status==IDLE: return
-        fr, en = self.TurnOf(), self.TurnOf(True)
-        info = namedtuple('info', ['status', 'turn', 'check', 'captures'])
-        return info(self.__status, fr.name, self.check.name==fr, (fr.deaths,en.deaths))
     
     @property
     def status(self):
