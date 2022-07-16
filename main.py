@@ -88,7 +88,7 @@ file_menu.add_command(label='Exit', command=game.quit)
 
 options_menu.add_command(label='Play', command=lambda: match.Start(DEFAULT_GRID))
 
-match.Start()
+
 
 # -----binding-----
 game.bind("<Button-1>", Mouse_SLC)
