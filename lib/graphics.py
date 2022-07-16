@@ -1,7 +1,8 @@
 import math
-import colorsys
 from typing import Literal
 from PIL import Image, ImageTk, ImageColor
+
+from lib.colorpicker import converter as Convert
 
 
 def ToImageTk(image: Image):
@@ -50,7 +51,7 @@ def SatValAlphaGradient(width: int, height: int):
         for x in range(width):
             sat = x/width
             val = 1 - y/height
-            r, g, b = tuple(round(i * 255) for i in colorsys.hls_to_rgb(0.0, val, 0.0))
+            r, g, b = tuple(round(i * 255) for i in Convert.hsl_2_rgb(0.0, 0.0, val))
             img.putpixel((x, y), (r, g, b, round(255-sat*(val)*255)))
     return img
 
@@ -60,7 +61,7 @@ def HueColorMap(width: int, height: int):
     img = Image.new("RGBA", (width, height), (255,)*4)
     for hue in range(width):
         sat = val = 1.0
-        r, g, b = tuple(round(i * 255) for i in colorsys.hsv_to_rgb(hue/width,val,sat))
+        r, g, b = tuple(round(i * 255) for i in Convert.hsv_2_rgb(hue/width, val, sat))
         for i in range(height):
             img.putpixel((hue, i), (r, g, b, 255))
     return img
@@ -85,12 +86,12 @@ def HueSatColorWheel(size: int):
             
             angle = math.degrees(math.acos(num/den))
             if y>size//2: angle = 360 - angle
-            r, g, b = tuple(round(i * 255) for i in colorsys.hsv_to_rgb(angle/360, dist/(size//2), 1.0))
+            r, g, b = tuple(round(i * 255) for i in Convert.hsv_2_rgb(angle/360, dist/(size//2), 1.0))
             img.putpixel((x, y), (r, g, b, 255))
     return img
 
 
-def LinearGradient(width: int, height: int, rgba: tuple[int], direction: Literal['x', 'y']):
+def LinearGradient(width: int, height: int, rgba: tuple[int], direction: Literal['x', 'y']): # PENDING
     if direction=='x': dx, dy = 1, 0
     elif direction=='y': dx, dy = 0, 1
     else: raise Exception(
@@ -99,3 +100,15 @@ def LinearGradient(width: int, height: int, rgba: tuple[int], direction: Literal
     )
     pass
     
+    
+def CheckerPattern(size: int, color1: str, color2: str):
+    """Returns chessboard checker image."""
+    color1, color2 = ImageColor.getcolor(color1, "RGB"), ImageColor.getcolor(color2, "RGB")
+    img = Image.new("RGB", (size*8, size*8))
+    for y in range(size*8):
+        for x in range(size*8):
+            col = (color1, color2)[(x//size + y//size)%2]
+            img.putpixel((x, y), col)
+    return img
+
+

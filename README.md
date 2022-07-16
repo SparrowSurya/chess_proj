@@ -2,12 +2,12 @@
 
 ---
 
-### Status:
+### WIP:
 
-    class Cell will be merged inside Chessboard class
+    loaded the major changes
+    mouse click and drag action will be again debugged
+    pawn promotion implementation
 
-    all mouse action function will be rewritten.
-    drag is broken. 
 
 ---
 

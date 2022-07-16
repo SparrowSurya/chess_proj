@@ -56,7 +56,7 @@ def hsv_2_rgb(h: float, s: float, v: float) -> tuple[float, float, float]:
     """
     s, v = s/100, v/100
     c = s*v
-    x = c*(1-abs((h/60)%2)-1)
+    x = c*(1-abs((h/60)%2-1))
     m = v-c
 
     if (h>=0 and h<60): r, g, b = c, x, 0

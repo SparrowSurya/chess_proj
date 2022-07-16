@@ -1,101 +1,70 @@
 import tkinter as tk
 from config import cfg
 from const import *
+from lib.graphics import ToImageTk, CircularGradient
+
 
 class Cell:
-    
-    def __init__(self, board: tk.Canvas, config: cfg, row: int, column: int, fill: str, img=""):
-        self.board: tk.Canvas = board
-        self.cfg: cfg = config
-        self.r: int = row
-        self.c: int = column
-        self.fill: str = fill
-        self.img = img
+    def __init__(self, board: tk.Canvas, config: cfg, r: int, c: int):
+        self.board = board
+        self.cfg = config
+        self.r = r
+        self.c = c
 
-        self.pid: str = NULL
-        self.selected: bool = False
-        self.highlighted: bool = False
+        x0, y0 = self.c*CELLSIZE + BORDER_WIDTH//2, self.r*CELLSIZE + BORDER_WIDTH//2 
+        self._cell = self.board.create_rectangle(
+            x0, y0, x0+CELLSIZE, y0+CELLSIZE,
+            state=tk.HIDDEN,
+            width=0
+        )
+
+        self._check_im = ToImageTk(CircularGradient(
+            CELLSIZE, CELLSIZE, 
+            (self.cfg[self.cfg.color_type(r,c)], self.cfg[COLOR_CHECK]),
+            alpha=(0.4, 1),
+        ))
+
+        self._check = self.board.create_image(
+            x0, y0, anchor=tk.NW, state=tk.HIDDEN, image=self._check_im
+        )
+
+        self._image = self.board.create_image(
+            x0, y0, anchor=tk.NW, state=tk.HIDDEN, image=""
+        )
+
+        self.__pid = NULL
         self.__dx: int = 0
         self.__dy: int = 0
 
-        self.color = self.board.create_rectangle(
-            self.c*CELLSIZE,
-            self.r*CELLSIZE,
-            (self.c+1)*CELLSIZE,
-            (self.r+1)*CELLSIZE,
-            fill=self.fill,
-            width=0,
-        )
-
-        self.image = self.board.create_image(
-            (2*self.c +1)*CELLSIZE //2,
-            (2*self.r +1)*CELLSIZE //2,
-            anchor=tk.CENTER,
-            state=tk.HIDDEN,
-            image=self.img
-        )
-    
-    def select(self, color_type: str) -> str:
-        """Selecting cell by colouring it. Check is a special case. Returns currently selected color."""
-        if self.highlighted == self.cfg[COLOR_CHECK]:
-            self.__Mark_cell(SELECT)
-        else:
-            self.__Mark_cell(color_type)
-            self.board.tag_raise(self.image)
-        self.selected = True
-        return self.ACTIVE_COLOR
-    
-    def deselect(self):
-        """Cell back to its original color. Check is a special case."""
-        if self.highlighted:
-            self.__Mark_cell(COLOR_CHECK)
-        else:
-            self.__Mark_cell(NORMAL)
-        self.selected = False
-    
-    def check(self):
-        """Marks cell as check."""
-        if self.pid[1]==KING:
-            self.__Mark_cell(COLOR_CHECK)
-            self.highlighted = True
-    
-    def danger(self):
-        """Marks cell as risk to be attacked."""
-        if self.pid[1]!=KING:
-            self.__Mark_cell(COLOR_CAPTURE)
-
-    def uncheck(self):
-        """To handle special case in select and deselect ie to remove check."""
-        self.highlighted = False
-        self.board.itemconfig(self.color, fill=self.fill)
+    @property
+    def pid(self):
+        return self.__pid
     
     @property
-    def ACTIVE_COLOR(self):
-        """returns current colur being displayed"""
-        return self.board.itemcget(self.color, 'fill')
+    def im_coord(self):
+        return self.board.coords(self._image)
     
-    def newimg(self, image: tk.PhotoImage, pid: str):
-        """Sets new image."""
-        self.board.itemconfig(self.image, image=image, state=tk.NORMAL)
-        self.img = image
-        self.pid = pid
+    @property
+    def state(self):
+        return self.board.itemcget(self._cell, 'fill')
     
-    def show_img(self):
-        """Shows the image displayed."""
-        self.__Img_state(tk.NORMAL)
-        self.lift()
+    def check(self):
+        """Shows check on it."""
+        self.board.itemconfig(self._check, state=tk.NORMAL)
     
-    def hide_img(self):
-        """Hides the image displayed."""
-        self.__Img_state(tk.HIDDEN)
+    def uncheck(self):
+        """Removes check on it."""
+        self.board.itemconfig(self._check, state=tk.HIDDEN)
     
-    def clear_img(self):
-        """Clears the image cell has currently."""
-        self.board.itemconfig(self.image, image="")
-        self.img = ""
-        self.pid = NULL
+    def select(self, mode: str):
+        """Selectes the cell to selection mode."""
+        self.board.itemconfig(self._cell, fill=self.cfg[mode], state=tk.NORMAL)
     
-    def move(self, dx: int, dy: int):
+    def deselect(self):
+        """Deselects the cell and removes visibility."""
+        self.board.itemconfig(self._cell, fill="", state=tk.HIDDEN)
+
+    def drag(self, dx: int, dy: int):
         """
         Changes the position of image on screen.
         Parameter should be relative to current location.
@@ -104,41 +73,19 @@ class Cell:
         dx, dy = dx//1, dy//1
         self.__dx += dx
         self.__dy += dy
-        self.board.move(self.image, dx, dy)
-    
-    @property
-    def COORDs(self):
-        """Returns the coordinates (row, column) of cell"""
-        return self.r, self.c
-    
-    @property
-    def COORDS_IMG(self):
-        """returns image coordinates (Row, column)."""
-        return self.board.coords(self.image)
-    
-    def reset_move(self):
+        self.board.move(self._image, dx, dy)
+
+    def reset_drag(self):
         """Clears delta translation of image."""
-        self.board.move(self.image, -self.__dx, -self.__dy)
+        self.board.move(self._image, -self.__dx, -self.__dy)
         self.__dx = 0
         self.__dy = 0
     
-    def lift(self):
-        """To lift up image to top."""
-        self.board.tag_raise(self.image)
-    
-    def __Mark_cell(self, color_type: str):
-        """Changes the cell color. Is called by every cell status method"""
-        if color_type is NORMAL:
-            self.board.itemconfig(self.color, fill=self.fill)
-        elif color_type is COLOR_CHECK:
-            self.board.itemconfig(self.color, fill=self.cfg[color_type])
-            self.highlighted = True
-        else:
-            self.board.itemconfig(self.color, fill=self.cfg[color_type])
-    
-    def __Img_state(self, state: str):
-        """Changes state of cell image. Is called by every image state method"""
-        self.board.itemconfig(self.image, state=state)
-
-    def config(self, key: str, value: str, **kwargs):
-        pass
+    def new_img(self, new: tk.PhotoImage, pid: str):
+        """To place new Image."""
+        self.board.itemconfig(self._image, state=tk.NORMAL, image=new)
+        self.__pid = pid
+        
+    def clear_img(self):
+        """Removes the image."""
+        self.board.itemconfig(self._image, state=tk.HIDDEN, image="")

@@ -30,33 +30,40 @@ main.pack()
 main_board = tk.Frame(main)
 main_board.pack()
 
-chessboard: ChessBoard = ChessBoard(main_board, Config)
+chessboard = ChessBoard(main_board, Config, Img)
 chessboard.canvas.pack()
 
-match = Match(chessboard, Grid, Img)
+match = Match(chessboard, Grid)
 
 
 # -----functions-----
 
+def mouse_on_chessboard(e: tk.Event):
+    if e.widget==chessboard.canvas:
+        r, c = chessboard.xy2rc(e.x, e.y) 
+        if r in range(8) and c in range(8):
+            return True
+    return False
+
 # *mouse*
 def Mouse_SLC(e: tk.Event):
     """Handles mouse single left click."""
-    if match.status is not IDLE and e.widget==chessboard.board:
+    if match.status is not IDLE and mouse_on_chessboard(e):
         match.Clicked('<SLC>', e.x, e.y)
 
 def Mouse_LD(e: tk.Event):
     """bind event for left click drag"""
-    if match.status is not IDLE and e.widget==chessboard:
+    if match.status is not IDLE and mouse_on_chessboard(e):
         match.Clicked('<LD>', e.x, e.y)
 
 def Mouse_LCR(e: tk.Event):
     """bind event for mouse left click release"""
-    if match.status is not IDLE and e.widget==chessboard:
+    if match.status is not IDLE and mouse_on_chessboard(e):
         match.Clicked('<LCR>', e.x, e.y)
 
 def Mouse_SRC(e: tk.Event):
     """bind event with single right click"""
-    if match.status is not IDLE and e.widget==chessboard:
+    if match.status is not IDLE and mouse_on_chessboard(e):
         match.Clicked('<SRC>', e.x, e.y)
 
 
@@ -81,7 +88,7 @@ file_menu.add_command(label='Exit', command=game.quit)
 
 options_menu.add_command(label='Play', command=lambda: match.Start(DEFAULT_GRID))
 
-
+match.Start()
 
 # -----binding-----
 game.bind("<Button-1>", Mouse_SLC)

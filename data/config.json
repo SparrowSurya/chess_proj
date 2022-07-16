@@ -2,7 +2,8 @@
     "color1" : "#b7865d",
     "color2" : "#efd6ae",
     "select" : "#ffff00",
-    "highlight" : "#00fff2",
+    "highlight1" : "#33BDBA",
+    "highlight2" : "#8AF2F1",
     "check" : "#ff0000",
     "unsecure" : "#ff8800",
     "border_color" : "#7d4512"

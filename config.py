@@ -2,8 +2,7 @@ import json
 from os import path
 from typing import Any
 
-from const import *
-
+from const import COLOR_C1, COLOR_C2, COLOR_H1, COLOR_H2
 
 ROOT_PATH = path.split(__file__)[0]
 
@@ -17,44 +16,39 @@ with open(FILE, 'r') as f:
 with open(UFILE, 'r') as f:
     _uConfig = json.loads(f.read())
 
-
 IMG_DIR = _uConfig['img_dir']
 
 
-class cfg():
-    __Config = _Config
+class cfg(dict):
     __file = FILE
-    __cfg = {key: _Config[key] for key in _Config.keys()}
 
     def __init__(self):
-        pass
+        super().__init__({key:_Config[key] for key in _Config.keys()})
     
     def __str__(self):
-        return json.dumps(self.__cfg, sort_keys=False, indent=4, separators=(',', ': '))
-
-    @property
-    def file(self):
-        return self.__file
-    
-    @property
-    def keys(self):
-        return self.__cfg.keys()
-
-    def __getitem__(self, __key: str):
-        return self.__cfg[__key]
+        return json.dumps(self, sort_keys=False, indent=4, separators=(',', ': '))
     
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name in self.keys:
-            self.__cfg[__name] = __value
+            self[__name] = __value
     
     def config(self, __key: str, __value: Any) -> None:
         """updates both file and gui"""
         if __key not in _Config.keys():
             return False
 
-        self.__cfg[__key] = __value
+        self[__key] = __value
         with open(self.__file, 'w') as f:
-            new_cfg = {key: self.__cfg[key] for key in self.__Config.items()}
+            new_cfg = {key: val for key, val in self.items()}
             data = json.dumps(new_cfg, sort_keys=False, indent=4, separators=(',', ': '))
             f.write(data)
         return True
+    
+    def color_type(self, r: int, c: int) -> str:
+        """Returns cell colour type based on its location."""
+        return COLOR_C1 if (r+c)%2 else COLOR_C2
+    
+    def highlight_type(self, r: int, c: int) -> str:
+        """Returns cell hightlight colour type based on its location."""
+        return COLOR_H1 if (r+c)%2 else COLOR_H2
+

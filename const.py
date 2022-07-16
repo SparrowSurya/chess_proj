@@ -11,11 +11,11 @@ ROOK   : str = 'r'
 PAWN   : str = 'p'
 NULL   : str = '..'
 
-NORMAL = 'normal' # to regain its normal color
-SELECT = 'select' # to show selection
-HIGHLIGHT = 'highlight' # to highlighted ie indirect selection
-COLOR_C1 = 'color1' # cell color type 1
-COLOR_C2 = 'color2' # cell color type 2
+COLOR_SELECT = 'select' # to show selection
+COLOR_H1 = 'highlight1' # to highlighted ie indirect selection -DARK
+COLOR_H2 = 'highlight2' # to highlighted ie indirect selection -LIGHT
+COLOR_C1 = 'color1' # cell color type 1 -DARK
+COLOR_C2 = 'color2' # cell color type 2 -LIGHT
 COLOR_CAPTURE = 'unsecure'
 COLOR_CHECK = 'check'
 COLOR_BORDER = 'border_color'
@@ -38,7 +38,7 @@ MARCH = {
 
 DEFAULT_GRID = "\
 0r0n0b0q0k0b0n0r\
-0p0p0p0p0p0p0p0p\
+0p0p0p0p1q0p0p0p\
 ................\
 ................\
 ................\

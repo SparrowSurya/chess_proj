@@ -5,15 +5,14 @@ from src.player import Player
 from const import *
 from lib.utils import *
 
-class Match:
 
-    def __init__(self, chessboard: ChessBoard, chessgrid: ChessGrid, image_dict: Image):
+class Match:
+    def __init__(self, chessboard: ChessBoard, chessgrid: ChessGrid):
         self.board = chessboard
         self.grid = chessgrid
-        self.img = image_dict
         
-        self.p0: Player = Player(P0)
-        self.p1: Player = Player(P1)
+        self.p0 = Player(P0)
+        self.p1 = Player(P1)
 
         self.__status: str = IDLE
 
@@ -61,7 +60,7 @@ class Match:
     def LoadPiece(self, r: int, c: int, player: str, piece: str):
         """Loads the piece in player pieces."""
         pid = get_pid(player, piece)
-        self.board.cell(r, c).newimg(self.img[pid], pid)
+        self.board.new_piece(r, c, pid)
         if player==P0: self.p0.NewPiece(piece, r, c)
         elif player==P1: self.p1.NewPiece(piece, r, c)
         else:
@@ -92,8 +91,7 @@ class Match:
         if self._IsCheck(player):
             print("[CHECK]")
             self.check = player
-            pc = player.pieces[KING][0]
-            self.board.cell(*(pc.loc)).check()
+            self.board.check(*player.pieces[KING][0].loc)
             return True
         return False
     
@@ -139,13 +137,13 @@ class Match:
         x1, y1 = self.last_loc
         if self.drag:
             pos = self.last_sel[0]
-            self.board.cell(*pos).move(x-x1, y-y1)
+            self.board.drag(*pos, x-x1, y-y1)
         elif self.drag is None:
             pos = self.board.xy2rc(*self.last_loc)
             if pos in self.last_sel:
-                cell = self.board.cell(*pos)
-                ix, iy = cell.COORDS_IMG
-                cell.move(x-ix, y-iy)
+                cell = self.board._cell(*pos)
+                ix, iy = cell.im_coord
+                cell.drag(x-ix, y-iy)
                 self.drag = True
             else:
                 self.drag = False
@@ -160,19 +158,19 @@ class Match:
             if pos is None:
                 self.Deselect(all=True)
                 self.drag = None
-                self.board.cell(r0, c0).reset_move()
+                self.board.drag_reset(r0, c0)
                 return
             else:
                 r1, c1 = pos
 
-            cell = self.board.cell(r1, c1)
-            if cell.selected and (r0, c0)!=(r1, c1):
+            cell = self.board._cell(r1, c1)
+            if cell.state==COLOR_SELECT and (r0, c0)!=(r1, c1):
                 self.Move(r0, c0, r1, c1)
                 self.Deselect(all=True)
                 self.SwitchTurn()
                 self.IsMatchEnd()
             else:
-                self.board.cell(r0, c0).reset_move()
+                self.board.drag_reset(r0, c0)
                 self.Deselect(all=True)
 
         elif self.drag is None and self.sel_flag == -1:
@@ -186,11 +184,11 @@ class Match:
         if self.grid[r, c] == NULL: return False
         self.Deselect(all=True)
         Epos, Apos = self.__moves[(r, c)]
-        self.Select(r, c, SELECT)
+        self.Select(r, c)
         for i, j in Epos:
-            self.Select(i, j, HIGHLIGHT)
+            self.Highlight(i, j)
         for i, j in Apos:
-            self.Select(i, j, COLOR_CAPTURE)
+            self.Attack(i, j)
         return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
@@ -204,7 +202,7 @@ class Match:
         
         if self.check: # UNCHECK KING
             loc = self.check.pieces[KING][0].loc
-            self.board.cell(*loc).uncheck()
+            self.board.uncheck(*loc)
 
         # MOVE
         pc = fr.GetPiece(r0, c0)
@@ -214,24 +212,34 @@ class Match:
         del self.grid[r0, c0]
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
+            print("[PROMOTION]")
             self.paused = True
             self.board.AskPromotion(self._Promote, player=fr, pos=(r1,c1))
         self.Check(en)
 
+    def Select(self, r: int, c: int):
+        """Select the cell."""
+        self.board.select(r, c)
+        self.last_sel.append((r, c))
 
-    def Select(self, r: int, c: int, fill_type: str):
+    def Highlight(self, r: int, c: int):
         """Highlights the cell."""
-        self.board.mark(r, c, fill_type)
+        self.board.highlight(r, c)
+        self.last_sel.append((r, c))
+    
+    def UnderCapture(self, r: int, c: int):
+        """Marks the cell piece under risk of capture."""
+        self.board.highlight(r, c)
         self.last_sel.append((r, c))
 
     def Deselect(self, r: int= None, c: int= None, *, all: bool = False):
         """If all is true ignores r,c else simply deselects all."""
         if all:
             for loc in self.last_sel:
-                self.board.cell(*loc).deselect()
+                self.board.deselect(*loc)
             self.last_sel.clear()
         else:
-            self.board.cell(r, c).deselect()
+            self.board.deselect(r, c)
 
     def _IsCheck(self, player: Player, *, move: tuple = None, i: int = 0):
         """checks the Check on player's king
@@ -296,11 +304,10 @@ class Match:
         """Promoting function. To be called by board after receiving Input."""
         r, c = pos
         pid = get_pid(player.name, rank)
-        player._Promote(*pos, rank)
-        self.board.cell(*pos).newimg(self.img[player.name, rank], pid)
+        player.Promote(*pos, rank)
+        self.board.promote(*pos, pid)
         self.grid[r, c] = pid
         self.paused = False
-
 
     def _FilterMoves(self, Epos, Apos, Ipos):
         """filters the move: Epos-empty, Apos-attack, Ipos-initial"""
