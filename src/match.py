@@ -1,4 +1,5 @@
-from src.img import Image
+from tkinter import Event
+
 from src.chessboard import ChessBoard
 from src.chessgrid import ChessGrid
 from src.player import Player
@@ -21,6 +22,7 @@ class Match:
 
         self.drag: bool = None
         self.check: Player = None
+        self.sel_flag = 0 # -1: old selection | 1: new selection | 0: None
 
         self.__moves: dict[tuple, tuple] = {} # (r, c) -> (moves, attacks)
     
@@ -56,6 +58,7 @@ class Match:
         self.__status = PLAY
         self.IsMatchEnd()
         self.Check(self.p0)
+        print(self.grid)
     
     def LoadPiece(self, r: int, c: int, player: str, piece: str):
         """Loads the piece in player pieces."""
@@ -95,34 +98,37 @@ class Match:
             return True
         return False
     
-    def Clicked(self, click_type: str, x: int, y: int):
+    def Clicked(self, click_type: str, e: Event):
         """Takes Click decision."""
-        func = {
-            '<SLC>': self._SLC,
-            '<LD>' : self._LD,
-            '<LCR>': self._LCR,
-            '<SRC>': self._SRC
-        }[click_type]
-        func(x, y)
+        if self.status is IDLE: return
+
+        if click_type=='<SLC>' and self.board.xy2rc(e.x, e.y) is not None:
+            self._SLC(e.x, e.y)
+        elif click_type=='<LD>':
+            self._LD(e.x, e.y)
+        elif click_type=='<LCR>':
+            self._LCR(e.x, e.y)
+        elif click_type=='<SRC>':
+            self._SRC(e.x, e.y)
     
     def _SLC(self, x: int, y: int):
         """Underlying function for mouse single left click."""
         self.last_loc = [x, y]
         r, c = self.board.xy2rc(x, y)
-        if self.last_sel:
+        if self.last_sel: # piece is selected
             self.sel_flag = -1
-            if (r,c) in self.last_sel[1:]:
+            if (r,c) in self.last_sel[1:]: # clicked piece destination
                 self.Move(*self.last_sel[0], r, c)
                 self.Deselect(all=True)
                 self.SwitchTurn()
                 self.IsMatchEnd()
-            elif (r, c) == self.last_sel[0]:
+            elif (r, c) == self.last_sel[0]: # clicked at same piece
                 self.MakeSelections(r, c)
                 self.sel_flag = 1
-            elif self.grid[r, c]!=NULL:
+            elif self.grid[r, c][0]==self.TurnOf(): # clicked another piece of same player
                 self.MakeSelections(r, c)
                 self.sel_flag = 1
-            else:
+            else: # clicked enemy piece
                 self.Deselect(all=True)
                 self.drag = False
                 return
@@ -163,8 +169,8 @@ class Match:
             else:
                 r1, c1 = pos
 
-            cell = self.board._cell(r1, c1)
-            if cell.state==COLOR_SELECT and (r0, c0)!=(r1, c1):
+            _mv = self.__moves[(r0, c0)]
+            if ((r1, c1) in _mv[0] or (r1, c1) in _mv[1]) and (r0, c0)!=(r1, c1):
                 self.Move(r0, c0, r1, c1)
                 self.Deselect(all=True)
                 self.SwitchTurn()
@@ -188,7 +194,7 @@ class Match:
         for i, j in Epos:
             self.Highlight(i, j)
         for i, j in Apos:
-            self.Attack(i, j)
+            self.UnderCapture(i, j)
         return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
@@ -229,7 +235,7 @@ class Match:
     
     def UnderCapture(self, r: int, c: int):
         """Marks the cell piece under risk of capture."""
-        self.board.highlight(r, c)
+        self.board.underattack(r, c)
         self.last_sel.append((r, c))
 
     def Deselect(self, r: int= None, c: int= None, *, all: bool = False):

@@ -10,6 +10,7 @@ from const import *
 game = tk.Tk()
 game.title("Chess")
 game.resizable(False, False)
+game.geometry("+600+15")
 
 
 # -----loading-backend-----
@@ -38,33 +39,22 @@ match = Match(chessboard, Grid)
 
 # -----functions-----
 
-def mouse_on_chessboard(e: tk.Event):
-    if e.widget==chessboard.canvas:
-        r, c = chessboard.xy2rc(e.x, e.y) 
-        if r in range(8) and c in range(8):
-            return True
-    return False
-
 # *mouse*
 def Mouse_SLC(e: tk.Event):
     """Handles mouse single left click."""
-    if match.status is not IDLE and mouse_on_chessboard(e):
-        match.Clicked('<SLC>', e.x, e.y)
+    match.Clicked('<SLC>', e)
 
 def Mouse_LD(e: tk.Event):
     """bind event for left click drag"""
-    if match.status is not IDLE and mouse_on_chessboard(e):
-        match.Clicked('<LD>', e.x, e.y)
+    match.Clicked('<LD>', e)
 
 def Mouse_LCR(e: tk.Event):
     """bind event for mouse left click release"""
-    if match.status is not IDLE and mouse_on_chessboard(e):
-        match.Clicked('<LCR>', e.x, e.y)
+    match.Clicked('<LCR>', e)
 
 def Mouse_SRC(e: tk.Event):
     """bind event with single right click"""
-    if match.status is not IDLE and mouse_on_chessboard(e):
-        match.Clicked('<SRC>', e.x, e.y)
+    match.Clicked('<SRC>', e)
 
 
 # -----menu-----
@@ -92,6 +82,9 @@ options_menu.add_command(label='Play', command=lambda: match.Start(DEFAULT_GRID)
 
 # -----binding-----
 game.bind("<Button-1>", Mouse_SLC)
+game.bind("<B1-Motion>", Mouse_LD)
+game.bind("<ButtonRelease-1>", Mouse_LCR)
+game.bind("<Button-3>", Mouse_SRC)
 
 
 game.mainloop()

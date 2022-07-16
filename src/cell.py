@@ -29,7 +29,7 @@ class Cell:
         )
 
         self._image = self.board.create_image(
-            x0, y0, anchor=tk.NW, state=tk.HIDDEN, image=""
+            x0+CELLSIZE//2, y0+CELLSIZE//2, anchor=tk.CENTER, state=tk.HIDDEN, image=""
         )
 
         self.__pid = NULL
@@ -45,8 +45,12 @@ class Cell:
         return self.board.coords(self._image)
     
     @property
-    def state(self):
+    def color(self):
         return self.board.itemcget(self._cell, 'fill')
+    
+    @property
+    def state(self):
+        return self.board.itemcget(self._cell, 'state')
     
     def check(self):
         """Shows check on it."""
@@ -70,6 +74,7 @@ class Cell:
         Parameter should be relative to current location.
         Adds these coords to delta translation.
         """
+        self.board.tag_raise(self._image)
         dx, dy = dx//1, dy//1
         self.__dx += dx
         self.__dy += dy
