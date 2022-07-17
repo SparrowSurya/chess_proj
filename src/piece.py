@@ -181,6 +181,6 @@ class Pawn(Piece):
                 Apos.append((r, c))
                 
         if self.move0 and Epos:
-            if grid[r+self.mdir][self.c] == NULL: # empty 2
+            if r+self.mdir in range(8) and grid[r+self.mdir][self.c] == NULL: # empty 2
                 Epos.append((r+self.mdir, self.c))
         return Epos, Apos

@@ -5,7 +5,7 @@ from const import *
 from src.cell import Cell
 from src.img import Image
 from lib.utils import check_pid
-from lib.graphics import ToImageTk, CheckerPattern
+from lib.graphics import CircularGradient, ToImageTk, CheckerPattern
 
 
 class ChessBoard:
@@ -53,21 +53,21 @@ class ChessBoard:
                 font=FONT_BORDER
             )
 
-        self.board = ToImageTk(CheckerPattern(CELLSIZE, self.cfg[COLOR_C1], self.cfg[COLOR_C2]))
-        self.canvas.create_image(BORDER_WIDTH//2, BORDER_WIDTH//2, anchor=tk.NW, image=self.board)
+        self._board = ToImageTk(CheckerPattern(CELLSIZE, self.cfg[COLOR_C1], self.cfg[COLOR_C2]))
+        self.canvas.create_image(BORDER_WIDTH//2, BORDER_WIDTH//2, anchor=tk.NW, image=self._board)
 
         self.__cells = [
             [Cell(self.canvas, self.cfg, _i, _j) for _j in range(8)] for _i in range(8)
         ]
-        self.canvas.tag_lower(self.board)
+        self.canvas.tag_lower(self._board)
 
-        # self.shade = ToImageTk(CircularGradient(CELLSIZE*8, CELLSIZE*8, ("#000000", "#330066"), (0, 1)))
-        # self.screen = self.board.create_image(
-        #     0, 0,
-        #     image=self.shade,
-        #     anchor=tk.NW,
-        #     state=tk.HIDDEN
-        # )
+        self._shade_im = ToImageTk(CircularGradient(CELLSIZE*8, CELLSIZE*8, ("#000000", "#F5F5F5"), (0.5, 1)))
+        self._check_im = ToImageTk(CircularGradient(
+            CELLSIZE, CELLSIZE, 
+            ("#DDDDDD", self.cfg[COLOR_CHECK]),
+            alpha=(0.4, 1),
+        ))
+        self._check = self.canvas.create_image(0, 0, anchor=tk.NW, image=self._check_im, state=tk.HIDDEN)
 
 
     def xy2rc(self, x_coord: int, y_coord: int, *, err: bool = False) -> tuple[int, int]:
@@ -82,7 +82,7 @@ class ChessBoard:
             )
     
     def rc2xy(self, r: int, c: int) -> tuple[int, int]:
-        """Returns x, y top left coordinate."""
+        """Returns x, y top left coordinate. Only for cell."""
         return c*CELLSIZE + BORDER_WIDTH//2, r*CELLSIZE + BORDER_WIDTH//2
     
     def _cell(self, r: int, c: int) -> Cell:
@@ -105,11 +105,14 @@ class ChessBoard:
     
     def check(self, r: int, c: int):
         """Marks the piece under check."""
-        self._cell(r, c).check()
-    
-    def uncheck(self, r: int, c: int):
+        (xi, yi), (xf, yf) = self.canvas.coords(self._check), self.rc2xy(r, c)
+        self.canvas.move(self._check, xf-xi, yf-yi)
+        self.canvas.tag_raise(self._cell(r, c)._image, self._check)
+        self.canvas.itemconfig(self._check, state=tk.NORMAL)
+
+    def uncheck(self):
         """Removes the piece under check."""
-        self._cell(r, c).uncheck()
+        self.canvas.itemconfig(self._check, state=tk.HIDDEN)
 
     def deselect(self, r: int, c: int):
         """Deselect the cell."""
@@ -137,33 +140,33 @@ class ChessBoard:
         """Changes the cell image to given pid."""
         self._cell(r, c).new_img(self.img[pid], pid)
 
-    # def AskPromotion(self, func, **kwargs):
-    #     """Special method to ask for pawn promotion."""
-    #     # new method for selection will be implemented
-        
-    #     wd = ht = CELLSIZE*8
-    #     ranks = {'queen': QUEEN, 'knight': KNIGHT, 'bishop': BISHOP, 'rook': ROOK}
-    #     _rank = []
+    def AskPromotion(self, func, **kwargs):
+        """Special method to ask for pawn promotion."""
+        screen = self.canvas.create_image(BORDER_WIDTH//2, BORDER_WIDTH//2, anchor=tk.NW, image=self._shade_im)      
+        (x0, y0), pl = self.rc2xy(*kwargs['pos']), kwargs['player']
 
-    #     def cmd():
-    #         print(rank_var.get())
-    #         select_bt.destroy()
-    #         self.board.itemconfig(self.screen, state=tk.HIDDEN)
-    #         func(**kwargs, rank=QUEEN)
-    #         return
-        
-    #     rank_var = tk.StringVar()
-    #     rank_var.set('queen')
+        def cmd(rank):
+            self.canvas.delete(box, queen, knight, bishop, rook, screen)
+            func(rank=rank, **kwargs)
 
-    #     for i, k in enumerate(ranks.keys()):
-    #         rb = tk.Radiobutton(self.board, name=k, value=k.capitalize(), variable=rank_var)
-    #         rb.place(x=int(wd*0.4), y=int(ht*0.4) + 30*i)
-    #         val = self.board.create_text(int(wd*0.5), int(ht*0.4) + 30*i, text=k.capitalize(), anchor=tk.N)
-    #         self.board.tag_raise(val)
-    #         _rank.append((rb, val))
-        
-    #     self.board.tag_raise(self.screen)
-    #     self.board.itemconfig(self.screen, state=tk.NORMAL)
-    #     # self.board.crea
-    #     select_bt = ttk.Button(self.board, text='Select', command=cmd)
-    #     select_bt.place(x=wd/2, y=int(ht*0.8), anchor=tk.S)
+        if y0<self.canvas.winfo_height()//2:
+            flow = 1
+            y0 += CELLSIZE
+            box = self.canvas.create_rectangle(x0, y0, x0+CELLSIZE, y0+CELLSIZE*4, fill=self.cfg[COLOR_SELECT], width=0)
+        else:
+            flow = -1
+            box = self.canvas.create_rectangle(x0, y0-CELLSIZE*4, x0+CELLSIZE, y0, fill=self.cfg[COLOR_SELECT], width=0)
+
+        queen = self.canvas.create_image(
+            x0+CELLSIZE//2, y0+(CELLSIZE*flow)//2, anchor=tk.CENTER, image=self.img[f"{pl}{QUEEN}"])
+        knight = self.canvas.create_image(
+            x0+CELLSIZE//2, y0+(CELLSIZE*flow*3)//2, anchor=tk.CENTER, image=self.img[f"{pl}{KNIGHT}"])
+        bishop = self.canvas.create_image(
+            x0+CELLSIZE//2, y0+(CELLSIZE*flow*5)//2, anchor=tk.CENTER, image=self.img[f"{pl}{BISHOP}"])
+        rook = self.canvas.create_image(
+            x0+CELLSIZE//2, y0+(CELLSIZE*flow*7)//2, anchor=tk.CENTER, image=self.img[f"{pl}{ROOK}"])
+
+        self.canvas.tag_bind(queen, '<Button-1>', lambda x: cmd(QUEEN))
+        self.canvas.tag_bind(knight, '<Button-1>', lambda x: cmd(KNIGHT))
+        self.canvas.tag_bind(bishop, '<Button-1>', lambda x: cmd(BISHOP))
+        self.canvas.tag_bind(rook, '<Button-1>', lambda x: cmd(ROOK))

@@ -100,7 +100,7 @@ class Match:
     
     def Clicked(self, click_type: str, e: Event):
         """Takes Click decision."""
-        if self.status is IDLE: return
+        if self.status is IDLE or self.status is PAUSE: return
 
         if click_type=='<SLC>' and self.board.xy2rc(e.x, e.y) is not None:
             self._SLC(e.x, e.y)
@@ -219,8 +219,8 @@ class Match:
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
             print("[PROMOTION]")
-            self.paused = True
             self.board.AskPromotion(self._Promote, player=fr, pos=(r1,c1))
+            self.__status = PAUSE
         self.Check(en)
 
     def Select(self, r: int, c: int):
@@ -277,21 +277,15 @@ class Match:
         
         for dr, dc in MARCH[KING]: # king
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
-                if (pid:=grid[i][j])[0]!=player:
-                    continue
-            else:
-                continue
-            if pid[1] is KING:
-                return True
+                pid = grid[i][j]
+                if pid!=NULL and pid[1]==KING and (not player.IsOwner(pid)):
+                    return True
         
         for dr, dc in MARCH[KNIGHT]: # knight
             if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
-                if (pid:=grid[i][j])[0]!=player:
-                    continue
-            else:
-                continue
-            if pid[1] is KNIGHT:
-                return True
+                pid = grid[i][j]
+                if pid!=NULL and pid[1]==KNIGHT and (not player.IsOwner(pid)):
+                    return True
         
         d = -1 if player==P1 else 1
         if r+d in range(8) and c+1 in range(8): # pawn right
@@ -313,7 +307,7 @@ class Match:
         player.Promote(*pos, rank)
         self.board.promote(*pos, pid)
         self.grid[r, c] = pid
-        self.paused = False
+        self.__status = PLAY
 
     def _FilterMoves(self, Epos, Apos, Ipos):
         """filters the move: Epos-empty, Apos-attack, Ipos-initial"""

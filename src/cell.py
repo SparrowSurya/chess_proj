@@ -1,7 +1,6 @@
 import tkinter as tk
 from config import cfg
 from const import *
-from lib.graphics import ToImageTk, CircularGradient
 
 
 class Cell:
@@ -16,16 +15,6 @@ class Cell:
             x0, y0, x0+CELLSIZE, y0+CELLSIZE,
             state=tk.HIDDEN,
             width=0
-        )
-
-        self._check_im = ToImageTk(CircularGradient(
-            CELLSIZE, CELLSIZE, 
-            (self.cfg[self.cfg.color_type(r,c)], self.cfg[COLOR_CHECK]),
-            alpha=(0.4, 1),
-        ))
-
-        self._check = self.board.create_image(
-            x0, y0, anchor=tk.NW, state=tk.HIDDEN, image=self._check_im
         )
 
         self._image = self.board.create_image(
@@ -51,14 +40,6 @@ class Cell:
     @property
     def state(self):
         return self.board.itemcget(self._cell, 'state')
-    
-    def check(self):
-        """Shows check on it."""
-        self.board.itemconfig(self._check, state=tk.NORMAL)
-    
-    def uncheck(self):
-        """Removes check on it."""
-        self.board.itemconfig(self._check, state=tk.HIDDEN)
     
     def select(self, mode: str):
         """Selectes the cell to selection mode."""
