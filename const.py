@@ -1,15 +1,15 @@
 MARKING = ("87654321", "abcdefgh")
 
 
-P0     : str = '0'
-P1     : str = '1'
-KING   : str = 'k'
-QUEEN  : str = 'q'
-KNIGHT : str = 'n'
-BISHOP : str = 'b'
-ROOK   : str = 'r'
-PAWN   : str = 'p'
-NULL   : str = '..'
+P0      = '0'
+P1      = '1'
+KING    = 'k'
+QUEEN   = 'q'
+KNIGHT  = 'n'
+BISHOP  = 'b'
+ROOK    = 'r'
+PAWN    = 'p'
+NULL    = '..'
 
 COLOR_SELECT = 'select' # to show selection
 COLOR_H1 = 'highlight1' # to highlighted ie indirect selection -DARK

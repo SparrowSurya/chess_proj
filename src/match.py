@@ -189,12 +189,14 @@ class Match:
     def MakeSelections(self, r: int, c: int):
         if self.grid[r, c] == NULL: return False
         self.Deselect(all=True)
-        Epos, Apos = self.__moves[(r, c)]
+        Epos, Apos, Spos = self.__moves[(r, c)]
         self.Select(r, c)
         for i, j in Epos:
             self.Highlight(i, j)
         for i, j in Apos:
             self.UnderCapture(i, j)
+        for i, j in Spos:
+            self.Highlight(i, j)
         return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
@@ -203,19 +205,36 @@ class Match:
             return
 
         fr, en = self.TurnOf(), self.TurnOf(True)
+        pc = fr.GetPiece(r0, c0)
         if en==(pid1:=self.grid[r1, c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).alive = False
         
         if self.check: # UNCHECK KING
-            loc = self.check.pieces[KING][0].loc
-            self.board.uncheck(*loc)
+            self.board.uncheck()
+
+        # CASTELLING
+        if (
+            (r1, c1) in self.__moves[(r0, c0)][2]
+            and (r1==r0==0 or r1==r0==7)
+            and pc.alias==KING
+        ):
+            if c1<c0:
+                self.grid[r0, c0-1] = self.grid[r0, c0-4]
+                self.board.move(r0, c0-4, r0, c0-1)
+                fr.GetPiece(r0, c0+3).move(r0, c0-1)
+                del self.grid[r0, c0-4]
+            else:
+                self.grid[r0, c0+1] = self.grid[r0, c0+3]
+                self.board.move(r0, c0+3, r0, c0+1)
+                fr.GetPiece(r0, c0+3).move(r0, c0+1)
+                del self.grid[r0, c0+3]
 
         # MOVE
-        pc = fr.GetPiece(r0, c0)
         pc.move(r1, c1)
         self.grid[r1, c1] = pid
         self.board.move(r0, c0, r1, c1)
         del self.grid[r0, c0]
+
 
         if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
             print("[PROMOTION]")
@@ -276,13 +295,13 @@ class Match:
                 i, j = i+dr, j+dc
         
         for dr, dc in MARCH[KING]: # king
-            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
+            if (i:=r+dr) in range(8) and (j:=c+dc) in range(8):
                 pid = grid[i][j]
                 if pid!=NULL and pid[1]==KING and (not player.IsOwner(pid)):
                     return True
         
         for dr, dc in MARCH[KNIGHT]: # knight
-            if (i:=r+dr) not in range(8) and (j:=c+dc) not in range(8):
+            if (i:=r+dr) in range(8) and (j:=c+dc) in range(8):
                 pid = grid[i][j]
                 if pid!=NULL and pid[1]==KNIGHT and (not player.IsOwner(pid)):
                     return True
@@ -330,8 +349,9 @@ class Match:
             for pc in pcs:
                 if pc.alive:
                     loc = pc.loc
-                    e,a = self._FilterMoves(*(pc.moves(self.grid.grid)), loc)
-                    self.__moves[loc] = (e,a)
+                    e, a, s = self.PieceMoves(pc)
+                    e,a = self._FilterMoves(e, a, loc)
+                    self.__moves[loc] = (e, a, s)
                     res = e or a or res
         return not res
     
@@ -373,6 +393,123 @@ class Match:
         elif (fd==1 and ed>1) or (en==1 and fd>1):
             print("[MATCH ENDED]:- lone king vs all the pieces")
             return
+
+    def march(self, grid: list[list[str]], r0: int, c0: int, dr: int, dc: int):
+        """Marches given piece at r0,c0 wrt to dr,dc.
+        Returns tuple[Empty positios in the way] and also returns tuple[r,c] if the next cell contained enemy piece."""
+        if grid[r0][c0] == NULL: return 
+        r, c = r0+dr, c0+dc
+        way = []
+        while (r in range(8) and c in range(8)):
+            pid = grid[r][c]
+            if pid == NULL: # empty
+                way.append((r, c))
+            elif pid[0] == grid[r0][c0][0]: # friend
+                return way, []
+            else: # enemy
+                return way, [(r, c)]
+            r, c = r+dr, c+dc
+        return way, []
+    
+    def PieceMoves(self, piece, *, grid=None):
+        """Returns piece Empty pos and Attack pos and Special pos."""
+        Epos, Apos, Spos = [], [], []
+        grid = self.grid.grid if grid is None else grid
+        player = self.TurnOf()
+        if not player.IsOwner(piece.__call__()):
+            player = self.TurnOf(True)
+
+        if piece.alias is KING:
+            for dr, dc in MARCH[KING]:
+                r, c = piece.r+dr, piece.c+dc
+                if r not in range(8) or c not in range(8): continue
+
+                pid = grid[r][c]
+                if pid == NULL: # empty
+                    Epos.append((r, c))
+                elif pid[0] == player: # friend
+                    continue
+                else: # enemy
+                    Apos.append((r, c))
+
+            # CASTELLING
+            if piece.move0:
+                r, c = piece.loc
+                _rook_pidl, _rook_pidr = grid[r][c-4], grid[r][c+3]
+
+                if (_rook_pidr[1] is ROOK
+                    and player.GetPiece(r, c+3, ROOK).move0
+                    and player.IsOwner(_rook_pidr)
+                    and grid[r][c+1]==NULL
+                    and grid[r][c+2]==NULL
+                    and (not self._IsCheck(player, move=(r, c, r, c+2)))
+                    ): Spos.append((r, c+2))
+
+                if (_rook_pidl[1] is ROOK
+                    and player.GetPiece(r, c-4, ROOK).move0
+                    and player.IsOwner(_rook_pidl)
+                    and grid[r][c-1]==NULL
+                    and grid[r][c-2]==NULL
+                    and grid[r][c-3]==NULL
+                    and (not self._IsCheck(player, move=(r, c, r, c-2)))
+                    ): Spos.append((r, c-2))
+
+            return Epos, Apos, Spos
+
+        elif piece.alias is QUEEN:
+            for dr, dc in MARCH[QUEEN]:
+                e, a = self.march(grid, piece.r, piece.c, dr, dc)
+                Epos.extend(e)
+                Apos.extend(a)
+            return Epos, Apos, Spos
+
+        elif piece.alias is KNIGHT:
+            for dr, dc in MARCH[KNIGHT]:
+                r, c = piece.r+dr, piece.c+dc
+                if r not in range(8) or c not in range(8): continue
+
+                pid = grid[r][c]
+                if pid == NULL: # empty
+                    Epos.append((r, c))
+                elif pid[0] == player: # friend
+                    continue
+                else: # enemy
+                    Apos.append((r, c))
+            return Epos, Apos, Spos
+
+        elif piece.alias is BISHOP:
+            for dr, dc in MARCH[BISHOP]:
+                e, a = self.march(grid, piece.r, piece.c, dr, dc)
+                Epos.extend(e)
+                Apos.extend(a)
+            return Epos, Apos, Spos
+
+        elif piece.alias is ROOK:
+            for dr, dc in MARCH[ROOK]:
+                e, a = self.march(grid, piece.r, piece.c, dr, dc)
+                Epos.extend(e)
+                Apos.extend(a)
+            return Epos, Apos, Spos
+
+
+        elif piece.alias is PAWN:
+            r = piece.r + piece.mdir
+
+            if grid[r][piece.c] == NULL: # empty 1
+                Epos.append((r, piece.c))
+                
+            if (c:=piece.c+1) in range(8): # right enemy
+                if (pid:=grid[r][c])[0] != player and pid != NULL:
+                    Apos.append((r, c))
+                    
+            if (c:=piece.c-1) in range(8): # left enemy
+                if (pid:=grid[r][c])[0] != player and pid != NULL:
+                    Apos.append((r, c))
+                    
+            if piece.move0 and Epos:
+                if r+piece.mdir in range(8) and grid[r+piece.mdir][piece.c] == NULL: # empty 2
+                    Epos.append((r+piece.mdir, piece.c))
+            return Epos, Apos, Spos
 
 """
 CYCLE:

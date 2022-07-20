@@ -87,6 +87,11 @@ game.bind("<ButtonRelease-1>", Mouse_LCR)
 game.bind("<Button-3>", Mouse_SRC)
 
 
+
+# -----debug-----
 match.Start()
 
+
+# -----gameloop-----
 game.mainloop()
+

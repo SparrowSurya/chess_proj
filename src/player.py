@@ -51,7 +51,7 @@ class Player:
         return piece_id[0] == self.name
     
     def kill(self, r: int, c: int, pic: str = None):
-        #! havent thought what to do if king is passed 
+        #! havent thought what to do if king is passed due to some reasons
         if (pc:=self.GetPiece(r, c, pic)).alive is True:
             pc.alive = False
             self.__stats[1] += 1
@@ -66,6 +66,7 @@ class Player:
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
         piece = self.GetPiece(r0, c0)
         piece.move(r1, c1)
+        self.last_move[r0, c0, r1, c1]
 
     def NewPiece(self, piece: str, r: int, c: int):
         if piece==KING and self.pieces.get(KING):
@@ -74,7 +75,7 @@ class Player:
                 "Player already has a king"
             )
         obj = PIECE[piece]
-        self.pieces[piece].append(obj(self.name, r, c))
+        self.pieces[piece].append(obj(self, r, c))
         self.__stats[0] += 1
 
     def Promote(self, r: int, c: int, rank: str):

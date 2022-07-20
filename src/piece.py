@@ -2,8 +2,8 @@ from const import KING, QUEEN, KNIGHT, BISHOP, ROOK, PAWN, NULL, P1, MARCH
 
 class Piece:
 
-    def __init__(self, player: str, row: int, col: int):
-        self.player: str = player
+    def __init__(self, player, row: int, col: int):
+        self.player = player
         self.r: int = row
         self.c: int = col
 
@@ -51,14 +51,15 @@ class King(Piece):
             r, c = self.r+dr, self.c+dc
             if r not in range(8) or c not in range(8):
                 continue
-
-            pid = grid[r][c]
-            if pid == NULL: # empty
-                Epos.append((r, c))
-            elif pid[0] == self.player: # friend
-                continue
-            else: # enemy
-                Apos.append((r, c))
+            else:
+                pid = grid[r][c]
+                if pid == NULL: # empty
+                    Epos.append((r, c))
+                elif pid[0] == self.player: # friend
+                    continue
+                else: # enemy
+                    Apos.append((r, c))
+        
         return Epos, Apos
 
 
@@ -97,14 +98,14 @@ class Knight(Piece):
             r, c = self.r+dr, self.c+dc
             if r not in range(8) or c not in range(8):
                 continue
-
-            pid = grid[r][c]
-            if pid == NULL: # empty
-                Epos.append((r, c))
-            elif pid[0] == self.player: # friend
-                continue
-            else: # enemy
-                Apos.append((r, c))
+            else:
+                pid = grid[r][c]
+                if pid == NULL: # empty
+                    Epos.append((r, c))
+                elif pid[0] == self.player: # friend
+                    continue
+                else: # enemy
+                    Apos.append((r, c))
         return Epos, Apos
 
 
@@ -150,7 +151,7 @@ class Pawn(Piece):
     alias: str = PAWN
     canmove: bool = True
 
-    def __init__(self, player: str, row: int, col: int):
+    def __init__(self, player, row: int, col: int):
         super().__init__(player, row, col)
         self.mdir = -1 if self.player==P1 else 1
 
@@ -184,3 +185,53 @@ class Pawn(Piece):
             if r+self.mdir in range(8) and grid[r+self.mdir][self.c] == NULL: # empty 2
                 Epos.append((r+self.mdir, self.c))
         return Epos, Apos
+
+
+'''
+class Piece:
+    """class to defineall chess piece."""
+    def __init__(self, player: str, alias: str, r: int, c: int, **kwargs):
+        self.__pl = player
+        self.__alias = alias
+        self.__r = r
+        self.__c = c
+        self.__move0 = False
+    
+        for key, val in kwargs.items():
+            self.__setattr__(key, val)
+
+    @property
+    def player(self):
+        return self.__pl
+
+    @property
+    def pid(self):
+        return f"{self.__pl}{self.__alias}"
+
+    @property
+    def pos(self):
+        return self.__r, self.__c
+    
+    @property
+    def move0(self):
+        return self.__move0
+    
+    def __call__(self) -> str:
+        return self.pid
+    
+    def __eq__(self, __o: str) -> bool:
+        return self.__alias == __o
+    
+    @pos.setter
+    def pos(self, pos: tuple[int, int]):
+        if len(pos)==2:
+            _r, _c = pos
+            if _r in range(8) and _c in range(8)and isinstance(_r, int) and isinstance(_c, int):
+                self.__r, self.__c = _r, _c
+                return
+        raise Exception(
+            "[INVALID PIECE LOCATION]",
+            f"argument received: {pos}"
+        )
+
+'''
