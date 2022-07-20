@@ -4,9 +4,7 @@
 
 ### WIP:
 
-    loaded the major changes
-    mouse click and drag action will be again debugged
-    pawn promotion implementation
+    en passon implementation
 
 
 ---

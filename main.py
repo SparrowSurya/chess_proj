@@ -97,10 +97,5 @@ game.mainloop()
 
 
 """
-polishing piece class and updating all files.
-
-tasks:
-pawn at start has first two steps to move
-pawn canmove checking for promotion
 
 """
