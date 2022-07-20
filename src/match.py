@@ -2,6 +2,7 @@ from tkinter import Event
 
 from src.chessboard import ChessBoard
 from src.chessgrid import ChessGrid
+from src.piece import Piece
 from src.player import Player
 from const import *
 from lib.utils import *
@@ -30,10 +31,10 @@ class Match:
     def status(self):
         return self.__status
 
-    @status.setter
-    def status(self, new: str):
-        """FOr handelling interruption between the match."""
-        # taking decision based on the status
+    # @__status.setter
+    # def __status(self, new: str):
+    #     """For handelling interruption between the match."""
+    #     # taking decision based on the __status
 
     def Start(self, setup: str = None, turn: bool = P1):
         """Start game with given arrangement. ifgame is already running then ignores."""
@@ -94,13 +95,13 @@ class Match:
         if self._IsCheck(player):
             print("[CHECK]")
             self.check = player
-            self.board.check(*player.pieces[KING][0].loc)
+            self.board.check(*player.pieces[KING][0].pos)
             return True
         return False
     
     def Clicked(self, click_type: str, e: Event):
         """Takes Click decision."""
-        if self.status is IDLE or self.status is PAUSE: return
+        if self.__status is IDLE or self.__status is PAUSE: return
 
         if click_type=='<SLC>' and self.board.xy2rc(e.x, e.y) is not None:
             self._SLC(e.x, e.y)
@@ -115,7 +116,7 @@ class Match:
         """Underlying function for mouse single left click."""
         self.last_loc = [x, y]
         r, c = self.board.xy2rc(x, y)
-        if self.last_sel: # piece is selected
+        if self.last_sel:
             self.sel_flag = -1
             if (r,c) in self.last_sel[1:]: # clicked piece destination
                 self.Move(*self.last_sel[0], r, c)
@@ -207,7 +208,7 @@ class Match:
         fr, en = self.TurnOf(), self.TurnOf(True)
         pc = fr.GetPiece(r0, c0)
         if en==(pid1:=self.grid[r1, c1])[0]: # KILL
-            en.GetPiece(r1, c1, pid1[1]).alive = False
+            en.GetPiece(r1, c1, pid1[1]).kill()
         
         if self.check: # UNCHECK KING
             self.board.uncheck()
@@ -216,27 +217,27 @@ class Match:
         if (
             (r1, c1) in self.__moves[(r0, c0)][2]
             and (r1==r0==0 or r1==r0==7)
-            and pc.alias==KING
+            and pc.piece == KING
         ):
             if c1<c0:
                 self.grid[r0, c0-1] = self.grid[r0, c0-4]
                 self.board.move(r0, c0-4, r0, c0-1)
-                fr.GetPiece(r0, c0+3).move(r0, c0-1)
+                fr.GetPiece(r0, c0+3).goto(r0, c0-1)
                 del self.grid[r0, c0-4]
             else:
                 self.grid[r0, c0+1] = self.grid[r0, c0+3]
                 self.board.move(r0, c0+3, r0, c0+1)
-                fr.GetPiece(r0, c0+3).move(r0, c0+1)
+                fr.GetPiece(r0, c0+3).goto(r0, c0+1)
                 del self.grid[r0, c0+3]
 
         # MOVE
-        pc.move(r1, c1)
+        pc.goto(r1, c1)
         self.grid[r1, c1] = pid
         self.board.move(r0, c0, r1, c1)
         del self.grid[r0, c0]
 
 
-        if self.grid[r1, c1][1]==PAWN and pc.canmove is False: # PAWN PROMOTION
+        if pc.piece==PAWN and pc.r+pc.step not in range(8): # PAWN PROMOTION
             print("[PROMOTION]")
             self.board.AskPromotion(self._Promote, player=fr, pos=(r1,c1))
             self.__status = PAUSE
@@ -270,7 +271,7 @@ class Match:
         """checks the Check on player's king
         move: [r0, c0, r1, c1] moves the piece(temporary)
         :i is used to get the king if player has more than one king"""
-        r, c = player.pieces[KING][i].loc
+        r, c = player.pieces[KING][i].pos
 
         grid = self.grid.grid
         if move is not None:
@@ -348,10 +349,9 @@ class Match:
         for pcs in pl.pieces.values():
             for pc in pcs:
                 if pc.alive:
-                    loc = pc.loc
                     e, a, s = self.PieceMoves(pc)
-                    e,a = self._FilterMoves(e, a, loc)
-                    self.__moves[loc] = (e, a, s)
+                    e,a = self._FilterMoves(e, a, pc.pos)
+                    self.__moves[pc.pos] = (e, a, s)
                     res = e or a or res
         return not res
     
@@ -363,30 +363,30 @@ class Match:
 
         fr, en = self.TurnOf(), self.TurnOf(True)
         fd, ed = fr.alives, en.alives
-        stat = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]} # [fr, en]
+        __stat = { KING: [0, 0], QUEEN: [0, 0], BISHOP: [0, 0], KNIGHT: [0, 0], ROOK: [0, 0], PAWN: [0, 0]} # [fr, en]
 
         for row in self.grid.grid:
             for (pl, pc) in row:
                 if pl == pc: continue # to prevent NULL
                 if pl is fr:
-                    stat[pc][0] += 1
+                    __stat[pc][0] += 1
                 else:
-                    stat[pc][1] += 1
+                    __stat[pc][1] += 1
 
         # special cases
         if fd == ed == 1:
             print("[MATCH ENDED]:- king vs king")
             return
 
-        elif (fd==2 and stat[QUEEN][0]==0 and en==1) or (en==2 and stat[QUEEN][1]==0 and fd==1):
+        elif (fd==2 and __stat[QUEEN][0]==0 and en==1) or (en==2 and __stat[QUEEN][1]==0 and fd==1):
             print("[MATCH ENDED]:- king vs minor piece with king")
             return
 
-        elif (stat[KNIGHT][0]==2 and fd==3 and en==1) or (stat[KNIGHT][1]==2 and en==3 and fd==1):
+        elif (__stat[KNIGHT][0]==2 and fd==3 and en==1) or (__stat[KNIGHT][1]==2 and en==3 and fd==1):
             print("[MATCH ENDED]:- king and 2 knights vs king")
             return
         
-        elif (fd==2 and en==2 and stat[QUEEN][0]==0) or (en==2 and fd==2 and stat[QUEEN][1]==0):
+        elif (fd==2 and en==2 and __stat[QUEEN][0]==0) or (en==2 and fd==2 and __stat[QUEEN][1]==0):
             print("[MATCH ENDED]:- king and minor piece vs king and minor piece")
             return
 
@@ -397,7 +397,12 @@ class Match:
     def march(self, grid: list[list[str]], r0: int, c0: int, dr: int, dc: int):
         """Marches given piece at r0,c0 wrt to dr,dc.
         Returns tuple[Empty positios in the way] and also returns tuple[r,c] if the next cell contained enemy piece."""
-        if grid[r0][c0] == NULL: return 
+        if grid[r0][c0] == NULL:
+            raise Exception(
+                "[NO PIECE FOUND]",
+                f"position: {r0, c0}"
+            )
+
         r, c = r0+dr, c0+dc
         way = []
         while (r in range(8) and c in range(8)):
@@ -411,7 +416,7 @@ class Match:
             r, c = r+dr, c+dc
         return way, []
     
-    def PieceMoves(self, piece, *, grid=None):
+    def PieceMoves(self, piece: Piece, *, grid:list[list[str]]=None):
         """Returns piece Empty pos and Attack pos and Special pos."""
         Epos, Apos, Spos = [], [], []
         grid = self.grid.grid if grid is None else grid
@@ -419,7 +424,7 @@ class Match:
         if not player.IsOwner(piece.__call__()):
             player = self.TurnOf(True)
 
-        if piece.alias is KING:
+        if piece.piece==KING:
             for dr, dc in MARCH[KING]:
                 r, c = piece.r+dr, piece.c+dc
                 if r not in range(8) or c not in range(8): continue
@@ -434,7 +439,7 @@ class Match:
 
             # CASTELLING
             if piece.move0:
-                r, c = piece.loc
+                r, c = piece.pos
                 _rook_pidl, _rook_pidr = grid[r][c-4], grid[r][c+3]
 
                 if (_rook_pidr[1] is ROOK
@@ -456,14 +461,14 @@ class Match:
 
             return Epos, Apos, Spos
 
-        elif piece.alias is QUEEN:
+        elif piece.piece==QUEEN:
             for dr, dc in MARCH[QUEEN]:
                 e, a = self.march(grid, piece.r, piece.c, dr, dc)
                 Epos.extend(e)
                 Apos.extend(a)
             return Epos, Apos, Spos
 
-        elif piece.alias is KNIGHT:
+        elif piece.piece==KNIGHT:
             for dr, dc in MARCH[KNIGHT]:
                 r, c = piece.r+dr, piece.c+dc
                 if r not in range(8) or c not in range(8): continue
@@ -477,14 +482,14 @@ class Match:
                     Apos.append((r, c))
             return Epos, Apos, Spos
 
-        elif piece.alias is BISHOP:
+        elif piece.piece==BISHOP:
             for dr, dc in MARCH[BISHOP]:
                 e, a = self.march(grid, piece.r, piece.c, dr, dc)
                 Epos.extend(e)
                 Apos.extend(a)
             return Epos, Apos, Spos
 
-        elif piece.alias is ROOK:
+        elif piece.piece==ROOK:
             for dr, dc in MARCH[ROOK]:
                 e, a = self.march(grid, piece.r, piece.c, dr, dc)
                 Epos.extend(e)
@@ -492,10 +497,10 @@ class Match:
             return Epos, Apos, Spos
 
 
-        elif piece.alias is PAWN:
-            r = piece.r + piece.mdir
+        elif piece.piece==PAWN:
+            r = piece.r + piece.step
 
-            if grid[r][piece.c] == NULL: # empty 1
+            if grid[r][piece.c] == NULL: # step 1
                 Epos.append((r, piece.c))
                 
             if (c:=piece.c+1) in range(8): # right enemy
@@ -507,30 +512,7 @@ class Match:
                     Apos.append((r, c))
                     
             if piece.move0 and Epos:
-                if r+piece.mdir in range(8) and grid[r+piece.mdir][piece.c] == NULL: # empty 2
-                    Epos.append((r+piece.mdir, piece.c))
+                if r+piece.step in range(8) and grid[r+piece.step][piece.c] == NULL: # step 2
+                    Epos.append((r+piece.step, piece.c))
             return Epos, Apos, Spos
 
-"""
-CYCLE:
-
-start
-    resetting players pieces and assigning turn on the fly
-    set grid, load pieces in gui and backend
-    match end detection and prefetch on fly with move filtered
-    check
-
-after move
-    clicked gets called on fly
-    move happens
-        move conditions checked
-        kill gets checked
-        unchecks the king if happens
-        actual move in gui and backend
-        pawn promotion is check if pawn is moved
-        check detection
-    cells unhighlights
-    turns gets switched
-    match end detection and prefetch on fly with move filtered
-
-"""
