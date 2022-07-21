@@ -197,15 +197,15 @@ class Match:
         for i, j in Apos:
             self.UnderCapture(i, j)
         for i, j in Spos:
-            self.Highlight(i, j)
+            self.Highlight(i, j, special=True)
         return True
 
     def Move(self, r0: int, c0: int, r1: int, c1: int):
         """Moves the piece if there. Handles capture, uncheck king, pawn promotion and checks whether acheck is given."""
-        if (pid:=self.grid[r0, c0])==NULL and self.__status==IDLE and (r0, c0)==(r1, c1):
+        if (pid:=self.grid[r0, c0])==NULL or self.__status==IDLE or (r0, c0)==(r1, c1) or not (fr:=self.TurnOf()).IsOwner(pid):
             return
 
-        fr, en = self.TurnOf(), self.TurnOf(True)
+        en = self.TurnOf(True)
         pc = fr.GetPiece(r0, c0)
         if en==(pid1:=self.grid[r1, c1])[0]: # KILL
             en.GetPiece(r1, c1, pid1[1]).kill()
@@ -222,20 +222,24 @@ class Match:
             if c1<c0:
                 self.grid[r0, c0-1] = self.grid[r0, c0-4]
                 self.board.move(r0, c0-4, r0, c0-1)
-                fr.GetPiece(r0, c0+3).goto(r0, c0-1)
+                fr.MovePiece(r0, c0+3, r0, c0-1)
                 del self.grid[r0, c0-4]
             else:
                 self.grid[r0, c0+1] = self.grid[r0, c0+3]
                 self.board.move(r0, c0+3, r0, c0+1)
-                fr.GetPiece(r0, c0+3).goto(r0, c0+1)
+                fr.MovePiece(r0, c0+3, r0, c0+1)
                 del self.grid[r0, c0+3]
 
+        if (r1, c1) in self.__moves[(r0, c0)][2] and pc.piece == PAWN: # EN PASSON
+            en.GetPiece(r1-pc.step, c1, PAWN).kill()
+            del self.grid[r1-pc.step, c1]
+            self.board._cell(r1-pc.step, c1).clear_img()
+
         # MOVE
-        pc.goto(r1, c1)
+        fr.MovePiece(r0, c0, r1, c1)
         self.grid[r1, c1] = pid
         self.board.move(r0, c0, r1, c1)
         del self.grid[r0, c0]
-
 
         if pc.piece==PAWN and pc.r+pc.step not in range(8): # PAWN PROMOTION
             print("[PROMOTION]")
@@ -248,11 +252,14 @@ class Match:
         self.board.select(r, c)
         self.last_sel.append((r, c))
 
-    def Highlight(self, r: int, c: int):
+    def Highlight(self, r: int, c: int, *, special: bool = False):
         """Highlights the cell."""
-        self.board.highlight(r, c)
+        if special:
+            self.board.special_highlight(r, c)
+        else:
+            self.board.highlight(r, c)
         self.last_sel.append((r, c))
-    
+        
     def UnderCapture(self, r: int, c: int):
         """Marks the cell piece under risk of capture."""
         self.board.underattack(r, c)
@@ -448,6 +455,7 @@ class Match:
                     and grid[r][c+1]==NULL
                     and grid[r][c+2]==NULL
                     and (not self._IsCheck(player, move=(r, c, r, c+2)))
+                    and (not self._IsCheck(player, move=(r, c, r, c+1)))
                     ): Spos.append((r, c+2))
 
                 if (_rook_pidl[1] is ROOK
@@ -457,6 +465,7 @@ class Match:
                     and grid[r][c-2]==NULL
                     and grid[r][c-3]==NULL
                     and (not self._IsCheck(player, move=(r, c, r, c-2)))
+                    and (not self._IsCheck(player, move=(r, c, r, c-1)))
                     ): Spos.append((r, c-2))
 
             return Epos, Apos, Spos
@@ -501,7 +510,10 @@ class Match:
             r = piece.r + piece.step
 
             if grid[r][piece.c] == NULL: # step 1
-                Epos.append((r, piece.c))
+                if r+piece.step in range(8):
+                    Epos.append((r, piece.c))
+                else: # one step before pawn promotion
+                    Spos.append((r, piece.c))
                 
             if (c:=piece.c+1) in range(8): # right enemy
                 if (pid:=grid[r][c])[0] != player and pid != NULL:
@@ -514,5 +526,20 @@ class Match:
             if piece.move0 and Epos:
                 if r+piece.step in range(8) and grid[r+piece.step][piece.c] == NULL: # step 2
                     Epos.append((r+piece.step, piece.c))
+            
+            # EN PASSON
+            if piece.r==4 and piece.step==1: k=2
+            elif piece.r==3 and piece.step==-1: k=-2
+            else: return Epos, Apos, Spos
+
+            for d in (-1, 1):
+                if (piece.c+d) not in range(8): continue
+                _pid = self.grid[piece.r, piece.c+d]
+                if (not player.IsOwner(_pid)
+                    and _pid[1]==PAWN
+                    and self.TurnOf(True).last_move == [piece.r+k, piece.c+d, piece.r, piece.c+d]
+                    and not self._IsCheck(player, move=(piece.r, piece.c, piece.r+piece.step, piece.c+d))
+                ):
+                    Spos.append((piece.r+piece.step, piece.c+d))
             return Epos, Apos, Spos
 

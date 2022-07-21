@@ -2,6 +2,7 @@
     "color1" : "#b7865d",
     "color2" : "#efd6ae",
     "select" : "#ffff00",
+    "special": "#FF00FF",
     "highlight1" : "#8AF2F1",
     "highlight2" : "#33BDBA",
     "check" : "#ff0000",

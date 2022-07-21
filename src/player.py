@@ -9,7 +9,7 @@ class Player:
         self.name: str = name
 
         self.turn: bool = False
-        self.last_move: list[int] = [] # [r0, c0, r1, c1]
+        self.last_move: list[int, int, int, int] = [] # [r0, c0, r1, c1]
 
         self.__alive = 0
         self.__dead = 0
@@ -54,9 +54,8 @@ class Player:
                     return pic
 
     def MovePiece(self, r0: int, c0: int, r1: int, c1: int):
-        piece = self.GetPiece(r0, c0)
-        piece.goto(r1, c1)
-        self.last_move[r0, c0, r1, c1]
+        self.GetPiece(r0, c0).goto(r1, c1)
+        self.last_move = [r0, c0, r1, c1]
 
     def NewPiece(self, piece: str, r: int, c: int):
         if piece==KING and self.pieces.get(KING):

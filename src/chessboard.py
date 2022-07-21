@@ -117,6 +117,10 @@ class ChessBoard:
     def deselect(self, r: int, c: int):
         """Deselect the cell."""
         self._cell(r, c).deselect()
+    
+    def special_highlight(self, r: int, c: int):
+        """Deselect the cell."""
+        self._cell(r, c).select(COLOR_SPECIAL)
 
     def highlight(self, r: int, c: int):
         """Highlight the cell."""

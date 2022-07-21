@@ -16,6 +16,7 @@ COLOR_H1 = 'highlight1' # to highlighted ie indirect selection -DARK
 COLOR_H2 = 'highlight2' # to highlighted ie indirect selection -LIGHT
 COLOR_C1 = 'color1' # cell color type 1 -DARK
 COLOR_C2 = 'color2' # cell color type 2 -LIGHT
+COLOR_SPECIAL = 'special'
 COLOR_CAPTURE = 'unsecure'
 COLOR_CHECK = 'check'
 COLOR_BORDER = 'border_color'
