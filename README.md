@@ -4,8 +4,13 @@
 
 ### WIP:
 
-    en passon implementation
-
+    >>> polishing
+    >>> game end design (A to Z)
+    >>> additional layouts
+    >>> ui
+    >>> customizer
+    >>> colorpicker
+    ...
 
 ---
 
@@ -23,7 +28,7 @@ pip install pillow
 ---
 
 ### Stages:
-1. 1VS1 (currently)
+1. 1VS1 (WIP)
 2. 1VSpc
 3. Online mode (maily Lan but not sure yet)
 
@@ -50,6 +55,8 @@ pip install pillow
 
 ### Additional:
 + add some statistics display after each game.
++ undo redo.
++ algebraic notation.
 + add a hint option or kind of like what can be the better move.
 + add an option to save match to replay.
 + sound effects.

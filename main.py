@@ -13,12 +13,6 @@ game.resizable(False, False)
 game.geometry("+600+15")
 
 
-# -----loading-backend-----
-Config = cfg()
-Grid = ChessGrid()
-Img = Image()
-
-
 # -----interface-widgets-----
 main: tk.Frame = tk.Frame(
     game,
@@ -30,6 +24,12 @@ main.pack()
 
 main_board = tk.Frame(main)
 main_board.pack()
+
+
+# -----loading-backend-----
+Config = cfg()
+Grid = ChessGrid()
+Img = Image()
 
 chessboard = ChessBoard(main_board, Config, Img)
 chessboard.canvas.pack()
@@ -97,5 +97,12 @@ game.mainloop()
 
 
 """
+>>> polishing
+>>> game end design (A to Z)
+>>> additional layouts
+>>> ui
+>>> customizer
+>>> colorpicker
+...
 
 """

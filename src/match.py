@@ -25,7 +25,7 @@ class Match:
         self.check: Player = None
         self.sel_flag = 0 # -1: old selection | 1: new selection | 0: None
 
-        self.__moves: dict[tuple, tuple] = {} # (r, c) -> (moves, attacks)
+        self.__legal_moves: dict[tuple, tuple] = {} # (r, c) -> (moves, attacks)
     
     @property
     def status(self):
@@ -170,7 +170,7 @@ class Match:
             else:
                 r1, c1 = pos
 
-            _mv = self.__moves[(r0, c0)]
+            _mv = self.__legal_moves[(r0, c0)]
             if ((r1, c1) in _mv[0] or (r1, c1) in _mv[1]) and (r0, c0)!=(r1, c1):
                 self.Move(r0, c0, r1, c1)
                 self.Deselect(all=True)
@@ -190,7 +190,7 @@ class Match:
     def MakeSelections(self, r: int, c: int):
         if self.grid[r, c] == NULL: return False
         self.Deselect(all=True)
-        Epos, Apos, Spos = self.__moves[(r, c)]
+        Epos, Apos, Spos = self.__legal_moves[(r, c)]
         self.Select(r, c)
         for i, j in Epos:
             self.Highlight(i, j)
@@ -212,10 +212,11 @@ class Match:
         
         if self.check: # UNCHECK KING
             self.board.uncheck()
+            self.check = None
 
         # CASTELLING
         if (
-            (r1, c1) in self.__moves[(r0, c0)][2]
+            (r1, c1) in self.__legal_moves[(r0, c0)][2]
             and (r1==r0==0 or r1==r0==7)
             and pc.piece == KING
         ):
@@ -230,7 +231,7 @@ class Match:
                 fr.MovePiece(r0, c0+3, r0, c0+1)
                 del self.grid[r0, c0+3]
 
-        if (r1, c1) in self.__moves[(r0, c0)][2] and pc.piece == PAWN: # EN PASSON
+        if (r1, c1) in self.__legal_moves[(r0, c0)][2] and pc.piece == PAWN: # EN PASSON
             en.GetPiece(r1-pc.step, c1, PAWN).kill()
             del self.grid[r1-pc.step, c1]
             self.board._cell(r1-pc.step, c1).clear_img()
@@ -351,21 +352,24 @@ class Match:
         """stores the moves and returns bool value if there is no move to move"""
         res = False
         pl = self.TurnOf()
-        self.__moves.clear()
+        self.__legal_moves.clear()
 
         for pcs in pl.pieces.values():
             for pc in pcs:
                 if pc.alive:
                     e, a, s = self.PieceMoves(pc)
                     e,a = self._FilterMoves(e, a, pc.pos)
-                    self.__moves[pc.pos] = (e, a, s)
+                    self.__legal_moves[pc.pos] = (e, a, s)
                     res = e or a or res
         return not res
     
     def IsMatchEnd(self):
         """Determines whether game should be running or stopped. Also pre fetches the moves."""
-        if self._PreFetchMoves(): # 0 moves
-            print("[MATCH ENDED]:- no moves to play")
+        if self._PreFetchMoves(): # 0 moves to play
+            if self.check == self.TurnOf(): # since check for opponent king is calculated as soon move is done
+                print("[MATCH ENDED]:- CHECKMATE")
+            else:
+                print("[MATCH ENDED]:- STALEMATE")
             return
 
         fr, en = self.TurnOf(), self.TurnOf(True)
@@ -383,23 +387,7 @@ class Match:
         # special cases
         if fd == ed == 1:
             print("[MATCH ENDED]:- king vs king")
-            return
-
-        elif (fd==2 and __stat[QUEEN][0]==0 and en==1) or (en==2 and __stat[QUEEN][1]==0 and fd==1):
-            print("[MATCH ENDED]:- king vs minor piece with king")
-            return
-
-        elif (__stat[KNIGHT][0]==2 and fd==3 and en==1) or (__stat[KNIGHT][1]==2 and en==3 and fd==1):
-            print("[MATCH ENDED]:- king and 2 knights vs king")
-            return
         
-        elif (fd==2 and en==2 and __stat[QUEEN][0]==0) or (en==2 and fd==2 and __stat[QUEEN][1]==0):
-            print("[MATCH ENDED]:- king and minor piece vs king and minor piece")
-            return
-
-        elif (fd==1 and ed>1) or (en==1 and fd>1):
-            print("[MATCH ENDED]:- lone king vs all the pieces")
-            return
 
     def march(self, grid: list[list[str]], r0: int, c0: int, dr: int, dc: int):
         """Marches given piece at r0,c0 wrt to dr,dc.
@@ -543,3 +531,29 @@ class Match:
                     Spos.append((piece.r+piece.step, piece.c+d))
             return Epos, Apos, Spos
 
+''''
+class Manager:
+
+    def __init__(chessboard, chessgrid):
+        self.board: ChessBoard
+        self.grid :ChessGrid
+        self.mode : PLAY/PAUSE/IDLE/EDIT
+
+        self.last_loc: list[int x, int y]
+        self.last_sel: list[tuple[int r, int c]]
+
+        self.drag: bool
+        self.check : None/Player
+        self.sel_flag: -1/0/1
+
+        self.__legal_moves: list[
+            Epos: list[tuple[int r, int c]]
+            Apos: list[tuple[int r, int c]]
+            Spos: list[tuple[int r, int c]]
+        ]
+
+    def StartMatch(grid, turn: P0/P1):
+
+
+
+'''

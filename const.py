@@ -37,6 +37,7 @@ MARCH = {
     ROOK   : ((1,0),(0,1),(-1,0),(0,-1))
 }
 
+
 DEFAULT_GRID = "\
 0r0n0b0q0k0b0n0r\
 0p0p0p0p0p0p0p0p\
