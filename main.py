@@ -2,7 +2,7 @@
 import tkinter as tk
 
 from config import cfg
-from src import ChessBoard, ChessGrid, Match, Image
+from src import ChessBoard, ChessGrid, Image, Engine
 from const import *
 
 
@@ -34,7 +34,7 @@ Img = Image()
 chessboard = ChessBoard(main_board, Config, Img)
 chessboard.canvas.pack()
 
-match = Match(chessboard, Grid)
+engine = Engine(chessboard, Grid)
 
 
 # -----functions-----
@@ -42,19 +42,19 @@ match = Match(chessboard, Grid)
 # *mouse*
 def Mouse_SLC(e: tk.Event):
     """Handles mouse single left click."""
-    match.Clicked('<SLC>', e)
+    engine.Clicked('<SLC>', e)
 
 def Mouse_LD(e: tk.Event):
     """bind event for left click drag"""
-    match.Clicked('<LD>', e)
+    engine.Clicked('<LD>', e)
 
 def Mouse_LCR(e: tk.Event):
     """bind event for mouse left click release"""
-    match.Clicked('<LCR>', e)
+    engine.Clicked('<LCR>', e)
 
 def Mouse_SRC(e: tk.Event):
     """bind event with single right click"""
-    match.Clicked('<SRC>', e)
+    engine.Clicked('<SRC>', e)
 
 
 # -----menu-----
@@ -76,7 +76,7 @@ file_menu.add_command(label='Settings')
 file_menu.add_separator()
 file_menu.add_command(label='Exit', command=game.quit)
 
-options_menu.add_command(label='Play', command=lambda: match.Start(DEFAULT_GRID))
+options_menu.add_command(label='Play', command=lambda: engine.StartMatch(DEFAULT_GRID))
 
 
 
@@ -89,20 +89,9 @@ game.bind("<Button-3>", Mouse_SRC)
 
 
 # -----debug-----
-match.Start()
+engine.StartMatch()
 
 
 # -----gameloop-----
 game.mainloop()
 
-
-"""
->>> polishing
->>> game end design (A to Z)
->>> additional layouts
->>> ui
->>> customizer
->>> colorpicker
-...
-
-"""
