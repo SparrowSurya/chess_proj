@@ -139,6 +139,7 @@ class ChessBoard:
         cell0 = self._cell(r0, c0)
         self._cell(r1, c1).new_img(self.img[cell0.pid], cell0.pid)
         cell0.clear_img()
+        cell0.reset_drag()
 
     def promote(self, r: int, c: int, pid: str):
         """Changes the cell image to given pid."""

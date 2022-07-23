@@ -10,8 +10,8 @@ class Cell:
         self.r = r
         self.c = c
         self.__pid = NULL
-        # self.__dx: int = 0
-        # self.__dy: int = 0
+        self.__dx: int = 0
+        self.__dy: int = 0
 
         x0, y0 = self.c*CELLSIZE + BORDER_WIDTH//2, self.r*CELLSIZE + BORDER_WIDTH//2 
         self._cell = self.board.create_rectangle(
@@ -56,18 +56,14 @@ class Cell:
         Adds these coords to delta translation.
         """
         self.board.tag_raise(self._image)
-        # dx, dy = dx//1, dy//1
-        # self.__dx += dx
-        # self.__dy += dy
+        dx, dy = dx//1, dy//1
+        self.__dx, self.__dy = self.__dx+dx, self.__dy+dy
         self.board.move(self._image, dx, dy)
 
     def reset_drag(self):
         """Clears delta translation of image."""
-        # self.board.move(self._image, -self.__dx, -self.__dy)
-        # self.__dx, self.__dy = 0, 0
-        x0, y0 = self.board.coords(self._image)
-        x1, y1 = self.c*CELLSIZE + CELLSIZE//2 + BORDER_WIDTH//2, self.r*CELLSIZE + CELLSIZE//2 + BORDER_WIDTH//2
-        self.board.move(self._image, x0-x1, y0-y1)
+        self.board.move(self._image, -self.__dx, -self.__dy)
+        self.__dx, self.__dy = 0, 0
     
     def new_img(self, new: tk.PhotoImage, pid: str):
         """To place new Image."""

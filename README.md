@@ -15,9 +15,6 @@
 
 ### Bugs:
     
-    # drag bug solution:
-        sometimes when resetting the position of image the image dont goes to correct place
-    
     # promotion piece selection:
         affter selecting the rank of promotion if the enemy has piece below the click it gets selected
 
